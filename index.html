@@ -1068,7 +1068,6 @@
   <button class="replay-btn" id="download-video-btn" style="border-color:#4caf50;color:#7fdb7f">⬇️ 下載對戰影片</button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/fix-webm-duration@1.0.6/"></script>
 <script>
 // ──────────────── AUDIO ────────────────
 let audioCtx = null;
@@ -2802,28 +2801,14 @@ function startRecording() {
       if (e.data && e.data.size > 0) recordedChunks.push(e.data);
     };
     mediaRecorder.onstop = () => {
-      const buggyBlob = new Blob(recordedChunks, { type: 'video/webm' });
-      const durationMs = Math.max(1, Date.now() - recordStartTimestamp);
-
-      const finish = (finalBlob) => {
-        if (recordedBlobUrl) URL.revokeObjectURL(recordedBlobUrl);
-        recordedBlobUrl = URL.createObjectURL(finalBlob);
-        const dlBtn = document.getElementById('download-video-btn');
-        if (dlBtn) dlBtn.style.display = 'inline-block';
-      };
-
-      // 用 fix-webm-duration 修補 Chrome MediaRecorder 產生的檔案缺少時長 metadata 的問題
-      // （若函式庫因離線等原因沒載入成功，就退回用原始檔案，仍可播放，只是不能拖進度條）
-      if (typeof ysFixWebmDuration === 'function') {
-        ysFixWebmDuration(buggyBlob, durationMs, { logger: false })
-          .then(finish)
-          .catch(() => finish(buggyBlob));
-      } else {
-        finish(buggyBlob);
-      }
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      if (recordedBlobUrl) URL.revokeObjectURL(recordedBlobUrl);
+      recordedBlobUrl = URL.createObjectURL(blob);
+      const dlBtn = document.getElementById('download-video-btn');
+      if (dlBtn) dlBtn.style.display = 'inline-block';
     };
 
-    mediaRecorder.start(250);
+    mediaRecorder.start();
     recording = true;
     recordStartTimestamp = Date.now();
     const indicator = document.getElementById('rec-indicator');
