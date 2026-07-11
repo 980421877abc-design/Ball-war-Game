@@ -990,7 +990,14 @@
     <div style="font-size:1.1rem;font-weight:800;color:#eee;letter-spacing:.12em">🗺️ 選擇場地</div>
     <button id="arena-modal-close" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#ccc;cursor:pointer;font-size:0.9rem">✕</button>
   </div>
-  <div id="arena-modal-grid" style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;max-width:700px;padding:0 16px"></div>
+<div style="display:flex;gap:0.6rem;height:56vh;width:100%;max-width:750px;justify-content:center;">
+    <div class="roster-grid-wrap" id="arena-modal-grid-wrap" style="max-width:700px;">
+      <div id="arena-modal-grid" style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;padding:0 16px 16px"></div>
+    </div>
+    <div class="roster-scrollbar" id="arena-modal-scrollbar">
+      <div class="roster-scrollbar-thumb" id="arena-modal-scrollbar-thumb"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ══ GAME SCREEN ══ -->
@@ -1525,7 +1532,7 @@ cursed:'格蘭尼達.... '}
   id: 'tiger', emoji: '🐯', weapon: '👊', name: '虎天帝',
   desc: '​「只要還能動，我就會一直詛咒你。——接招吧，宿儺！」​歷經無數絕望與摯友的逝去，那個曾經只會用肉身搏擊的少年，終於在戰場上徹底覺醒為支配宿命的「虎天帝」。',
   stats: ['徑庭拳 ', '超新星 ', '穿血' , '宿儺容器'],
-  skills: ['「徑庭拳」：距離130內蓄力0.4秒揮拳，命中造成80傷，1秒後追加50傷並擊退；20%機率觸發「黑閃」，兩段傷害提升1.5倍並清除等量流血。（CD 2.6秒）', '被動「宿儺容器」：受到傷害的65%轉為流血，之後以18/秒扣除，流血上限600；觸發黑閃時可清除等同於1.5倍黑閃傷害量的流血。', '「穿血」：消耗自身50血量（不致命）發射血刃，造成60傷害，並在自身留下等量流血；命中處留下可存活12秒的血球。（CD 2.2秒）', '「超新星」：集滿3顆血球後，原地蓄力0.7秒引爆，射出14根血流針，每根30傷，射程140。（CD 至少4秒）'],
+  skills: ['「徑庭拳」：距離130內蓄力0.4秒揮拳，命中造成70傷，1秒後追加50傷並擊退；20%機率觸發「黑閃」，兩段傷害提升1.5倍並清除等量流血。（CD 2.6秒）', '被動「宿儺容器」：受到傷害的65%轉為流血，之後以18/秒扣除，流血上限600；觸發黑閃時可清除等同於1.5倍黑閃傷害量的流血。', '「穿血」：消耗自身50血量（不致命）發射血刃，造成60傷害，並在自身留下等量流血；命中處留下可存活12秒的血球。（CD 2.2秒）', '「超新星」：集滿3顆血球後，原地蓄力0.7秒引爆，射出14根血流針，每根25傷，射程140。（CD 至少4秒）'],
   color: '#cc2200', glowColor: 'rgba(204,34,0,0.6)', type: 'tiger',
   winQuote: '我只是個零件。就算我是個零件，也要盡可能地祓除詛咒。',
   vsQuotes: { yuta: '乙骨前輩，辛苦你了。',
@@ -1539,7 +1546,7 @@ yuki:'這是對我哥哥重要的人來說，她的理想'
   id: 'stargirl', emoji: '⭐', weapon: '🌟', name: '星星女孩',
   desc: '使用「星造術」，大星星碰牆時向周圍爆散出5顆小星星。小星星傷害敵人。不定時時召喚星隕，大量流星從天而降。',
   stats: ['大星星', '星散', '小星星', '星隕'],
-  skills: ['「星造術」：操控大星星，碰牆時向周圍爆散出5顆小星星(星散)。', '小星星：接觸敵人造成傷害。', '「星隕」：不定時召喚流星雨，大量流星從天而降。'],
+  skills: ['「星造術」：操控大星星，碰牆時向周圍爆散出5顆小星星(星散)。', '小星星：接觸敵人造成22傷害。', '「星隕」：不定時召喚流星雨，大量流星從天而降。'],
   color: '#ffe066', glowColor: 'rgba(255,224,102,0.6)', type: 'stargirl',
   winQuote: '一閃一閃亮晶晶。'
   },
@@ -1623,6 +1630,18 @@ yuki:'這是對我哥哥重要的人來說，她的理想'
   }
   
   
+  },
+  {
+    id: 'wuxing', emoji: '👻', weapon: '❔', name: '無形',
+    desc: '「你以為你在跟誰打？下一秒，我就是別人了。」沒有固定招式與樣貌的存在，會不斷奪取他人的姿態與力量。',
+    stats: ['無形'],
+    skills: [
+      '被動「無形」：戰鬥開始立刻化身為隨機角色，之後每 7 秒隨機再變成不同角色，變身瞬間回復75血量。',
+      '變身期間的技能、冷卻時間、攻擊方式完全比照當下化身的角色，等同直接操作那個角色。',
+      '血量、位置以及當下所中的異常狀態（灼燒、麻痺、定身、緩速等）不會因變身而重置或清除。'
+    ],
+    color: '#9b8cce', glowColor: 'rgba(155,140,206,0.6)', type: 'wuxing',
+    winQuote: '你甚至不知道，你剛剛打的到底是誰。'
   }
 ];
 
@@ -2018,6 +2037,7 @@ const ARENA_GRASS_INTERVAL = 7;     // 青草場：回血間隔
 const ARENA_GRASS_HEAL = 150;       // 青草場：每次回血量
 const ARENA_SAND_SPAWN_INTERVAL = 6; // 流沙場：流沙圈生成間隔
 const ARENA_SAND_RADIUS = 55;       // 流沙圈半徑
+const OBSTACLE_ARENA_RADIUS = 48;   // 障礙場地：正中央巨石的碰撞半徑
 const ARENA_SAND_DURATION = 8;      // 流沙圈存活秒數
 const ARENA_SAND_SLOW_FACTOR = 0.45; // 流沙緩速倍率
 
@@ -2061,7 +2081,7 @@ const ARENA_BEACH_SHARKFIN_MAX   = 3;     // 空軍幾次後清空並丟出鯊�
 const ARENA_BEACH_SHARKBITE_DMG  = 110;
 const ARENA_BEACH_SHARKBITE_SPD  = 620;
 
-let selectedArena = 'normal'; // 'normal' | 'lava' | 'snow' | 'grass' | 'sand' | 'beach'
+let selectedArena = 'normal'; // 'normal' | 'lava' | 'snow' | 'grass' | 'sand' | 'beach' | 'obstacle'
 
 const ARENAS = [
   { id: 'normal', emoji: '🏟️', name: '標準場地', desc: '純粹的對決。' },
@@ -2069,7 +2089,8 @@ const ARENAS = [
   { id: 'snow',   emoji: '❄️', name: '冰雪場地', desc: '每隔 7 秒吹一次暴風雪，雙方各有 50% 機率被凍結，凍結中無法移動，技能CD也會停止計算。' },
   { id: 'grass',  emoji: '🌿', name: '青草場地', desc: '每隔 7 秒，雙方同時回復 150 滴血，考驗爆發輸出能力。' },
   { id: 'sand',   emoji: '🏜️', name: '流沙場地', desc: '場上會不定時出現流沙圈，站在裡面的角色會被大幅緩速。' },
-  { id: 'beach',  emoji: '🏖️', name: '海灘場地', desc: '水域與沙灘各半。潮汐漲退間有暗流、螃蟹、海膽與寶箱出沒，雷電法王與釣魚佬在此另有特殊互動。' }
+  { id: 'beach',  emoji: '🏖️', name: '海灘場地', desc: '水域與沙灘各半。潮汐漲退間有暗流、螃蟹、海膽與寶箱出沒，雷電法王與釣魚佬在此另有特殊互動。' },
+  { id: 'obstacle', emoji: '🪨', name: '障礙場地', desc: '正中央有一塊巨石，會實際擋住雙方的移動路徑，可以繞到後面躲避攻擊或利用地形卡位。' }
 ];
 
 const MODES = [
@@ -2097,6 +2118,7 @@ const OPM_WALL_REDUCE          = 0.5; // 撞牆時減少的怒氣值倒數秒數
 
 //廚師常數
 const CHEF_ATTACK_INTERVAL = 2.0; //攻擊CD
+
 const KNIFE_SPEED          = 300; //刀子移動速度
 const KNIFE_DAMAGE         = 130; //刀子傷害
 const KNIFE_MAX_COUNT      = 2; //刀子上限
@@ -2338,7 +2360,7 @@ const STAR_BIG_LIFETIME         = 12.0;  // 大星星存活時間（秒）
 const STAR_SCATTER_RANGE        = 80;    // 星散感應範圍（px，比碰撞半徑大很多）
 const STAR_SMALL_COUNT          = 5;     // 星散爆出小星星數
 const STAR_SMALL_SPEED          = 300;   // 小星星速度（px/s）
-const STAR_SMALL_DAMAGE         = 24;    // 小星星碰敵人傷害
+const STAR_SMALL_DAMAGE         = 22;    // 小星星碰敵人傷害
 const STAR_SMALL_RADIUS         = 8;     // 小星星半徑（px）
 const STAR_SMALL_LIFETIME       = 10.0;  // 小星星存活時間（秒）
 const STAR_EXPLODE_DAMAGE       = 80;    // 小星星接觸爆炸傷害（碰小星星/大星星/女孩）
@@ -2381,7 +2403,7 @@ const OBITO_PHANTOM_DAMAGE       = 40;   // 假想子彈碰到對手傷害
 const TIGER_PUNCH_INTERVAL      = 2.6;   // 徑庭拳CD（秒）
 const TIGER_PUNCH_CHARGE_TIME   = 0.4;   // 蓄力時間（秒）
 const TIGER_PUNCH_RANGE         = 130;   // 徑庭拳判定範圍（px）
-const TIGER_PUNCH_DMG1          = 80;    // 徑庭拳第一段傷害
+const TIGER_PUNCH_DMG1          = 70;    // 徑庭拳第一段傷害
 const TIGER_PUNCH_DMG2          = 50;    // 徑庭拳第二段傷害（延遲追加）
 const TIGER_PUNCH_DELAY2        = 1;  // 第二段傷害延遲（秒）
 const TIGER_PUNCH_KNOCKBACK     = 280;   // 徑庭拳擊退力道
@@ -2399,7 +2421,7 @@ const TIGER_NOVA_COOLDOWN       = 4.0;   // 超新星最少CD（秒）：兩次�
 const TIGER_NOVA_CHARGE_TIME    = 0.7;   // 超新星發動前在原地蓄力的時間（秒）
 const TIGER_NOVA_NEEDLE_COUNT   = 14;    // 超新星血流針數量
 const TIGER_NOVA_NEEDLE_SPEED   = 400;   // 血流針飛行速度
-const TIGER_NOVA_NEEDLE_DMG     = 30;    // 每根血流針傷害
+const TIGER_NOVA_NEEDLE_DMG     = 25;    // 每根血流針傷害
 const TIGER_NOVA_NEEDLE_RANGE   = 140;   // 血流針有效射程
 const TIGER_BLEED_RATIO         = 0.65;  // 受傷有多少比例轉為流血
 const TIGER_BLEED_DPS           = 18;    // 流血每秒傷害
@@ -2666,7 +2688,7 @@ const DAJI_ENH_HEAL          = 10;    // 釋放強化技能時恢復生命值
 
 // 九十九由基 專屬常數
 const YUKI_PHOENIX_DELAY          = 0.2;   // 碰撞後延遲觸發「鳳輪」秒數
-const YUKI_PHOENIX_DAMAGE         = 100;   // 鳳輪基礎傷害
+const YUKI_PHOENIX_DAMAGE         = 120;   // 鳳輪基礎傷害
 const YUKI_PHOENIX_RADIUS         = 90;    // 鳳輪環繞由基身旁的掃蕩範圍
 const YUKI_COLLISION_COOLDOWN     = 0.6;   // 碰撞觸發鳳輪的內置CD（避免重疊瞬間重複觸發）
 const YUKI_GRAVITY_MAX_STACK      = 5;     // 重力最大層數
@@ -2682,6 +2704,8 @@ const YUKI_BLACKHOLE_PULL_SPEED   = 150;   // 假想黑洞：吸入速度（px/s
 const YUKI_BLACKHOLE_SELF_COST    = 500;   // 假想黑洞結束後，由基自身扣血
 const YUKI_GRAVITY_AURA_RADIUS    = 500;   // 被動引力場：作用範圍
 const YUKI_GRAVITY_AURA_PULL      = 70;    // 被動引力場：基礎拉力（px/s）
+const WUXING_TRANSFORM_INTERVAL = 7; // 無形：每隔幾秒重新變身一次
+const WUXING_TRANSFORM_HEAL     = 70; // 無形：每次變身回血量
 
 
 let gameLoop = null;
@@ -2689,6 +2713,7 @@ let lastTime = 0;
 let elapsed  = 0;
 let gameSpeed = 1;
 let state    = {};
+let updateWuxingFn = null; // 無形的變身更新邏輯（在 startGame 內賦值，因為需要用到 makeBall 閉包）
 
 // ══════════════ 對戰錄影功能 ══════════════
 const RECORD_SCALE = 2;      // 錄影解析度倍率（畫布本身只有 350x350，放大避免影片太糊）
@@ -2877,14 +2902,66 @@ function renderArenaModal() {
     };
     grid.appendChild(card);
   });
+  if (window.updateArenaThumb) setTimeout(window.updateArenaThumb, 0);
 }
 document.getElementById('arena-pick-btn').addEventListener('click', () => {
   renderArenaModal();
   document.getElementById('arena-modal').style.display = 'flex';
+  setTimeout(updateArenaThumb, 30);
 });
 document.getElementById('arena-modal-close').addEventListener('click', () => {
   document.getElementById('arena-modal').style.display = 'none';
 });
+
+// ── 場地選擇：自訂垂直滑條 ──
+(function () {
+  const gridWrap = document.getElementById('arena-modal-grid-wrap');
+  const sbar     = document.getElementById('arena-modal-scrollbar');
+  const sthumb   = document.getElementById('arena-modal-scrollbar-thumb');
+  if (!gridWrap || !sbar || !sthumb) return;
+
+  window.updateArenaThumb = function () {
+    const trackH = sbar.clientHeight;
+    const ratio  = gridWrap.clientHeight / gridWrap.scrollHeight;
+    if (!isFinite(ratio) || ratio >= 1) { sthumb.style.display = 'none'; return; }
+    sthumb.style.display = 'block';
+    const thumbH = Math.max(28, trackH * ratio);
+    const maxScroll = gridWrap.scrollHeight - gridWrap.clientHeight;
+    const scrollRatio = maxScroll > 0 ? gridWrap.scrollTop / maxScroll : 0;
+    sthumb.style.height = thumbH + 'px';
+    sthumb.style.top = (scrollRatio * (trackH - thumbH)) + 'px';
+  };
+
+  gridWrap.addEventListener('scroll', updateArenaThumb);
+  window.addEventListener('resize', updateArenaThumb);
+
+  let dragging = false, dragStartY = 0, dragStartScroll = 0;
+  function onDragMove(clientY) {
+    const trackH = sbar.clientHeight;
+    const thumbH = sthumb.offsetHeight;
+    const maxScroll = gridWrap.scrollHeight - gridWrap.clientHeight;
+    const deltaY = clientY - dragStartY;
+    const deltaRatio = deltaY / (trackH - thumbH);
+    gridWrap.scrollTop = dragStartScroll + deltaRatio * maxScroll;
+  }
+  sthumb.addEventListener('pointerdown', e => {
+    dragging = true;
+    dragStartY = e.clientY;
+    dragStartScroll = gridWrap.scrollTop;
+    sthumb.setPointerCapture(e.pointerId);
+  });
+  sthumb.addEventListener('pointermove', e => { if (dragging) onDragMove(e.clientY); });
+  sthumb.addEventListener('pointerup', () => { dragging = false; });
+  sthumb.addEventListener('pointercancel', () => { dragging = false; });
+
+  sbar.addEventListener('pointerdown', e => {
+    if (e.target === sthumb) return;
+    const rect = sbar.getBoundingClientRect();
+    const clickRatio = (e.clientY - rect.top) / rect.height;
+    const maxScroll = gridWrap.scrollHeight - gridWrap.clientHeight;
+    gridWrap.scrollTop = clickRatio * maxScroll;
+  });
+})();
 
 // 背景顏色選擇
 document.getElementById('bg-color-picker').addEventListener('input', (e) => {
@@ -2923,8 +3000,8 @@ function forfeitGame() {
   overlay.classList.add('show');
 }
 
-const P1_COLORS ={ chef:'#e84545',drunk:'#7b4cca', opm:'#f5f5f5', vampire:'#8b1a8b', gojo:'#00cfff', cursed:'#c0392b', trapper:'#27ae60', yi:'#e8e8e8', gunner:'#b8860b', samurai:'#d4af37', mage:'#9b59b6', thunder:'#f1c40f', blacksmith:'#cd7f32', naobito:'#c8c8e8', itachi:'#8b0000', yuta:'#ff6fa5', engineer:'#3a8fd6', cannondad:'#bdbdbd', dio:'#f5d020', tiger:'#cc2200', stargirl:'#ffe066', obito:'#ff6600', fisherman:'#4a90d9', geto:'#5b3a8e', sakiko:'#c9a4d1', joseph:'#2f7dc0', steve:'#4a8f3c',daji:'#e08ac7',yuki:'#b8860b' };
-const P2_COLORS = { chef:'#ff9f43', drunk:'#48dbfb', opm:'#aaaaaa', vampire:'#cc44cc', gojo:'#7ff8ff', cursed:'#e74c3c', trapper:'#2ecc71', yi:'#cccccc', gunner:'#f0c040', samurai:'#ffe88a', mage:'#d7aefb', thunder:'#ffe066', blacksmith:'#e8a840', naobito:'#aaaacc', itachi:'#ff3333', yuta:'#ffa3c8', engineer:'#7ec8ff', cannondad:'#787878', dio:'#fff066', tiger:'#ff4422', stargirl:'#fff5aa', obito:'#ffaa44', fisherman:'#8ec6ff', geto:'#a678e0', sakiko:'#e8cdf0', joseph:'#6fb8ee', steve:'#8fd96b',daji:'#e8cdf8' ,yuki:'#b8960b'};
+const P1_COLORS ={ chef:'#e84545',drunk:'#7b4cca', opm:'#f5f5f5', vampire:'#8b1a8b', gojo:'#00cfff', cursed:'#c0392b', trapper:'#27ae60', yi:'#e8e8e8', gunner:'#b8860b', samurai:'#d4af37', mage:'#9b59b6', thunder:'#f1c40f', blacksmith:'#cd7f32', naobito:'#c8c8e8', itachi:'#8b0000', yuta:'#ff6fa5', engineer:'#3a8fd6', cannondad:'#bdbdbd', dio:'#f5d020', tiger:'#cc2200', stargirl:'#ffe066', obito:'#ff6600', fisherman:'#4a90d9', geto:'#5b3a8e', sakiko:'#c9a4d1', joseph:'#2f7dc0', steve:'#4a8f3c',daji:'#e08ac7',yuki:'#b8860b',wuxing:'#9b8cce' };
+const P2_COLORS = { chef:'#ff9f43', drunk:'#48dbfb', opm:'#aaaaaa', vampire:'#cc44cc', gojo:'#7ff8ff', cursed:'#e74c3c', trapper:'#2ecc71', yi:'#cccccc', gunner:'#f0c040', samurai:'#ffe88a', mage:'#d7aefb', thunder:'#ffe066', blacksmith:'#e8a840', naobito:'#aaaacc', itachi:'#ff3333', yuta:'#ffa3c8', engineer:'#7ec8ff', cannondad:'#787878', dio:'#fff066', tiger:'#ff4422', stargirl:'#fff5aa', obito:'#ffaa44', fisherman:'#8ec6ff', geto:'#a678e0', sakiko:'#e8cdf0', joseph:'#6fb8ee', steve:'#8fd96b',daji:'#e8cdf8' ,yuki:'#b8960b',wuxing:'#c3b8e8'};
 
 // 玩家 1、2 用既有的兩張色表；玩家 3 以上（多人混戰用）用同一顏色做色調偏移，避免撞色。
 // 之後若要幫玩家 3/4 手動指定色表，只要新增 P3_COLORS / P4_COLORS 並在這裡優先讀取即可。
@@ -3255,6 +3332,7 @@ function startGame() {
       // 被施加詛咒（捌）的狀態（任何角色都可能被施加）
       curseDotTimer: 0,     // dot剩餘時間
       curseDotDmg: 0,       // 每秒傷害量
+      curseDotOwnerPlayer: null, // 詛咒dot施放者玩家編號（多人混戰傷害歸屬用）
       curseSlowTimer: 0,    // 緩速剩餘時間
       // 暗夜領主專屬狀態
       vampireBiting: ch.type === 'vampire' ? false : null,       // 是否正在咬擊
@@ -3286,6 +3364,7 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       // 被尖刺 dot（任何角色）
       trapDotTimer: 0,
       trapDotDps: 0,
+      trapDotOwnerPlayer: null, // 尖刺dot施放者玩家編號（多人混戰傷害歸屬用）
       // 奕專屬狀態
       yiBlackTimer: ch.type === 'yi' ? YI_BLACK_INTERVAL : null,  // 落黑棋CD
       yiBlackCount: ch.type === 'yi' ? 0 : null,                   // 當前黑棋計數（累積到4觸發白旗）
@@ -3471,6 +3550,7 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       fisherHookToY:       ch.type === 'fisherman' ? 0 : null,
       fisherResult:        ch.type === 'fisherman' ? null : null,       // 本次釣魚結果
       fisherRedTimer:      0,   // 「魚」紅溫延遲爆炸倒數（任何角色都可能被此狀態影響）
+      fisherRedOwnerPlayer: null, // 紅溫爆炸施放者玩家編號（多人混戰傷害歸屬用）
       // 大海專屬（海浪 + 坐船勾甩）
       fisherOceanPhase:    ch.type === 'fisherman' ? null : null,       // null|'waves'|'dashwait'|'dash'|'grab'|'slam'
       fisherOceanTimer:    ch.type === 'fisherman' ? 0 : null,
@@ -3553,6 +3633,7 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       josephDioHpCostDone:  ch.type === 'joseph' ? false : null,            // 對上DIO的開局扣血是否已執行
       // 波紋層數（任何角色都可能被大喬施加）
       rippleStacks: 0,
+      rippleOwnerPlayer: null, // 波紋層數施加者玩家編號（多人混戰傷害歸屬用）
       rippleTickTimer: 0,
       // 被大喬SYO定身（任何角色都可能）
       frozenByJoseph: false,
@@ -3590,8 +3671,91 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       yukiBlackHoleActive:   ch.type === 'yuki' ? false : null,        // 假想黑洞是否啟動中
       yukiBlackHoleTimer:    ch.type === 'yuki' ? 0 : null,            // 假想黑洞剩餘時間
       yukiBlackHoleUsedThisPlasma: ch.type === 'yuki' ? false : null,  // 本次星漿體是否已使用過假想黑洞
+      // 無形專屬狀態
+      wuxingBaseChar: ch.type === 'wuxing' ? ch : null,   // 保留「這是無形」的標記（角色定義本身）
+      wuxingTimer:    ch.type === 'wuxing' ? 0 : null,     // 距離下次變身倒數（0 = 開局立刻變身一次）
+      wuxingFlash:    ch.type === 'wuxing' ? 0 : null,     // 變身瞬間的短暫特效倒數
     };
   }
+
+  // ══════ 無形：隨機挑一個場上其他角色的「形態」 ══════
+  function pickWuxingForm(ball) {
+    // DIO（一擊必殺 MAX_HP 傷害）跟一拳超人（一拳一擊必殺）機制太極端，
+    // 無形變身抽到等於瞬間獲得一擊必殺技，直接停用這兩種形態。
+    const pool = CHARACTERS.filter(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm' && c.id !== ball.char.id);
+    if (pool.length === 0) return CHARACTERS.find(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm') || ball.char;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  // 無形變身：把 ball 換成另一個角色完整的技能/CD狀態；血量、位置、
+  // 以及當下所中的異常狀態（灼燒、麻痺、定身、緩速等）不會因此重置或清除。
+  function transformWuxing(ball) {
+    const baseChar  = ball.wuxingBaseChar;
+    const newChBase = pickWuxingForm(ball);
+    const newCh = {
+      ...newChBase,
+      color: colorForPlayer(ball.player, newChBase.type),
+      displayName: '無形-' + newChBase.name,
+    };
+
+    // 任何角色都可能被施加的異常狀態欄位：變身前保留下來，變身後原封不動塞回去
+    const preserveKeys = [
+      'curseDotTimer', 'curseDotDmg', 'curseDotOwnerPlayer', 'curseSlowTimer',
+      'frozenByVampire', 'frozenTimer',
+      'dajiCharmedTimer',
+      'trapDotTimer', 'trapDotDps', 'trapDotOwnerPlayer',
+      'gunnerStunTimer',
+      'mageFreezeTimer',
+      'itachiMarked', 'itachiPinnedTimer',
+      'thunderParalyzed', 'thunderStunTimer', 'thunderParalyzeWasHit',
+      'tigerBleedPool',
+      'fisherGrabbedBy', 'fisherRedTimer', 'fisherRedOwnerPlayer',
+      'getoBoundTimer', 'getoDotTimer', 'getoDotTickTimer', 'getoDotDmg', 'getoDotOwnerPlayer', 'getoBranches',
+      'dajiBurnTimer', 'dajiBurnTick',
+      'rippleStacks', 'rippleTickTimer', 'rippleOwnerPlayer',
+      'frozenByJoseph', 'frozenByJosephTimer',
+    ];
+    const preserved = {};
+    preserveKeys.forEach(k => { if (k in ball) preserved[k] = ball[k]; });
+
+    const oldHp = ball.hp;
+    const healedHp = Math.min(MAX_HP, oldHp + WUXING_TRANSFORM_HEAL); // 變身瞬間回血
+    const fresh = makeBall(ball.x, ball.y, ball.vx, ball.vy, newCh, ball.player);
+    Object.assign(ball, fresh, preserved);
+    ball.hp = healedHp;
+    ball.char = newCh;
+    ball.wuxingBaseChar = baseChar;             // 繼續標記自己是無形，下次還能再變身
+    ball.wuxingTimer = WUXING_TRANSFORM_INTERVAL;
+    ball.wuxingFlash = 0.5;
+
+    // 清掉舊形態留下的場上造物（砲台、棋、飛行中的子彈、陷阱等），避免變身後還留著上一個角色的東西
+    purgeDeadPlayerEntities(ball.player);
+
+    if (state.hitFlashes) {
+      state.hitFlashes.push({ x: ball.x, y: ball.y, r: 40, alpha: 1, color: newCh.color, t: 0.4 });
+      // 回血特效（綠色光圈）
+      state.hitFlashes.push({ x: ball.x, y: ball.y, r: 26, alpha: 0.9, color: '#66ff88', t: 0.5 });
+    }
+
+    // 同步更新 HUD 上的名字與血條顏色
+    const n = ball.player;
+    const nameEl = document.getElementById(`p${n}-hud-name`);
+    if (nameEl) {
+      nameEl.innerHTML = (n % 2 === 1)
+        ? `<span>${newCh.emoji}</span> ${newCh.displayName}`
+        : `${newCh.displayName} <span>${newCh.emoji}</span>`;
+    }
+    const barEl = document.getElementById(`p${n}-bar`);
+    if (barEl) barEl.style.background = `linear-gradient(90deg, ${newCh.color}aa, ${newCh.color})`;
+  }
+
+  updateWuxingFn = function (dt) {
+    for (const b of state.balls) {
+      if (b.hp <= 0 || !b.wuxingBaseChar) continue;
+      b.wuxingTimer -= dt;
+      if (b.wuxingTimer <= 0) transformWuxing(b);
+    }
+  };
 
   const initialStats = { duration: 0 };
   chs.forEach((ch, i) => { initialStats[i + 1] = { totalDmg: 0, maxHit: 0, skillUses: 0 }; });
@@ -3608,6 +3772,11 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
     thunderPillars: [],
     thunderStrikes: [],
     smithForgeParticles: [],
+    steveMineDebris: [],
+    // ══════ 通用「有生命召喚物」註冊表（給未來新角色使用，見 spawnSummon 等函式的說明）══════
+    summons: [],
+    summonDeathFX: [],
+    summonIdCounter: 1,
     naoShadows: [],       // 禪院直哉殘影列表
     naoPathLines: [],     // 路徑預覽線（短暫顯示）
     stats: initialStats,
@@ -4015,11 +4184,14 @@ function dealDamage(target, dmg, options = {}) {
   if (prevHp > 0 && target.hp <= 0 && target.player) {
     purgeDeadPlayerEntities(target.player);
   }
-  // 記錄傷害到對方玩家的 stats（攻擊者 = 對方）
-  if (state && state.stats && target.player) {
-    const attackerPlayer = target.player === 1 ? 2 : 1;
-    state.stats[attackerPlayer].totalDmg += actual;
-    if (actual > state.stats[attackerPlayer].maxHit) state.stats[attackerPlayer].maxHit = actual;
+  // 記錄傷害到攻擊者的 stats
+  // 注意：攻擊者一律由呼叫端透過 options.attackerPlayer 明確指定，
+  // 不能用「target.player 以外的那個玩家」去推算——這在只有兩人對戰時剛好成立，
+  // 但在 3～4 人混戰時場上不只一位對手，用猜的一定會把傷害算到不相關的第三人頭上。
+  if (state && state.stats && target.player && options.attackerPlayer != null &&
+      options.attackerPlayer !== target.player && state.stats[options.attackerPlayer]) {
+    state.stats[options.attackerPlayer].totalDmg += actual;
+    if (actual > state.stats[options.attackerPlayer].maxHit) state.stats[options.attackerPlayer].maxHit = actual;
   }
 }
 
@@ -4052,6 +4224,13 @@ function purgeDeadPlayerEntities(player) {
   if (state.obitoFireballs) state.obitoFireballs = state.obitoFireballs.filter(x => x.owner !== player);
   if (state.yiBlackStones) state.yiBlackStones = state.yiBlackStones.filter(x => x.owner !== player);
 
+  // 通用召喚物：主人死亡時，該主人所有召喚物一併消滅（避免遺孤沒人管、也避免死人還在場上出手）
+  if (state.summons && state.summons.length) {
+    for (let i = state.summons.length - 1; i >= 0; i--) {
+      if (state.summons[i].ownerPlayer === player) killSummon(state.summons[i]);
+    }
+  }
+
   // 帶土神威空間：空間主人死亡時，釋放被抓進去的敵人，避免對方被永久卡住
   if (state.obitoSpaceCaptures) {
     for (let i = state.obitoSpaceCaptures.length - 1; i >= 0; i--) {
@@ -4068,6 +4247,218 @@ function purgeDeadPlayerEntities(player) {
   // 掛在角色本體上、而非場地全域陣列裡的追蹤型投射物（例如砲爹的追蹤光球）
   const ownerBall = state.balls.find(b => b.player === player);
   if (ownerBall && ownerBall.cannonBalls) ownerBall.cannonBalls = [];
+
+  // 掛在角色本體上、由該角色專屬更新迴圈負責推進的狀態機：
+  // 這些迴圈開頭都有 `if (b.hp <= 0) continue;`，一旦角色死亡就永遠不會再被推進，
+  // 若死亡當下正好卡在「拋竿中／收線中」或「假想黑洞展開中」，畫面就會留下永遠不會消失的殘留特效。
+  // 死亡當下直接把這些狀態機重置，讓對應的繪圖迴圈沒有東西可畫。
+  if (ownerBall) {
+    if (ownerBall.char && ownerBall.char.type === 'fisherman') {
+      ownerBall.fisherPhase = 'idle';
+      ownerBall.fisherOceanPhase = null;
+    }
+    if (ownerBall.char && ownerBall.char.type === 'yuki') {
+      ownerBall.yukiBlackHoleActive = false;
+      ownerBall.yukiPlasmaActive = false;
+    }
+    // 重大 bug：DIO 死亡時若正好在「世界」時停中，dioWorldActive 會永遠卡 true，
+    // 因為 DIO 自己的更新迴圈一旦 hp<=0 就整段跳過、再也不會倒數 dioWorldTimer 或關閉它，
+    // 而 state.dioWorldGlobalActive 每幀都是用「場上還找不找得到 dioWorldActive 的球」來判斷，
+    // 死掉的球依然找得到 → 全場所有角色永遠凍結，等於整局卡死。
+    if (ownerBall.char && ownerBall.char.type === 'dio') {
+      ownerBall.dioWorldActive = false;
+      ownerBall.dioHighActive = false;
+      ownerBall.dioWorldTimer = 0;
+    }
+    // 其餘同樣「靠自己更新迴圈才會關閉、迴圈卻在 hp<=0 時整段跳過」的技能狀態，
+    // 死亡時一併重置，避免殘留的展開特效/持續判定卡住畫面。
+    ownerBall.curseDomainActive = false;
+    ownerBall.trapChainActive = false;
+    ownerBall.yiArenaActive = false;
+    ownerBall.sakikoDualActive = false;
+    ownerBall.getoSpecialActive = false;
+    ownerBall.yutaRikaActive = false;
+    ownerBall.itachiSusanooActive = false;
+    ownerBall.josephUltimateActive = false;
+    ownerBall.starMeteorActive = false;
+    ownerBall.steveElytraActive = false;
+    ownerBall.tigerNovaActive = false;
+    ownerBall.mageTrickReady = false;
+    ownerBall.vampireBiting = false;
+    ownerBall.dajiTailSwing = false;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// 通用「有生命召喚物」框架 (state.summons)
+// ──────────────────────────────────────────────────────────────────────────
+// 目的：以後要幫任何角色新增「會被打死的召喚物」（例如寵物、傀儡、砲台、分身…），
+// 不用再像夏油條的小型咒靈那樣整套手刻一份「陣列 + 移動 + 血條 + 死亡特效 + 死亡清理」，
+// 只要呼叫下面幾個函式就好：
+//
+//   const pet = spawnSummon(b.player, {
+//     x: b.x, y: b.y, radius: 14, hp: 40, maxHp: 40, color: '#66ccff',
+//     kind: 'my_char_pet',        // 自訂字串，用來辨識這是誰的哪種召喚物
+//     life: 10,                   // 可選：幾秒後自動消失；不填 = 除非被打死否則永遠存在
+//     ai: { mode: 'chase', speed: 140 },  // 可選：內建「追最近敵人」簡易 AI
+//   });
+//
+// 每幀呼叫一次 updateSummons(dt)（已經掛在 update() 主迴圈裡，新角色不用自己再呼叫），
+// 它會自動：處理壽命倒數、內建 AI 移動（若有設定 ai）、呼叫 onUpdate（若有自訂邏輯）、
+// 在 DIO 世界時停時自動暫停（除非 respectsDioWorldFreeze:false）、血量歸零時自動死亡清理。
+//
+// 想讓角色自己的攻擊命中判定去傷害這隻召喚物：直接呼叫 damageSummon(pet, dmg, { attackerPlayer })，
+// 用法跟 dealDamage 一致（同樣看 options.attackerPlayer 記傷害歸屬，多人混戰也不會算錯）。
+//
+// 想要更複雜的自訂移動/攻擊邏輯：不要填 ai，改填 onUpdate(summon, dt) 自己控制 vx/vy 或直接改 x/y，
+// 邏輯風格可以比照其他角色現有的 for 迴圈寫。
+//
+// 想要死亡時做額外處理（例如觸發爆炸、通知主人回血）：填 onDeath(summon)，會在死亡清理前呼叫一次。
+//
+// 想要自訂外觀（不要預設的實心圓）：填 customDraw(ctx, summon) 自己畫；預設會畫一顆帶血條的圓。
+//
+// 死亡清理已經自動處理好兩種情況：
+//   1. 召喚物自己血量歸零或壽命到期 → killSummon() 自動觸發。
+//   2. 召喚主人死亡 → purgeDeadPlayerEntities() 已經會把他名下所有召喚物一併清掉，不用額外處理。
+// ══════════════════════════════════════════════════════════════════════════
+
+function spawnSummon(ownerPlayer, opts) {
+  const s = Object.assign({
+    id: state.summonIdCounter++,
+    ownerPlayer,
+    kind: 'summon',
+    x: 0, y: 0, vx: 0, vy: 0,
+    radius: 14,
+    hp: 20, maxHp: 20,
+    color: '#8888ff',
+    life: null,           // null = 沒有壽命上限，只能被打死
+    contactCd: 0,          // 通用「碰撞攻擊」冷卻，各角色自行遞減/使用，這裡只保留欄位
+    respectsDioWorldFreeze: true,
+    invincible: false,
+    ai: null,              // { mode: 'chase', speed } 之類的內建簡易 AI 設定
+    onUpdate: null,        // (summon, dt) => void，自訂每幀邏輯
+    onDeath: null,         // (summon) => void，死亡時呼叫一次
+    customDraw: null,      // (ctx, summon) => void，自訂外觀
+    showHpBar: true,
+  }, opts || {});
+  state.summons.push(s);
+  return s;
+}
+
+// 讓召喚物承受傷害；回傳實際扣掉的血量。攻擊者一律用 options.attackerPlayer 指定（比照 dealDamage）。
+function damageSummon(summon, dmg, options = {}) {
+  if (!summon || summon._dead || summon.hp <= 0 || summon.invincible) return 0;
+  const actual = Math.max(0, Math.min(summon.hp, dmg));
+  summon.hp -= actual;
+  if (state && state.stats && options.attackerPlayer != null &&
+      options.attackerPlayer !== summon.ownerPlayer && state.stats[options.attackerPlayer]) {
+    state.stats[options.attackerPlayer].totalDmg += actual;
+    if (actual > state.stats[options.attackerPlayer].maxHit) state.stats[options.attackerPlayer].maxHit = actual;
+  }
+  if (actual > 0) {
+    state.hitFlashes.push({ x: summon.x, y: summon.y, r: summon.radius + 4, alpha: 0.6, color: '#ffffff', t: 0.18 });
+  }
+  if (summon.hp <= 0) killSummon(summon);
+  return actual;
+}
+
+// 立即殺死並清理一隻召喚物（血量歸零 / 壽命到期 / 主人死亡 都會走這條路）
+function killSummon(summon) {
+  if (!summon || summon._dead) return;
+  summon._dead = true;
+  state.summonDeathFX.push({ x: summon.x, y: summon.y, life: 0.35, maxLife: 0.35, r: summon.radius, color: summon.color });
+  if (typeof summon.onDeath === 'function') {
+    try { summon.onDeath(summon); } catch (e) { /* 自訂死亡回呼出錯不應讓整局遊戲掛掉 */ }
+  }
+  const idx = state.summons.indexOf(summon);
+  if (idx >= 0) state.summons.splice(idx, 1);
+}
+
+// 每幀更新所有召喚物：壽命、內建簡易 AI、自訂邏輯、DIO 世界時停。已掛在 update() 主迴圈中。
+function updateSummons(dt) {
+  if (!state.summons || !state.summons.length) {
+    // 死亡特效仍要繼續淡出，即使目前沒有任何存活的召喚物
+  } else {
+    for (let i = state.summons.length - 1; i >= 0; i--) {
+      const s = state.summons[i];
+      if (!s || s._dead) continue;
+      if (s.respectsDioWorldFreeze && state.dioWorldGlobalActive &&
+          (!state.dioWorldCaster || state.dioWorldCaster.player !== s.ownerPlayer)) continue;
+
+      if (s.ai && s.ai.mode === 'chase') {
+        const enemy = getNearestEnemyTo(s.x, s.y, s.ownerPlayer);
+        if (enemy) {
+          const dx = enemy.x - s.x, dy = enemy.y - s.y;
+          const d = Math.hypot(dx, dy) || 1;
+          s.vx = (dx / d) * s.ai.speed;
+          s.vy = (dy / d) * s.ai.speed;
+        } else {
+          s.vx = 0; s.vy = 0;
+        }
+      }
+
+      if (typeof s.onUpdate === 'function') s.onUpdate(s, dt);
+      else { s.x += s.vx * dt; s.y += s.vy * dt; }
+
+      if (s.contactCd > 0) s.contactCd -= dt;
+
+      if (s.life != null) {
+        s.life -= dt;
+        if (s.life <= 0) { killSummon(s); continue; }
+      }
+      if (s.hp <= 0) { killSummon(s); continue; }
+    }
+  }
+
+  if (state.summonDeathFX && state.summonDeathFX.length) {
+    for (let i = state.summonDeathFX.length - 1; i >= 0; i--) {
+      state.summonDeathFX[i].life -= dt;
+      if (state.summonDeathFX[i].life <= 0) state.summonDeathFX.splice(i, 1);
+    }
+  }
+}
+
+// 繪製所有召喚物（血條 + 本體，或呼叫 customDraw 自訂外觀）與死亡特效。已掛在 render() 主流程中。
+function drawSummons() {
+  if (state.summons) {
+    for (const s of state.summons) {
+      ctx.save();
+      if (typeof s.customDraw === 'function') {
+        s.customDraw(ctx, s);
+      } else {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fillStyle = s.color;
+        ctx.shadowColor = s.color;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+      }
+      if (s.showHpBar && s.maxHp > 0) {
+        const barW = s.radius * 2, barH = 4, barY = s.y - s.radius - 10;
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(s.x - barW / 2, barY, barW, barH);
+        ctx.fillStyle = colorForPlayer ? colorForPlayer(s.ownerPlayer, s.kind) : '#4caf50';
+        ctx.fillRect(s.x - barW / 2, barY, barW * Math.max(0, s.hp / s.maxHp), barH);
+      }
+      ctx.restore();
+    }
+  }
+  if (state.summonDeathFX) {
+    for (const d of state.summonDeathFX) {
+      const prog = Math.max(0, d.life / d.maxLife);
+      ctx.save();
+      ctx.globalAlpha = prog;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r * (1 + (1 - prog) * 1.5), 0, Math.PI * 2);
+      ctx.strokeStyle = d.color || '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = d.color || '#ffffff';
+      ctx.shadowBlur = 12;
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
 }
 
 // ── 多人混戰（FFA）目標選擇工具函式 ──
@@ -4106,7 +4497,7 @@ function yukiTriggerPhoenix(b) {
     if (enemy.player === b.player || enemy.hp <= 0) continue;
     const d = Math.hypot(enemy.x - b.x, enemy.y - b.y);
     if (d < YUKI_PHOENIX_RADIUS + RADIUS) {
-      dealDamage(enemy, YUKI_PHOENIX_DAMAGE * mult);
+      dealDamage(enemy, YUKI_PHOENIX_DAMAGE * mult, { attackerPlayer: b.player });
       hitAny = true;
       state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 16, alpha: 0.8, color: '#c39bd3', t: 0.3 });
     }
@@ -4128,6 +4519,7 @@ function tick(now) {
   state.elapsed = elapsed;
   if (state.stats) state.stats.duration = elapsed;
   update(dt);
+  if (updateWuxingFn) updateWuxingFn(dt);
 
   // 一拳超人特效更新（獨立於 update() 之外，比賽結束凍結邏輯後仍需讓特效播完，避免卡死在出拳畫面）
   for (let i = state.opmFX.length - 1; i >= 0; i--) {
@@ -4236,6 +4628,7 @@ function tick(now) {
   }
 
   render();
+  renderWuxingCountdown();
   updateHUD();
   const dead = state.balls.filter(b => b.hp <= 0);
   const aliveCount = state.balls.length - dead.length;
@@ -4565,7 +4958,7 @@ function update(dt) {
         // 執行本次咬擊
         const enemy = getNearestEnemyTo(b.x, b.y, b.player);
         if (enemy) {
-          dealDamage(enemy, VAMPIRE_BITE_DAMAGE);
+          dealDamage(enemy, VAMPIRE_BITE_DAMAGE, { attackerPlayer: b.player });
           b.hp = Math.min(MAX_HP, b.hp + VAMPIRE_BITE_HEAL);
           // 傷害特效
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 30, alpha: 1.0, color: '#ff0055', t: 0.3 });
@@ -4628,11 +5021,11 @@ function update(dt) {
       b.rippleTickTimer = (b.rippleTickTimer || 0) + dt;
       if (b.rippleTickTimer >= RIPPLE_TICK_INTERVAL) {
         b.rippleTickTimer -= RIPPLE_TICK_INTERVAL;
-        dealDamage(b, b.rippleStacks * RIPPLE_TICK_DMG_PER_STACK);
+        dealDamage(b, b.rippleStacks * RIPPLE_TICK_DMG_PER_STACK, { attackerPlayer: b.rippleOwnerPlayer });
         if (Math.random() < 0.5) state.hitFlashes.push({ x: b.x+randBetween(-10,10), y: b.y+randBetween(-10,10), r: 10, alpha: 0.6, color: '#2f7dc0', t: 0.3 });
         if (b.rippleStacks >= RIPPLE_BURST_THRESHOLD) {
           b.rippleStacks -= RIPPLE_BURST_CONSUME;
-          dealDamage(b, RIPPLE_BURST_DAMAGE);
+          dealDamage(b, RIPPLE_BURST_DAMAGE, { attackerPlayer: b.rippleOwnerPlayer });
           state.rippleStackFX.push({ x: b.x, y: b.y, life: 0.4, maxLife: 0.4 });
           state.hitFlashes.push({ x: b.x, y: b.y, r: 32, alpha: 1, color: '#66ccff', t: 0.4 });
           playHitSound('opm');
@@ -4643,7 +5036,7 @@ function update(dt) {
     // 詛咒 dot 傷害（捌）
     if (b.curseDotTimer > 0) {
       b.curseDotTimer -= dt;
-      dealDamage(b, b.curseDotDmg * dt);
+      dealDamage(b, b.curseDotDmg * dt, { attackerPlayer: b.curseDotOwnerPlayer });
       if (b.curseDotTimer <= 0) { b.curseDotTimer = 0; b.curseDotDmg = 0; }
       // 紅色詛咒粒子
       if (Math.random() < 0.3) state.hitFlashes.push({ x: b.x+randBetween(-15,15), y: b.y+randBetween(-15,15), r: 8, alpha: 0.7, color: '#c0392b', t: 0.4 });
@@ -4654,7 +5047,7 @@ function update(dt) {
       b.fisherRedTimer -= dt;
       if (b.fisherRedTimer <= 0) {
         b.fisherRedTimer = 0;
-        dealDamage(b, FISHER_FISH_RED_DMG);
+        dealDamage(b, FISHER_FISH_RED_DMG, { attackerPlayer: b.fisherRedOwnerPlayer });
         state.hitFlashes.push({ x: b.x, y: b.y, r: 34, alpha: 1.1, color: '#ff3300', t: 0.35 });
         state.hitFlashes.push({ x: b.x, y: b.y, r: 16, alpha: 0.9, color: '#ffaa00', t: 0.25 });
       }
@@ -4737,6 +5130,23 @@ function update(dt) {
     if (b.x + RADIUS > W - WALL) { b.x = W - WALL - RADIUS; b.vx = -Math.abs(b.vx); hitWall = true; }
     if (b.y - RADIUS < WALL)     { b.y = WALL + RADIUS;     b.vy =  Math.abs(b.vy); hitWall = true; }
     if (b.y + RADIUS > H - WALL) { b.y = H - WALL - RADIUS; b.vy = -Math.abs(b.vy); hitWall = true; }
+
+    // 障礙場地：正中央巨石碰撞（圓對圓反彈，巨石本身不會被推動）
+    if (state.arena === 'obstacle') {
+      const ocx = W / 2, ocy = H / 2;
+      const odx = b.x - ocx, ody = b.y - ocy;
+      const odist = Math.hypot(odx, ody);
+      const minDist = RADIUS + OBSTACLE_ARENA_RADIUS;
+      if (odist > 0 && odist < minDist) {
+        const nx = odx / odist, ny = ody / odist;
+        b.x = ocx + nx * minDist;
+        b.y = ocy + ny * minDist;
+        const dot = b.vx * nx + b.vy * ny;
+        if (dot < 0) { b.vx -= 2 * dot * nx; b.vy -= 2 * dot * ny; }
+      } else if (odist === 0) {
+        b.x += minDist; // 極端狀況：剛好重疊在正中央，直接推開
+      }
+    }
 
     // 陷阱大師：碰邊界放置尖刺
     if (hitWall && b.char.type === 'trapper') {      const myTraps = state.traps.filter(t => t.owner === b.player);
@@ -4968,6 +5378,7 @@ function update(dt) {
           if (!curser.hachiCooldown || curser.hachiCooldown <= 0) {
             curser.hachiCooldown = 0.55;
             target.curseDotTimer = CURSE_DOT_DURATION;
+            target.curseDotOwnerPlayer = curser.player;
             target.curseDotDmg   = CURSE_DOT_DAMAGE;
             // 捌：斬擊特效（多道斬線爆開）
             for (let si = 0; si < 4; si++) {
@@ -4995,7 +5406,7 @@ function update(dt) {
         if (!target) continue;
         if (!stv.steveContactCooldown || stv.steveContactCooldown <= 0) {
           stv.steveContactCooldown = 0.4;
-          dealDamage(target, STEVE_SWORD_DMG[stv.stevePhase]);
+          dealDamage(target, STEVE_SWORD_DMG[stv.stevePhase], { attackerPlayer: stv.player });
           state.hitFlashes.push({ x: target.x, y: target.y, r: 16, alpha: 0.7, color: stv.char.color, t: 0.2 });
           playHitSound('knife');
         }
@@ -5009,7 +5420,7 @@ function update(dt) {
         if (!target || target.getoBoundTimer > 0) continue;
         if (!(geto.getoCaneCooldown > 0)) {
           geto.getoCaneCooldown = GETO_CANE_COOLDOWN;
-          dealDamage(target, GETO_CANE_DAMAGE);
+          dealDamage(target, GETO_CANE_DAMAGE, { attackerPlayer: geto.player });
           const kdx = target.x - geto.x, kdy = target.y - geto.y;
           const kd = Math.hypot(kdx, kdy) || 1;
           const hitAngle = Math.atan2(kdy, kdx);
@@ -5040,7 +5451,7 @@ function update(dt) {
           jo.josephContactCd = JOSEPH_CONTACT_CD;
           const isBreathing = jo.josephState === 'breathing';
           const dmg = isBreathing ? JOSEPH_CONTACT_DMG_RIPPLE : JOSEPH_CONTACT_DMG_BASE;
-          dealDamage(target, dmg);
+          dealDamage(target, dmg, { attackerPlayer: jo.player });
           if (isBreathing) jo.hp = Math.min(MAX_HP, jo.hp + JOSEPH_HP_REGEN_ON_HIT);
           state.hitFlashes.push({ x: target.x, y: target.y, r: 16, alpha: 0.7, color: isBreathing ? '#2f7dc0' : '#7799bb', t: 0.25 });
         }
@@ -5210,7 +5621,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         state.hitFlashes.push({ x: b.x, y: b.y, r: 22, alpha: 0.8, color: '#f1c40f', t: 0.4 });
       } else {
       b.opmPunched = true;
-      dealDamage(enemy, MAX_HP, { bypassParry: true });
+      dealDamage(enemy, MAX_HP, { bypassParry: true, attackerPlayer: b.player });
 
       // ── 出拳特效 ──
       const ex = enemy.x, ey = enemy.y;
@@ -5280,7 +5691,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
           owner: b.player
         });
         // 立即傷害
-        dealDamage(enemy, CURSE_SLASH_DAMAGE);
+        dealDamage(enemy, CURSE_SLASH_DAMAGE, { attackerPlayer: b.player });
         enemy.curseSlowTimer = CURSE_SLASH_SLOW_DUR;
         state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 35, alpha: 1.0, color: '#c0392b', t: 0.4 });
         state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 20, alpha: 0.8, color: '#ffffff', t: 0.25 });
@@ -5328,7 +5739,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
             const ddx = foe.x - b.x, ddy = foe.y - b.y;
             const dd = Math.sqrt(ddx*ddx + ddy*ddy);
             if (dd <= CURSE_DOMAIN_RADIUS) {
-              dealDamage(foe, CURSE_DOMAIN_FRAMEDMG);
+              dealDamage(foe, CURSE_DOMAIN_FRAMEDMG, { attackerPlayer: b.player });
               // 伏魔持續斬擊特效
               if (Math.random() < 0.12) {
                 const sAngle = Math.random() * Math.PI * 2;
@@ -5463,6 +5874,23 @@ for (let bi = 0; bi < state.balls.length; bi++) {
       if (ball.x+ball.r > W) { ball.x=W-ball.r; ball.vx*=-1; hitWall=true; }
       if (ball.y-ball.r < 0) { ball.y=ball.r; ball.vy*=-1; hitWall=true; }
       if (ball.y+ball.r > H) { ball.y=H-ball.r; ball.vy*=-1; hitWall=true; }
+
+      // 障礙場地：中央巨石跟外牆一樣要能實際擋住球，不然球會直接飛穿過去
+      if (state.arena === 'obstacle') {
+        const odx = ball.x - W / 2, ody = ball.y - H / 2;
+        const odist = Math.hypot(odx, ody) || 1;
+        const minDist = OBSTACLE_ARENA_RADIUS + ball.r;
+        if (odist < minDist) {
+          const onx = odx / odist, ony = ody / odist;
+          ball.x = W / 2 + onx * minDist;
+          ball.y = H / 2 + ony * minDist;
+          const dot = ball.vx * onx + ball.vy * ony;
+          ball.vx -= 2 * dot * onx;
+          ball.vy -= 2 * dot * ony;
+          hitWall = true;
+        }
+      }
+
       if (hitWall && ball.type!=='purple' && ball.type!=='blue') { ball.active=false; continue; }
       if (hitWall && ball.type==='blue') {
         // 蒼球碰牆反彈，留下撞牆光閃
@@ -5474,11 +5902,11 @@ for (let bi = 0; bi < state.balls.length; bi++) {
       if (ed < ball.r+RADIUS) {
         if (ball.type==='purple' || ball.type==='blue') {
           // 穿透飛行，經過時每幀扣血
-          dealDamage(enemy, ball.frameDmg);
+          dealDamage(enemy, ball.frameDmg, { attackerPlayer: b.player });
           state.hitFlashes.push({ x:enemy.x, y:enemy.y, r:22, alpha:0.9,
             color: ball.type==='blue' ? '#00cfff' : '#bf00ff', t:0.12 });
         } else {
-          dealDamage(enemy, ball.damage);
+          dealDamage(enemy, ball.damage, { attackerPlayer: b.player });
           // 赫：命中瞬間把敵人撞飛（仿鍛造師劍擊擊退寫法：疊加速度 + 立即位移，確保視覺上立刻看得到）
           const kdx = enemy.x - ball.x, kdy = enemy.y - ball.y;
           const kd = Math.sqrt(kdx*kdx + kdy*kdy) || 1;
@@ -5529,7 +5957,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
           spawnFlash: 0.4
         });
         b.yiBlackCount++;
-        dealDamage(enemy, YI_BLACK_DAMAGE);
+        dealDamage(enemy, YI_BLACK_DAMAGE, { attackerPlayer: b.player });
         state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 22, alpha: 0.9, color: '#888888', t: 0.35 });
         playHitSound('trap_place');
 
@@ -5611,15 +6039,24 @@ for (let bi = 0; bi < state.balls.length; bi++) {
           if (ball.player === s.owner) continue;
           const ed = Math.sqrt((ball.x - s.x) ** 2 + (ball.y - s.y) ** 2);
           if (ed < YI_WHITE_EXPLODE_RAD + RADIUS) {
-            dealDamage(ball, YI_WHITE_DAMAGE / 4); // 4顆各算1/4，合計200
+            dealDamage(ball, YI_WHITE_DAMAGE / 4, { attackerPlayer: s.owner }); // 4顆各算1/4，合計200
             state.hitFlashes.push({ x: s.x, y: s.y, r: 35, alpha: 1.0, color: '#ffeeaa', t: 0.5 });
           }
         }
         playHitSound('trap_hit');
         state.hitFlashes.push({ x: s.x, y: s.y, r: 50, alpha: 1.2, color: '#ffffff', t: 0.4 });
       } else {
-        s.x += (pdx / pd) * moveAmt;
-        s.y += (pdy / pd) * moveAmt;
+        const nx = s.x + (pdx / pd) * moveAmt;
+        const ny = s.y + (pdy / pd) * moveAmt;
+        if (state.arena === 'obstacle') {
+          const odx = nx - W / 2, ody = ny - H / 2;
+          if (Math.hypot(odx, ody) < OBSTACLE_ARENA_RADIUS + 8) {
+            s.phase = 'exploded';
+            state.hitFlashes.push({ x: nx, y: ny, r: 26, alpha: 0.9, color: '#888888', t: 0.3 });
+            continue;
+          }
+        }
+        s.x = nx; s.y = ny;
       }
     }
 
@@ -5710,6 +6147,43 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     // 資源收集中：原地不動，時間到後升級裝備
     if (b.steveGathering) {
       b.vx = 0; b.vy = 0;
+
+      // 挖礦碎屑：找出目前貼著的那面牆，讓碎屑從牆面往場內崩落飛出
+      {
+        let nx = 0, ny = 0, wx = b.x, wy = b.y;
+        const leftGap = (b.x - RADIUS) - WALL;
+        const rightGap = (W - WALL) - (b.x + RADIUS);
+        const topGap = (b.y - RADIUS) - WALL;
+        const bottomGap = (H - WALL) - (b.y + RADIUS);
+        const minGap = Math.min(leftGap, rightGap, topGap, bottomGap);
+        if (minGap === leftGap)      { nx = 1;  ny = 0;  wx = WALL;     wy = b.y; }
+        else if (minGap === rightGap){ nx = -1; ny = 0;  wx = W - WALL; wy = b.y; }
+        else if (minGap === topGap)  { nx = 0;  ny = 1;  wx = b.x;      wy = WALL; }
+        else                         { nx = 0;  ny = -1; wx = b.x;      wy = H - WALL; }
+        const tx = -ny, ty = nx; // 沿牆面的切線方向，讓碎屑左右散開
+
+        if (Math.random() < 0.7) {
+          const spread = (Math.random() - 0.5) * RADIUS * 1.6;
+          const speed = 60 + Math.random() * 140;
+          const outward = 0.5 + Math.random() * 0.7;
+          state.steveMineDebris.push({
+            x: wx + tx * spread, y: wy + ty * spread,
+            vx: nx * speed * outward + tx * (Math.random() - 0.5) * 60,
+            vy: ny * speed * outward + ty * (Math.random() - 0.5) * 60 - 40,
+            rot: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 12,
+            size: 2.5 + Math.random() * 4,
+            life: 0.5 + Math.random() * 0.4,
+            maxLife: 0.9,
+            color: Math.random() < 0.5 ? '#8f6b3c' : (Math.random() < 0.5 ? '#6b5233' : '#a68a5b')
+          });
+        }
+        // 偶爾一小撮塵土噴濺
+        if (Math.random() < 0.15) {
+          state.hitFlashes.push({ x: wx + tx * (Math.random()-0.5)*RADIUS*1.6, y: wy + ty * (Math.random()-0.5)*RADIUS*1.6, r: 10, alpha: 0.5, color: '#c8b183', t: 0.25 });
+        }
+      }
+
       b.steveGatherTimer -= dt;
       if (b.steveGatherTimer <= 0) {
         b.steveGathering = false;
@@ -5717,6 +6191,21 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         b.steveGatherCooldown = STEVE_GATHER_COOLDOWN;
         state.hitFlashes.push({ x: b.x, y: b.y, r: 34, alpha: 1.0, color: '#c8a84b', t: 0.45 });
         state.hitFlashes.push({ x: b.x, y: b.y, r: 18, alpha: 0.9, color: '#ffffff', t: 0.25 });
+        // 完成瞬間：一波較大的碎石爆散
+        for (let i = 0; i < 14; i++) {
+          const sa = Math.random() * Math.PI * 2;
+          const ss = 120 + Math.random() * 200;
+          state.steveMineDebris.push({
+            x: b.x, y: b.y,
+            vx: Math.cos(sa) * ss, vy: Math.sin(sa) * ss - 80,
+            rot: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 16,
+            size: 3 + Math.random() * 5,
+            life: 0.55 + Math.random() * 0.35,
+            maxLife: 0.9,
+            color: Math.random() < 0.5 ? '#8f6b3c' : (Math.random() < 0.5 ? '#6b5233' : '#c8a84b')
+          });
+        }
         playHitSound('trap_place');
         if (b.stevePhase >= STEVE_MAX_PHASE && !b.steveHammerUnlocked) {
           b.steveHammerUnlocked = true;
@@ -5741,7 +6230,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
           b.vy = (dy0 / d0) * STEVE_HAMMER_DASH_SPEED;
           if (!b.steveElytraHit && d0 < RADIUS * 2 + 10) {
             b.steveElytraHit = true;
-            dealDamage(enemy, STEVE_ELYTRA_DASH_DMG);
+            dealDamage(enemy, STEVE_ELYTRA_DASH_DMG, { attackerPlayer: b.player });
             enemy.vx += (dx0 / d0) * STEVE_AXE_KNOCKBACK;
             enemy.vy += (dy0 / d0) * STEVE_AXE_KNOCKBACK;
             state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 26, alpha: 1, color: '#7fd0ff', t: 0.3 });
@@ -5769,7 +6258,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         b.vy = (dy0 / d0) * STEVE_HAMMER_DASH_SPEED * 1.2;
         if (!b.steveElytraHit && d0 < RADIUS * 2 + 12) {
           b.steveElytraHit = true;
-          dealDamage(enemy, STEVE_ELYTRA_THRUST_DMG);
+          dealDamage(enemy, STEVE_ELYTRA_THRUST_DMG, { attackerPlayer: b.player });
           enemy.vx += (dx0 / d0) * STEVE_HAMMER_KNOCKBACK;
           enemy.vy += (dy0 / d0) * STEVE_HAMMER_KNOCKBACK;
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 42, alpha: 1.2, color: '#ffe066', t: 0.4 });
@@ -5793,7 +6282,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
       b.vy = (dy0 / d0) * STEVE_HAMMER_DASH_SPEED;
       if (!b.steveHammerDashHit && d0 < RADIUS * 2 + 10) {
         b.steveHammerDashHit = true;
-        dealDamage(enemy, STEVE_HAMMER_DMG);
+        dealDamage(enemy, STEVE_HAMMER_DMG, { attackerPlayer: b.player });
         enemy.vx += (dx0 / d0) * STEVE_HAMMER_KNOCKBACK;
         enemy.vy += (dy0 / d0) * STEVE_HAMMER_KNOCKBACK;
         state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 38, alpha: 1.2, color: '#c8a84b', t: 0.4 });
@@ -5852,7 +6341,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
             life: 0.22, maxLife: 0.22
           });
           if (hit) {
-            dealDamage(enemy, dmg);
+            dealDamage(enemy, dmg, { attackerPlayer: b.player });
             const ex = enemy.x - b.x, ey = enemy.y - b.y;
             const ed = Math.hypot(ex, ey) || 1;
             enemy.vx += (ex / ed) * STEVE_AXE_KNOCKBACK;
@@ -5975,8 +6464,9 @@ for (let bi = 0; bi < state.balls.length; bi++) {
           b.trapChainTargetTrap = null;
           // 到達尖刺立即觸發傷害
           if (pd < RADIUS + 16 && !trap.hitCooldown) {
-            dealDamage(enemy, TRAP_DAMAGE);
+            dealDamage(enemy, TRAP_DAMAGE, { attackerPlayer: b.player });
             enemy.trapDotTimer = TRAP_DOT_DURATION;
+            enemy.trapDotOwnerPlayer = b.player;
             enemy.trapDotDps = TRAP_DOT_DPS;
             trap.hitCooldown = TRAP_HIT_COOLDOWN;
             playHitSound('trap_hit');
@@ -5999,8 +6489,9 @@ for (let bi = 0; bi < state.balls.length; bi++) {
       if (ball.player === trap.owner) continue;
       const dd = Math.hypot(ball.x - trap.x, ball.y - trap.y);
       if (dd < RADIUS + 10 && (!trap.hitCooldown || trap.hitCooldown <= 0)) {
-        dealDamage(ball, TRAP_DAMAGE);
+        dealDamage(ball, TRAP_DAMAGE, { attackerPlayer: trap.owner });
         ball.trapDotTimer = TRAP_DOT_DURATION;
+        ball.trapDotOwnerPlayer = trap.owner;
         ball.trapDotDps = TRAP_DOT_DPS;
         trap.hitCooldown = TRAP_HIT_COOLDOWN;
         playHitSound('trap_hit');
@@ -6014,7 +6505,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     if (b.hp <= 0) continue; // 已死亡不再有任何行為
     if (b.trapDotTimer > 0) {
       b.trapDotTimer -= dt;
-      dealDamage(b, b.trapDotDps * dt);
+      dealDamage(b, b.trapDotDps * dt, { attackerPlayer: b.trapDotOwnerPlayer });
       if (b.trapDotTimer <= 0) { b.trapDotTimer = 0; b.trapDotDps = 0; }
       if (Math.random() < 0.25) {
         state.hitFlashes.push({ x: b.x + randBetween(-12,12), y: b.y + randBetween(-12,12), r: 7, alpha: 0.7, color: '#2ecc71', t: 0.35 });
@@ -6142,7 +6633,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
       const md = Math.hypot(enemy.x - b.x, enemy.y - b.y);
       if (md < RADIUS * 2 + 6 && b.cannonMeleeCooldown <= 0) {
         b.cannonMeleeCooldown = CANNON_MELEE_COOLDOWN;
-        dealDamage(enemy, CANNON_MELEE_DAMAGE);
+        dealDamage(enemy, CANNON_MELEE_DAMAGE, { attackerPlayer: b.player });
         state.hitFlashes.push({ x: (b.x+enemy.x)/2, y: (b.y+enemy.y)/2, r: 18, alpha: 0.8, color: '#ffd76b', t: 0.25 });
         playHitSound('knife');
       }
@@ -6159,7 +6650,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         if (proj > 0) {
           const perp = Math.abs(ex*dy - ey*dx);
           if (perp < CANNON_BLAST_HALFWIDTH + RADIUS) {
-            dealDamage(enemy, CANNON_BLAST_DAMAGE);
+            dealDamage(enemy, CANNON_BLAST_DAMAGE, { attackerPlayer: b.player });
             b.cannonBlastHitThisShot = true;
             state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 36, alpha: 1, color: '#ff8a3d', t: 0.3 });
             playHitSound('opm');
@@ -6277,7 +6768,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
       if (cb.x < cb.r || cb.x > W-cb.r || cb.y < cb.r || cb.y > H-cb.r) { cb.active = false; continue; }
       const dd = Math.hypot(enemy.x - cb.x, enemy.y - cb.y);
       if (dd < RADIUS + cb.r) {
-        dealDamage(enemy, cb.damage);
+        dealDamage(enemy, cb.damage, { attackerPlayer: b.player });
         cb.active = false;
         state.hitFlashes.push({ x: cb.x, y: cb.y, r: 20, alpha: 0.9, color: '#ffb347', t: 0.25 });
         playHitSound('knife');
@@ -6301,7 +6792,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
           const localX = dx * cos + dy * sin;
           const localY = -dx * sin + dy * cos;
           if (localX > 0 && localX < lz.length && Math.abs(localY) < lz.width / 2 + RADIUS) {
-            dealDamage(target, CANNON_BEAM_DAMAGE);
+            dealDamage(target, CANNON_BEAM_DAMAGE, { attackerPlayer: lz.owner });
             lz.hit = true;
             state.hitFlashes.push({ x: target.x, y: target.y, r: 28, alpha: 1.0, color: '#ffd9a0', t: 0.3 });
             playHitSound('opm');
@@ -6355,7 +6846,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         // 定身（重用通用定身欄位）並持續造成傷害
         ball.itachiPinnedTimer = Math.max(ball.itachiPinnedTimer, ENGINEER_GRID_STUN_BUFFER);
         ball.vx = 0; ball.vy = 0;
-        dealDamage(ball, ENGINEER_GRID_DPS * dt);
+        dealDamage(ball, ENGINEER_GRID_DPS * dt, { attackerPlayer: g.owner });
         if (Math.random() < 0.4) {
           state.hitFlashes.push({ x: ball.x + randBetween(-14,14), y: ball.y + randBetween(-14,14), r: 6, alpha: 0.7, color: '#5fd0ff', t: 0.2 });
         }
@@ -6380,7 +6871,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
           const localX = dx * cos + dy * sin;
           const localY = -dx * sin + dy * cos;
           if (localX > 0 && localX < lz.length && Math.abs(localY) < lz.width / 2 + RADIUS) {
-            dealDamage(target, ENGINEER_LASER_DAMAGE);
+            dealDamage(target, ENGINEER_LASER_DAMAGE, { attackerPlayer: lz.owner });
             lz.hit = true;
             state.hitFlashes.push({ x: target.x, y: target.y, r: 30, alpha: 1.0, color: '#aee0ff', t: 0.3 });
             state.hitFlashes.push({ x: target.x, y: target.y, r: 16, alpha: 0.9, color: '#ffffff', t: 0.2 });
@@ -6470,7 +6961,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
           }
           // 每條命中的閃電線各自造成傷害
           for (let h = 0; h < totalHits; h++) {
-            dealDamage(foe, THUNDER_STRIKE_DAMAGE);
+            dealDamage(foe, THUNDER_STRIKE_DAMAGE, { attackerPlayer: b.player });
           }
           if (totalHits > 0) {
             state.hitFlashes.push({ x: foe.x, y: foe.y, r: THUNDER_HIT_FX_R1, alpha: 1.0, color: '#f1c40f', t: 0.4 });
@@ -6509,6 +7000,22 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     }
   }
 
+  // 史蒂夫：挖礦碎屑物理更新（飛出後受重力落下、旋轉）
+  if (state.steveMineDebris) {
+    for (let i = state.steveMineDebris.length - 1; i >= 0; i--) {
+      const dp = state.steveMineDebris[i];
+      dp.x += dp.vx * dt;
+      dp.y += dp.vy * dt;
+      dp.vy += 420 * dt; // 碎屑較重，重力比火花明顯
+      dp.rot += dp.rotSpeed * dt;
+      dp.life -= dt;
+      if (dp.life <= 0) state.steveMineDebris.splice(i, 1);
+    }
+  }
+
+  // 通用召喚物（給未來新角色用，見 spawnSummon 等函式上方的說明）
+  updateSummons(dt);
+
   for (let bi = 0; bi < state.balls.length; bi++) {
     const b = state.balls[bi];
     if (b.hp <= 0) continue;
@@ -6543,7 +7050,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         } else {
           // 揮劍攻擊
           const swordDmg = SMITH_SWORD_BASE_DAMAGE + b.smithForgeStacks * SMITH_FORGE_DMG_PER_STACK;
-          dealDamage(enemy, swordDmg);
+          dealDamage(enemy, swordDmg, { attackerPlayer: b.player });
           if (state.stats) state.stats[b.player].skillUses++;
 
           // 擊退效果
@@ -6638,7 +7145,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
       if (enemy && sh.hitCooldown <= 0 && !state.dioWorldGlobalActive) {
         const dist = Math.hypot(enemy.x - sh.x, enemy.y - sh.y);
         if (dist < NAOBITO_SHADOW_HIT_RADIUS + RADIUS) {
-          dealDamage(enemy, NAOBITO_SHADOW_DAMAGE);
+          dealDamage(enemy, NAOBITO_SHADOW_DAMAGE, { attackerPlayer: sh.owner });
           sh.hitCooldown = NAOBITO_SHADOW_HIT_COOLDOWN;
           state.hitFlashes.push({ x: sh.x, y: sh.y, r: 22, alpha: 0.7, color: '#c8c8ff', t: 0.2 });
           playHitSound('naobito_shadow');
@@ -6723,7 +7230,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     if (b.naoKyouseiFiring) {
       const distE = Math.hypot(enemy.x - b.x, enemy.y - b.y);
       if (distE < RADIUS * 2) {
-        dealDamage(enemy, NAOBITO_KYOUSEI_PIERCE_DMG);
+        dealDamage(enemy, NAOBITO_KYOUSEI_PIERCE_DMG, { attackerPlayer: b.player });
         state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 40, alpha: 1.0, color: '#ffffff', t: 0.35 });
         state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 20, alpha: 0.9, color: '#8888ff', t: 0.25 });
         b.naoKyouseiFiring = false;
@@ -6836,7 +7343,7 @@ waypoints.push({
       if (enemy) {
         const dist = Math.hypot(enemy.x - p.x, enemy.y - p.y);
         if (dist < RADIUS + p.r) {
-          dealDamage(enemy, p.damage);
+          dealDamage(enemy, p.damage, { attackerPlayer: p.owner });
           p.hit = true;
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 22, alpha: 0.85, color: '#aaaaff', t: 0.25 });
         }
@@ -6970,7 +7477,7 @@ waypoints.push({
       const id = Math.hypot(b.x - enemy.x, b.y - enemy.y);
       if (id < RADIUS * 2 + 5 && !b.samuraiIaidoHit) {
         b.samuraiIaidoHit = true;
-        dealDamage(enemy, SAMURAI_IAIDO_DAMAGE);
+        dealDamage(enemy, SAMURAI_IAIDO_DAMAGE, { attackerPlayer: b.player });
         // 居合穿透命中可解除鼬的月讀定身
         if (enemy.char.type === 'itachi' && enemy.itachiBiting) {
           enemy.itachiBiting = false;
@@ -7124,7 +7631,7 @@ waypoints.push({
         const sd = Math.hypot(enemy.x - samurai.x, enemy.y - samurai.y);
         if (sd < RADIUS * 2 + 2) {
           // 碰到敵人 → 造成反彈傷害後立刻結束招架，觸發居合
-          dealDamage(enemy, SAMURAI_PARRY_BUMP_DMG);
+          dealDamage(enemy, SAMURAI_PARRY_BUMP_DMG, { attackerPlayer: samurai.player });
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 28, alpha: 1.0, color: '#d4af37', t: 0.3 });
           samurai.samuraiParrying = false;
           samurai.samuraiParryHit = true;
@@ -7188,6 +7695,31 @@ waypoints.push({
     }
     p.x += p.vx*dt; p.y += p.vy*dt;
     p.angle = Math.atan2(p.vy, p.vx);
+
+    // 障礙場地：飛行道具打到中央巨石就被擋下消失
+    if (state.arena === 'obstacle') {
+      const odx = p.x - W / 2, ody = p.y - H / 2;
+      const odist = Math.hypot(odx, ody);
+      if (odist < OBSTACLE_ARENA_RADIUS + (p.r || 8)) {
+        state.hitFlashes.push({ x: p.x, y: p.y, r: 18, alpha: 0.8, color: '#888888', t: 0.25 });
+        // 廚師的刀撞到巨石不應該直接消失憑空蒸發：比照撞牆的處理，插在石頭表面等待回收，
+        // 否則刀會被巨石「吃掉」，刀數再也拿不回來。
+        if (p.type === 'knife') {
+          const knifeOwnerBall = state.balls.find(b => b.player === p.owner);
+          if (knifeOwnerBall && knifeOwnerBall.char.type === 'chef') {
+            const pushOutR = OBSTACLE_ARENA_RADIUS + (p.r || 8);
+            const nx = odist > 0 ? odx / odist : 1, ny = odist > 0 ? ody / odist : 0;
+            state.wallKnives.push({
+              x: W / 2 + nx * pushOutR, y: H / 2 + ny * pushOutR,
+              angle: p.angle, owner: p.owner, color: p.color
+            });
+          }
+        }
+        state.projectiles.splice(i, 1);
+        continue;
+      }
+    }
+
     let removed = false;
     for (let bi = 0; bi < state.balls.length; bi++) {
       // 未反彈：跳過己方；已反彈：跳過反彈者（武士），打原始 owner
@@ -7247,12 +7779,12 @@ waypoints.push({
           if (!p.hitTargets) p.hitTargets = new Set();
           if (!p.hitTargets.has(b.player)) {
             p.hitTargets.add(b.player);
-            dealDamage(b, p.damage);
+            dealDamage(b, p.damage, { attackerPlayer: p.owner });
             state.hitFlashes.push({ x:b.x, y:b.y, r:35, alpha:1, color:'#ffcc00', t:0.35 });
             playHitSound('knife');
           }
         } else if (p.type === 'bullet' || p.type === 'turret_bullet') {
-          dealDamage(b, p.damage);
+          dealDamage(b, p.damage, { attackerPlayer: p.owner });
           const blen = Math.hypot(p.vx, p.vy) || 1;
           b.vx += (p.vx / blen) * (p.type === 'turret_bullet' ? GUNNER_BULLET_KNOCKBACK * 0.5 : GUNNER_BULLET_KNOCKBACK);
           b.vy += (p.vy / blen) * (p.type === 'turret_bullet' ? GUNNER_BULLET_KNOCKBACK * 0.5 : GUNNER_BULLET_KNOCKBACK);
@@ -7261,7 +7793,7 @@ waypoints.push({
           state.projectiles.splice(i, 1);
           removed = true; break;
         } else if (p.type === 'curseword') {
-          dealDamage(b, p.damage);
+          dealDamage(b, p.damage, { attackerPlayer: p.owner });
           // 禁錮：重用通用定身欄位（itachiPinnedTimer），但乙骨自身需CD才能再次造成禁錮
           const yuta = state.balls.find(x => x.player === p.owner);
           if (yuta && yuta.yutaBindCooldown <= 0) {
@@ -7278,7 +7810,7 @@ waypoints.push({
             if (target.player === p.owner) continue;
             const fd = Math.hypot(p.x - target.x, p.y - target.y);
             if (fd < GUNNER_FLASH_RADIUS) {
-              dealDamage(target, p.damage);
+              dealDamage(target, p.damage, { attackerPlayer: p.owner });
               target.gunnerStunTimer = GUNNER_FLASH_STUN_DUR;
             }
           }
@@ -7291,13 +7823,13 @@ waypoints.push({
           if (b.itachiMarked) {
             // 已有標記：清空標記，造成大量傷害
             b.itachiMarked = false;
-            dealDamage(b, p.reflected ? p.damage : ITACHI_AMATERASU_MARK_DMG);
+            dealDamage(b, p.reflected ? p.damage : ITACHI_AMATERASU_MARK_DMG, { attackerPlayer: p.reflected ? p.reflectedBy : p.owner });
             state.hitFlashes.push({ x:b.x, y:b.y, r:65, alpha:1.3, color:'#ff2200', t:0.5 });
             state.hitFlashes.push({ x:b.x, y:b.y, r:35, alpha:1.0, color:'#1a0a1a', t:0.4 });
             playHitSound('opm');
           } else {
             // 無標記：造成基礎傷害並施加標記
-            dealDamage(b, p.reflected ? p.damage : ITACHI_AMATERASU_DAMAGE);
+            dealDamage(b, p.reflected ? p.damage : ITACHI_AMATERASU_DAMAGE, { attackerPlayer: p.reflected ? p.reflectedBy : p.owner });
             b.itachiMarked = true;
             state.hitFlashes.push({ x:b.x, y:b.y, r:32, alpha:1.0, color:'#8b0000', t:0.35 });
             state.hitFlashes.push({ x:b.x, y:b.y, r:16, alpha:0.8, color:'#1a0a1a', t:0.25 });
@@ -7306,7 +7838,7 @@ waypoints.push({
           state.projectiles.splice(i, 1);
           removed = true; break;
         } else if (p.type === 'dove') {
-          dealDamage(b, p.damage);
+          dealDamage(b, p.damage, { attackerPlayer: p.owner });
           state.hitFlashes.push({ x:b.x, y:b.y, r:35, alpha:1.0, color:'#9b59b6', t:0.35 });
           state.hitFlashes.push({ x:b.x, y:b.y, r:18, alpha:0.8, color:'#ffffff', t:0.2 });
           playHitSound('knife');
@@ -7364,7 +7896,7 @@ waypoints.push({
           state.projectiles.splice(i, 1);
           removed = true; break;
         } else if (p.type === 'bloodshot') {
-          dealDamage(b, p.damage);
+          dealDamage(b, p.damage, { attackerPlayer: p.owner });
           // 在命中位置留下血球
           if (!state.tigerBloodOrbs) state.tigerBloodOrbs = [];
           state.tigerBloodOrbs.push({
@@ -7387,20 +7919,22 @@ waypoints.push({
           if (!p.hitTargets) p.hitTargets = new Set();
           if (!p.hitTargets.has(b.player)) {
             p.hitTargets.add(b.player);
-            dealDamage(b, p.damage);
+            dealDamage(b, p.damage, { attackerPlayer: p.owner });
             state.hitFlashes.push({ x: b.x, y: b.y, r: 32, alpha: 1.1, color: '#ffd700', t: 0.35 });
             playHitSound('knife');
           }
         } else if (p.type === 'fisher_fish') {
-          dealDamage(b, p.damage);
+          dealDamage(b, p.damage, { attackerPlayer: p.owner });
           b.fisherRedTimer = FISHER_FISH_RED_DELAY;
+          b.fisherRedOwnerPlayer = p.owner;
           state.hitFlashes.push({ x:b.x, y:b.y, r:26, alpha:1, color:'#4a90d9', t:0.3 });
           playHitSound('bottle');
           state.projectiles.splice(i, 1);
           removed = true; break;
         } else if (p.type === 'fisher_shark') {
-          dealDamage(b, p.damage);
+          dealDamage(b, p.damage, { attackerPlayer: p.owner });
           b.curseDotTimer = FISHER_SHARK_BLEED_DUR;
+          b.curseDotOwnerPlayer = p.owner;
           b.curseDotDmg = FISHER_SHARK_BLEED_DPS;
           state.hitFlashes.push({ x:b.x, y:b.y, r:36, alpha:1.1, color:'#cc0022', t:0.35 });
           playHitSound('vampire_bite');
@@ -7413,11 +7947,11 @@ waypoints.push({
           if (ownerBall) {
             for (const foe of getEnemies(ownerBall)) {
               if (Math.hypot(foe.x - blastX, foe.y - blastY) < STEVE_FIREWORK_SPLASH_RADIUS + RADIUS) {
-                dealDamage(foe, p.damage);
+                dealDamage(foe, p.damage, { attackerPlayer: p.owner });
               }
             }
           } else {
-            dealDamage(b, p.damage);
+            dealDamage(b, p.damage, { attackerPlayer: p.owner });
           }
           state.hitFlashes.push({ x: blastX, y: blastY, r: STEVE_FIREWORK_SPLASH_RADIUS, alpha: 1.1, color: '#ff8844', t: 0.4 });
           state.hitFlashes.push({ x: blastX, y: blastY, r: 20, alpha: 1.0, color: '#ffffff', t: 0.25 });
@@ -7425,7 +7959,7 @@ waypoints.push({
           state.projectiles.splice(i, 1);
           removed = true; break;
         } else {
-          dealDamage(b, p.damage);
+          dealDamage(b, p.damage, { attackerPlayer: p.owner });
           state.hitFlashes.push({ x:b.x, y:b.y, r:35, alpha:1, color:'#ffcc00', t:0.35 });
           playHitSound('bottle');
           state.projectiles.splice(i, 1);
@@ -7516,7 +8050,7 @@ waypoints.push({
     if (b.itachiSusanooActive && b.itachiBiteCooldown <= 0 && !state.dioWorldGlobalActive) {
       const sd = Math.hypot(b.x - enemy.x, b.y - enemy.y);
       if (sd < ITACHI_SUSANOO_BITE_RANGE) {
-        dealDamage(enemy, ITACHI_SUSANOO_BITE_DAMAGE);
+        dealDamage(enemy, ITACHI_SUSANOO_BITE_DAMAGE, { attackerPlayer: b.player });
         b.hp = Math.min(MAX_HP, b.hp + ITACHI_SUSANOO_BITE_HEAL);
         const stabAngle = Math.atan2(enemy.y - b.y, enemy.x - b.x);
         state.itachiStabFX = state.itachiStabFX || [];
@@ -7662,7 +8196,7 @@ waypoints.push({
         state.hitFlashes.push({ x: b.x, y: b.y, r: 20, alpha: 0.8, color: '#f1c40f', t: 0.4 });
       } else {
         const dmgMul = b.yutaRikaActive ? YUTA_RIKA_PASSIVE_DMG_MULT : 1;
-        dealDamage(enemy, YUTA_SLASH_DAMAGE * dmgMul);
+        dealDamage(enemy, YUTA_SLASH_DAMAGE * dmgMul, { attackerPlayer: b.player });
         if (state.stats) state.stats[b.player].skillUses++;
 
         // 咒力斬累積命中次數 → 達標永久召喚里香
@@ -7715,7 +8249,7 @@ waypoints.push({
           for (const foe of getEnemies(b)) {
             const cd = Math.hypot(foe.x - wx, foe.y - wy);
             if (cd < YUTA_RIKA_CLAW_RANGE) {
-              dealDamage(foe, YUTA_RIKA_CLAW_DAMAGE);
+              dealDamage(foe, YUTA_RIKA_CLAW_DAMAGE, { attackerPlayer: b.player });
               clawHitAny = true;
               state.hitFlashes.push({ x: foe.x, y: foe.y, r: 36, alpha: 1.2, color: '#ff6fa5', t: 0.4 });
               // 爪痕：3道斜線劃傷 + 閃光
@@ -7757,7 +8291,7 @@ waypoints.push({
           if (proj > 0) {
             const perp = Math.abs(ex * dy - ey * dx); // 垂直距離
             if (perp < YUTA_RIKA_CANNON_RANGE) {
-              dealDamage(foe, YUTA_RIKA_CANNON_DPS * dt);
+              dealDamage(foe, YUTA_RIKA_CANNON_DPS * dt, { attackerPlayer: b.player });
             }
           }
         }
@@ -7815,7 +8349,7 @@ waypoints.push({
     if (b.dioStandPunchTimer > 0) b.dioStandPunchTimer -= dt;
     const standDist = Math.hypot(enemy.x - standX, enemy.y - standY);
     if (standDist < DIO_STAND_HIT_RANGE && b.dioStandPunchTimer <= 0) {
-      dealDamage(enemy, DIO_STAND_PUNCH_DAMAGE);
+      dealDamage(enemy, DIO_STAND_PUNCH_DAMAGE, { attackerPlayer: b.player });
       b.dioStandPunchTimer = DIO_STAND_PUNCH_INTERVAL;
       if (state.stats) state.stats[b.player].skillUses++;
       const pAngle = Math.atan2(enemy.y - standY, enemy.x - standX);
@@ -7977,7 +8511,7 @@ waypoints.push({
       if (rd < RADIUS * 2 + 10) {
         b.dioRushPunchTimer -= dt;
         if (b.dioRushPunchTimer <= 0) {
-          dealDamage(enemy, DIO_RUSH_PUNCH_DAMAGE);
+          dealDamage(enemy, DIO_RUSH_PUNCH_DAMAGE, { attackerPlayer: b.player });
           b.dioRushPunchTimer = DIO_RUSH_PUNCH_INTERVAL;
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 20, alpha: 1, color: '#ffd34d', t: 0.15 });
           if (state.stats) state.stats[b.player].skillUses++;
@@ -7998,7 +8532,7 @@ waypoints.push({
         const d = Math.hypot(srEnemy.x - sr.x, srEnemy.y - sr.y);
         if (d < RADIUS + DIO_STEAMROLLER_RADIUS) {
           sr.hitTargets.add(srEnemy.player);
-          dealDamage(srEnemy, DIO_STEAMROLLER_DAMAGE);
+          dealDamage(srEnemy, DIO_STEAMROLLER_DAMAGE, { attackerPlayer: sr.owner });
           const kx = (srEnemy.x - sr.x) / (d || 1), ky = (srEnemy.y - sr.y) / (d || 1);
           srEnemy.vx += kx * 420; srEnemy.vy += ky * 420;
           state.hitFlashes.push({ x: srEnemy.x, y: srEnemy.y, r: 45, alpha: 1.2, color: '#666666', t: 0.4 });
@@ -8109,6 +8643,22 @@ waypoints.push({
     if (s.y - STAR_BIG_RADIUS < WALL) { s.y = WALL + STAR_BIG_RADIUS; s.vy = Math.abs(s.vy); bounced = true; }
     if (s.y + STAR_BIG_RADIUS > H - WALL) { s.y = H - WALL - STAR_BIG_RADIUS; s.vy = -Math.abs(s.vy); bounced = true; }
 
+    // 障礙場地：中央巨石也要能擋下大星星，不然星星會直接穿越巨石飛過去
+    if (state.arena === 'obstacle') {
+      const odx = s.x - W / 2, ody = s.y - H / 2;
+      const odist = Math.hypot(odx, ody) || 1;
+      const minDist = OBSTACLE_ARENA_RADIUS + STAR_BIG_RADIUS;
+      if (odist < minDist) {
+        const onx = odx / odist, ony = ody / odist;
+        s.x = W / 2 + onx * minDist;
+        s.y = H / 2 + ony * minDist;
+        const dot = s.vx * onx + s.vy * ony;
+        s.vx -= 2 * dot * onx;
+        s.vy -= 2 * dot * ony;
+        bounced = true;
+      }
+    }
+
     if (bounced && s.scatterCooldown <= 0) {
       const groupId = Date.now() + Math.random();
       for (let k = 0; k < STAR_SMALL_COUNT; k++) {
@@ -8135,7 +8685,7 @@ waypoints.push({
       if (b.player === s.owner) continue;
       const dx = b.x - s.x, dy = b.y - s.y;
       if (Math.sqrt(dx*dx+dy*dy) < RADIUS + STAR_BIG_RADIUS && s.hitCooldown <= 0) {
-        dealDamage(b, STAR_BIG_DAMAGE);
+        dealDamage(b, STAR_BIG_DAMAGE, { attackerPlayer: s.owner });
         state.hitFlashes.push({ x: s.x, y: s.y, r: 22, alpha: 1, color: s.color, t: 0.25, maxT: 0.25 });
         s.hitCooldown = 0.6;
       }
@@ -8165,6 +8715,21 @@ waypoints.push({
     if (s.y - STAR_SMALL_RADIUS < WALL) { s.y = WALL + STAR_SMALL_RADIUS; s.vy = Math.abs(s.vy); }
     if (s.y + STAR_SMALL_RADIUS > H - WALL) { s.y = H - WALL - STAR_SMALL_RADIUS; s.vy = -Math.abs(s.vy); }
 
+    // 障礙場地：中央巨石也要能擋下小星星
+    if (state.arena === 'obstacle') {
+      const odx = s.x - W / 2, ody = s.y - H / 2;
+      const odist = Math.hypot(odx, ody) || 1;
+      const minDist = OBSTACLE_ARENA_RADIUS + STAR_SMALL_RADIUS;
+      if (odist < minDist) {
+        const onx = odx / odist, ony = ody / odist;
+        s.x = W / 2 + onx * minDist;
+        s.y = H / 2 + ony * minDist;
+        const dot = s.vx * onx + s.vy * ony;
+        s.vx -= 2 * dot * onx;
+        s.vy -= 2 * dot * ony;
+      }
+    }
+
     // 碰到敵人：30傷後消失
     let hit = false;
     for (const b of state.balls) {
@@ -8183,7 +8748,7 @@ waypoints.push({
           }
           starSmallToRemove.add(i); hit = true; break;
         }
-        dealDamage(b, STAR_SMALL_DAMAGE);
+        dealDamage(b, STAR_SMALL_DAMAGE, { attackerPlayer: s.owner });
         state.hitFlashes.push({ x: s.x, y: s.y, r: 16, alpha: 1, color: s.color, t: 0.2, maxT: 0.2 });
         starSmallToRemove.add(i); hit = true; break;
       }
@@ -8203,7 +8768,7 @@ waypoints.push({
           if (b.hp <= 0) continue; // 已死亡不再有任何行為
           if (b.player === s.owner) continue;
           const dbx = b.x - ex, dby = b.y - ey;
-          if (Math.sqrt(dbx*dbx+dby*dby) < RADIUS + 32) dealDamage(b, STAR_EXPLODE_DAMAGE);
+          if (Math.sqrt(dbx*dbx+dby*dby) < RADIUS + 32) dealDamage(b, STAR_EXPLODE_DAMAGE, { attackerPlayer: s.owner });
         }
         state.hitFlashes.push({ x: ex, y: ey, r: 28, alpha: 1, color: '#ffffff', t: 0.3, maxT: 0.3 });
         starSmallToRemove.add(i); starSmallToRemove.add(j); hit = true; break;
@@ -8220,7 +8785,7 @@ waypoints.push({
           if (b.hp <= 0) continue; // 已死亡不再有任何行為
           if (b.player === s.owner) continue;
           const dbx = b.x - s.x, dby = b.y - s.y;
-          if (Math.sqrt(dbx*dbx+dby*dby) < RADIUS + 35) dealDamage(b, STAR_EXPLODE_DAMAGE);
+          if (Math.sqrt(dbx*dbx+dby*dby) < RADIUS + 35) dealDamage(b, STAR_EXPLODE_DAMAGE, { attackerPlayer: s.owner });
         }
         state.hitFlashes.push({ x: s.x, y: s.y, r: 28, alpha: 1, color: '#ffff88', t: 0.3, maxT: 0.3 });
         starSmallToRemove.add(i); hit = true; break;
@@ -8248,7 +8813,7 @@ waypoints.push({
       if (b.player === m.owner) continue;
       const dx = b.x - m.x, dy = b.y - m.y;
       if (Math.sqrt(dx*dx+dy*dy) < RADIUS + STAR_METEOR_RADIUS) {
-        dealDamage(b, STAR_METEOR_DAMAGE);
+        dealDamage(b, STAR_METEOR_DAMAGE, { attackerPlayer: m.owner });
         state.hitFlashes.push({ x: m.x, y: m.y, r: 24, alpha: 1, color: m.color, t: 0.25, maxT: 0.25 });
         state.starMeteors.splice(i, 1); break;
       }
@@ -8338,7 +8903,7 @@ waypoints.push({
             vx: (Math.random()-0.5)*160, vy: (Math.random()-0.5)*160,
             life: 6.0,
           });
-          dealDamage(enemy, OBITO_SPACE_ENTRY_DAMAGE);
+          dealDamage(enemy, OBITO_SPACE_ENTRY_DAMAGE, { attackerPlayer: b.player });
           // 敵人暫時定身在神威空間（凍結位置）
           enemy.obitoInSpace = true;
           enemy.obitoInSpaceTimer = 5.0;
@@ -8597,7 +9162,7 @@ waypoints.push({
             enemyBall.y = b.y + Math.sin(exitAng) * (RADIUS * 2 + 10);
             enemyBall.vx = 0; enemyBall.vy = 0;
             enemyBall.obitoInSpace = false;
-            dealDamage(enemyBall, OBITO_SPACE_ENTRY_DAMAGE);
+            dealDamage(enemyBall, OBITO_SPACE_ENTRY_DAMAGE, { attackerPlayer: b.player });
           }
           // 移除空間中所有屬於此帶土的敵人捕獲（避免殘留）
           if (state.obitoSpaceCaptures) {
@@ -8655,7 +9220,7 @@ waypoints.push({
         // 鐵鏈傷害（範圍持續）
         const chainD = Math.hypot(enemy.x - b.x, enemy.y - b.y);
         if (chainD < OBITO_KAMUI_CHAIN_RADIUS + RADIUS) {
-          dealDamage(enemy, OBITO_KAMUI_CHAIN_DAMAGE * dt * 60);
+          dealDamage(enemy, OBITO_KAMUI_CHAIN_DAMAGE * dt * 60, { attackerPlayer: b.player });
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 18, alpha: 0.7, color: '#cc44ff', t: 0.1 });
         }
         if (b.obitoChainTimer <= 0) {
@@ -8663,7 +9228,7 @@ waypoints.push({
           b.obitoChainTimer = 0.5;
           // 起爆符：大範圍爆炸
           if (Math.hypot(enemy.x - b.x, enemy.y - b.y) < OBITO_KAMUI_BOMB_RADIUS + RADIUS) {
-            dealDamage(enemy, OBITO_KAMUI_BOMB_DAMAGE);
+            dealDamage(enemy, OBITO_KAMUI_BOMB_DAMAGE, { attackerPlayer: b.player });
             state.hitFlashes.push({ x: b.x, y: b.y, r: 70, alpha: 1.5, color: '#ff4400', t: 0.5 });
             playHitSound('vampire_dash');
           }
@@ -8674,7 +9239,7 @@ waypoints.push({
           // 甩飛傷害
           if (b.obitoChainTimer <= 0.3 && !b.obitoThrowDealt) {
             b.obitoThrowDealt = true;
-            dealDamage(enemy, OBITO_KAMUI_THROW_DAMAGE);
+            dealDamage(enemy, OBITO_KAMUI_THROW_DAMAGE, { attackerPlayer: b.player });
             const throwAng = Math.random() * Math.PI * 2;
             enemy.vx = Math.cos(throwAng) * 400;
             enemy.vy = Math.sin(throwAng) * 400;
@@ -8732,13 +9297,21 @@ waypoints.push({
           fb.y - fb.r < WALL || fb.y + fb.r > H - WALL) {
         state.obitoFireballs.splice(i, 1); continue;
       }
+      // 障礙場地：中央巨石跟外牆一樣會擋下火球（同樣直接消失）
+      if (state.arena === 'obstacle') {
+        const odx = fb.x - W / 2, ody = fb.y - H / 2;
+        if (Math.hypot(odx, ody) < OBSTACLE_ARENA_RADIUS + fb.r) {
+          state.hitFlashes.push({ x: fb.x, y: fb.y, r: 22, alpha: 0.8, color: '#888888', t: 0.25 });
+          state.obitoFireballs.splice(i, 1); continue;
+        }
+      }
       // 碰敵人
       for (const b of state.balls) {
         if (b.hp <= 0) continue; // 已死亡不再有任何行為
         if (b.player === fb.owner) continue;
         const dx = b.x - fb.x, dy = b.y - fb.y;
         if (Math.hypot(dx, dy) < RADIUS + fb.r) {
-          dealDamage(b, OBITO_FIREBALL_DAMAGE);
+          dealDamage(b, OBITO_FIREBALL_DAMAGE, { attackerPlayer: fb.owner });
           state.hitFlashes.push({ x: fb.x, y: fb.y, r: 30, alpha: 1, color: '#ff4400', t: 0.3 });
           playHitSound('knife');
           state.obitoFireballs.splice(i, 1); hit = true; break;
@@ -8796,7 +9369,7 @@ waypoints.push({
           if (gd < HIT_R + 12) {
             const enemyBall = state.balls.find(x => x.player === other.enemyPlayer);
             if (enemyBall) {
-              dealDamage(enemyBall, OBITO_PHANTOM_DAMAGE);
+              dealDamage(enemyBall, OBITO_PHANTOM_DAMAGE, { attackerPlayer: cap.owner });
               state.hitFlashes.push({ x: enemyBall.x, y: enemyBall.y, r: 22, alpha: 1, color: '#cc44ff', t: 0.3 });
               playHitSound('knife');
             }
@@ -8964,7 +9537,7 @@ waypoints.push({
         // 範圍判定
         const dist = Math.hypot(enemy.x - b.x, enemy.y - b.y);
         if (dist < TIGER_PUNCH_RANGE) {
-          dealDamage(enemy, dmg1);
+          dealDamage(enemy, dmg1, { attackerPlayer: b.player });
           // 擊退
           const kx = (enemy.x - b.x) / (dist || 1), ky = (enemy.y - b.y) / (dist || 1);
           enemy.vx += kx * TIGER_PUNCH_KNOCKBACK;
@@ -9029,7 +9602,7 @@ waypoints.push({
         b.tigerPendingSecond = false;
         const tgt = b.tigerPendingTarget;
         if (tgt && tgt.hp > 0) {
-          dealDamage(tgt, b.tigerPendingDmg);
+          dealDamage(tgt, b.tigerPendingDmg, { attackerPlayer: b.player });
           tgt.vx += (b.tigerPendingKx || 0) * TIGER_PUNCH_KNOCKBACK * 0.6;
           tgt.vy += (b.tigerPendingKy || 0) * TIGER_PUNCH_KNOCKBACK * 0.6;
           // 藍色咒力追加特效
@@ -9198,7 +9771,7 @@ waypoints.push({
         b.josephUltimateStep++;
         const isFinalHit = b.josephUltimateStep >= JOSEPH_ULTIMATE_COMBO_HITS;
         const perHitDmg = JOSEPH_ULTIMATE_COMBO_DMG / JOSEPH_ULTIMATE_COMBO_HITS;
-        dealDamage(tgt, perHitDmg);
+        dealDamage(tgt, perHitDmg, { attackerPlayer: b.player });
         b.hp = Math.min(MAX_HP, b.hp + JOSEPH_HP_REGEN_ON_HIT);
         state.hitFlashes.push({ x: tgt.x, y: tgt.y, r: 22, alpha: 0.9, color: '#ffe066', t: 0.2 });
         state.josephPunchFX.push({ x: b.x, y: b.y, tx: tgt.x, ty: tgt.y, side: (b.josephUltimateStep % 2 === 0 ? 1 : -1), life: 0.2, maxLife: 0.2, owner: b.player, style: 'combo' });
@@ -9206,11 +9779,13 @@ waypoints.push({
         if (isFinalHit) {
           const vsDio = tgt.char.type === 'dio';
           if (vsDio) {
-            dealDamage(tgt, JOSEPH_ULTIMATE_DIO_PIERCE);
+            dealDamage(tgt, JOSEPH_ULTIMATE_DIO_PIERCE, { attackerPlayer: b.player });
             tgt.rippleStacks = (tgt.rippleStacks || 0) + JOSEPH_ULTIMATE_DIO_STACK;
+            tgt.rippleOwnerPlayer = b.player;
           } else {
-            dealDamage(tgt, JOSEPH_ULTIMATE_FINAL_DMG);
+            dealDamage(tgt, JOSEPH_ULTIMATE_FINAL_DMG, { attackerPlayer: b.player });
             tgt.rippleStacks = (tgt.rippleStacks || 0) + JOSEPH_ULTIMATE_FINAL_STACK;
+            tgt.rippleOwnerPlayer = b.player;
           }
           b.hp = Math.min(MAX_HP, b.hp + JOSEPH_HP_REGEN_ON_HIT);
           const kdx = tgt.x - b.x, kdy = tgt.y - b.y;
@@ -9232,7 +9807,7 @@ waypoints.push({
     } else if (b.josephState === 'breathing' && b.josephUltimateReady && b.josephUltimateCooldown <= 0 && jDistToEnemy < JOSEPH_ULTIMATE_RANGE) {
       // 發動 Sunlight Yellow Overdrive：第一拳
       b.josephUltimateCooldown = JOSEPH_ULTIMATE_COOLDOWN;
-      dealDamage(enemy, JOSEPH_ULTIMATE_FIRST_DMG);
+      dealDamage(enemy, JOSEPH_ULTIMATE_FIRST_DMG, { attackerPlayer: b.player });
       b.hp = Math.min(MAX_HP, b.hp + JOSEPH_HP_REGEN_ON_HIT);
       state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 26, alpha: 1, color: '#ffe066', t: 0.3 });
       state.josephPunchFX.push({ x: b.x, y: b.y, tx: enemy.x, ty: enemy.y, life: 0.28, maxLife: 0.28, owner: b.player, style: 'first' });
@@ -9252,18 +9827,20 @@ waypoints.push({
       if (b.josephState === 'breathing') {
         if (b.josephDashTimer <= 0 && jDistToEnemy < JOSEPH_DASH_RANGE) {
           b.josephDashTimer = JOSEPH_DASH_COOLDOWN;
-          dealDamage(enemy, JOSEPH_DASH_DAMAGE);
+          dealDamage(enemy, JOSEPH_DASH_DAMAGE, { attackerPlayer: b.player });
           b.hp = Math.min(MAX_HP, b.hp + JOSEPH_HP_REGEN_ON_HIT);
           enemy.rippleStacks = (enemy.rippleStacks || 0) + JOSEPH_DASH_STACK;
+          enemy.rippleOwnerPlayer = b.player;
           const dashAng = Math.atan2(enemy.y - b.y, enemy.x - b.x);
           state.josephPunchFX.push({ x: b.x, y: b.y, angle: dashAng, dist: jDistToEnemy, life: 0.22, maxLife: 0.22, owner: b.player, style: 'dash' });
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 20, alpha: 0.85, color: '#4aa8ff', t: 0.25 });
           playHitSound('knife');
         } else if (b.josephSpringTimer <= 0 && jDistToEnemy < JOSEPH_SPRING_RANGE && jDistToEnemy >= JOSEPH_DASH_RANGE) {
           b.josephSpringTimer = JOSEPH_SPRING_COOLDOWN;
-          dealDamage(enemy, JOSEPH_SPRING_DAMAGE);
+          dealDamage(enemy, JOSEPH_SPRING_DAMAGE, { attackerPlayer: b.player });
           b.hp = Math.min(MAX_HP, b.hp + JOSEPH_HP_REGEN_ON_HIT);
           enemy.rippleStacks = (enemy.rippleStacks || 0) + JOSEPH_SPRING_STACK;
+          enemy.rippleOwnerPlayer = b.player;
           const springAng = Math.atan2(enemy.y - b.y, enemy.x - b.x);
           state.josephPunchFX.push({ x: b.x, y: b.y, angle: springAng, dist: jDistToEnemy, life: 0.42, maxLife: 0.42, owner: b.player, style: 'spring' });
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 24, alpha: 0.9, color: '#2f7dc0', t: 0.3 });
@@ -9295,7 +9872,7 @@ waypoints.push({
         let needleHit = false;
         for (const needleEnemy of getEnemies(ownerBall)) {
           if (Math.hypot(needleEnemy.x - needle.x, needleEnemy.y - needle.y) < RADIUS + needle.r) {
-            dealDamage(needleEnemy, needle.damage);
+            dealDamage(needleEnemy, needle.damage, { attackerPlayer: needle.owner });
             needleHit = true;
             if (!state.tigerCurseFX) state.tigerCurseFX = [];
             for (let ci = 0; ci < 4; ci++) {
@@ -9368,7 +9945,7 @@ waypoints.push({
         b.vy = Math.sin(b.fisherOceanDashAngle) * FISHER_OCEAN_DASH_SPEED;
         const dd = Math.hypot(enemy.x - b.x, enemy.y - b.y);
         if (dd < RADIUS * 2 + 14) {
-          dealDamage(enemy, FISHER_OCEAN_HOOK_DMG);
+          dealDamage(enemy, FISHER_OCEAN_HOOK_DMG, { attackerPlayer: b.player });
           b.vx = 0; b.vy = 0;
           enemy.vx = 0; enemy.vy = 0;
           enemy.fisherGrabbedBy = b.player;
@@ -9399,7 +9976,7 @@ waypoints.push({
         enemy.y = b.y + (b.fisherOceanTargetY - b.y) * t2;
         b.fisherOceanTimer -= dt;
         if (b.fisherOceanTimer <= 0) {
-          dealDamage(enemy, FISHER_OCEAN_SLAM_DMG);
+          dealDamage(enemy, FISHER_OCEAN_SLAM_DMG, { attackerPlayer: b.player });
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 46, alpha: 1.3, color: '#4a90d9', t: 0.4 });
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 20, alpha: 1, color: '#ffffff', t: 0.25 });
           playHitSound('opm');
@@ -9488,6 +10065,14 @@ waypoints.push({
     const wv = state.fisherOceanWaves[i];
     if (!wv) continue; // 陣列可能因角色死亡清理而中途縮短
     wv.x += FISHER_OCEAN_WAVE_SPEED * dt;
+
+    // 障礙場地：巨石擋下海浪，浪打到石頭就消散，石頭後方不會再被打到
+    if (state.arena === 'obstacle' && !wv.blockedByRock && Math.abs(wv.x - W / 2) < OBSTACLE_ARENA_RADIUS) {
+      wv.blockedByRock = true;
+      state.hitFlashes.push({ x: W / 2, y: H / 2, r: 42, alpha: 0.9, color: '#4a90d9', t: 0.35 });
+      state.fisherOceanWaves.splice(i, 1);
+      continue;
+    }
     // 海浪為橫掃整個場地的範圍攻擊：命中路徑上「所有」敵人，而不只是最近的那一個
     if (!wv.hitTargets) wv.hitTargets = new Set();
     const ownerBall = state.balls.find(x => x.player === wv.owner);
@@ -9496,7 +10081,7 @@ waypoints.push({
         if (wv.hitTargets.has(foe.player)) continue;
         if (Math.abs(foe.x - wv.x) < FISHER_OCEAN_WAVE_WIDTH / 2) {
           wv.hitTargets.add(foe.player);
-          dealDamage(foe, FISHER_OCEAN_WAVE_DMG);
+          dealDamage(foe, FISHER_OCEAN_WAVE_DMG, { attackerPlayer: wv.owner });
           state.hitFlashes.push({ x: foe.x, y: foe.y, r: 28, alpha: 1, color: '#66ccff', t: 0.3 });
         }
       }
@@ -9631,7 +10216,7 @@ waypoints.push({
             b.getoSurgeTimer = GETO_SURGE_COOLDOWN;
             const dd = Math.hypot(enemy.x - b.getoSpecialX, enemy.y - b.getoSpecialY);
             if (dd < GETO_SURGE_RANGE + 60) {
-              dealDamage(enemy, GETO_SURGE_DAMAGE);
+              dealDamage(enemy, GETO_SURGE_DAMAGE, { attackerPlayer: b.player });
               state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 34, alpha: 1, color: '#c9a6ff', t: 0.35 });
             }
             state.getoSurgeFX.push({
@@ -9680,7 +10265,7 @@ waypoints.push({
       b.getoDotTickTimer -= dt;
       if (b.getoDotTickTimer <= 0) {
         b.getoDotTickTimer = GETO_ENTANGLE_TICK_TIME;
-        dealDamage(b, b.getoDotDmg);
+        dealDamage(b, b.getoDotDmg, { attackerPlayer: b.getoDotOwnerPlayer });
         const healer = state.balls.find(x => x.player === b.getoDotOwnerPlayer);
         if (healer && healer.hp > 0) healer.hp = Math.min(MAX_HP, healer.hp + b.getoDotDmg * GETO_ENTANGLE_HEAL_RATIO);
         state.hitFlashes.push({ x: b.x + randBetween(-10, 10), y: b.y + randBetween(-10, 10), r: 12, alpha: 0.7, color: '#5b3a8e', t: 0.3 });
@@ -9732,7 +10317,7 @@ waypoints.push({
     if (s.contactCd > 0) s.contactCd -= dt;
     if (dist < RADIUS + GETO_SPIRIT_RADIUS && s.contactCd <= 0) {
       s.contactCd = GETO_SPIRIT_CONTACT_CD;
-      dealDamage(enemy, GETO_SPIRIT_DAMAGE);
+      dealDamage(enemy, GETO_SPIRIT_DAMAGE, { attackerPlayer: s.owner });
       s.hp -= GETO_SPIRIT_RETALIATE;
       state.hitFlashes.push({ x: (s.x + enemy.x) / 2, y: (s.y + enemy.y) / 2, r: 14, alpha: 0.8, color: '#5b3a8e', t: 0.25 });
       playHitSound('trap_hit');
@@ -9749,7 +10334,7 @@ waypoints.push({
     if (target) {
       const dd = Math.hypot(target.x - p.x, target.y - p.y);
       if (dd < RADIUS + p.r) {
-        dealDamage(target, p.damage);
+        dealDamage(target, p.damage, { attackerPlayer: p.owner });
         state.hitFlashes.push({ x: target.x, y: target.y, r: 55, alpha: 1.2, color: '#c9a6ff', t: 0.45 });
         state.hitFlashes.push({ x: target.x, y: target.y, r: 30, alpha: 1.0, color: '#ffffff', t: 0.3 });
         playHitSound('opm');
@@ -9872,7 +10457,7 @@ waypoints.push({
         const stackCount = b.sakikoNotes.filter(x => !x.isNova && x.active).length;
         const stackCap = b.sakikoDualActive ? SAKIKO_DUAL_NOTE_CAP : SAKIKO_NOTE_MAX_STACK;
         const finalDmg = n.isNova ? n.damage : n.damage * (1 + SAKIKO_NOTE_DMG_PER_STACK * Math.min(stackCount, stackCap));
-       dealDamage(enemy, finalDmg);
+       dealDamage(enemy, finalDmg, { attackerPlayer: b.player });
 if (!b.sakikoDualActive) {
   b.sakikoFever = Math.min(SAKIKO_FEVER_MAX, (b.sakikoFever || 0) + SAKIKO_FEVER_PER_HIT);
 }        n.active = false;
@@ -9910,7 +10495,7 @@ if (!b.sakikoDualActive) {
         b.dajiCharmTimer = 0;
         if (t && t.hp > 0) {
           t.dajiCharmedTimer = 0;
-          dealDamage(t, b.dajiCharmDmg);
+          dealDamage(t, b.dajiCharmDmg, { attackerPlayer: b.player });
           const kx = t.x - b.x, ky = t.y - b.y;
           const kd = Math.hypot(kx, ky) || 1;
           t.vx += (kx / kd) * DAJI_MELEE_KNOCKBACK;
@@ -10032,7 +10617,7 @@ if (!b.sakikoDualActive) {
       if (enemy) {
         const dd = Math.hypot(enemy.x - f.x, enemy.y - f.y);
         if (dd < RADIUS + f.r) {
-          dealDamage(enemy, DAJI_FIRE_DAMAGE);
+          dealDamage(enemy, DAJI_FIRE_DAMAGE, { attackerPlayer: b.player });
           enemy.dajiBurnTimer = DAJI_BURN_DURATION;
           enemy.dajiBurnTick = Math.min(enemy.dajiBurnTick || 1, 1);
           f.active = false;
@@ -10056,7 +10641,7 @@ if (!b.sakikoDualActive) {
         if (target.player === b.player || target.hp <= 0) continue;
         const dd = Math.hypot(target.x - s.x, target.y - s.y);
         if (dd < RADIUS + s.r) {
-          dealDamage(target, s.damage);
+          dealDamage(target, s.damage, { attackerPlayer: b.player });
           s.active = false;
           state.hitFlashes.push({ x: s.x, y: s.y, r: s.r * 1.8, alpha: 0.9, color: '#ff4fa3', t: 0.3 });
           playHitSound('knife');
@@ -10177,7 +10762,7 @@ if (!b.sakikoDualActive) {
         const d = Math.hypot(dx, dy) || 1;
         const pull = Math.min(d, YUKI_BLACKHOLE_PULL_SPEED * dt);
         enemy.x += (dx / d) * pull; enemy.y += (dy / d) * pull;
-        dealDamage(enemy, YUKI_BLACKHOLE_DPS * dt);
+        dealDamage(enemy, YUKI_BLACKHOLE_DPS * dt, { attackerPlayer: b.player });
       }
       if (b.yukiBlackHoleTimer <= 0) {
         b.yukiBlackHoleActive = false;
@@ -10496,6 +11081,38 @@ function render() {
   // 海灘場地背景
   if (state.arena === 'beach') {
     renderBeachArena();
+  }
+
+  // 障礙場地背景 + 中央巨石
+  if (state.arena === 'obstacle') {
+    ctx.fillStyle = '#17140f'; ctx.fillRect(0, 0, W, H);
+    const obgrad = ctx.createRadialGradient(W/2, H/2, 20, W/2, H/2, Math.max(W,H)*0.75);
+    obgrad.addColorStop(0, 'rgba(120,110,90,0.10)');
+    obgrad.addColorStop(1, 'rgba(20,18,14,0.3)');
+    ctx.fillStyle = obgrad; ctx.fillRect(0, 0, W, H);
+
+    const ocx = W / 2, ocy = H / 2;
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur = 14;
+    const rockGrad = ctx.createRadialGradient(ocx - 12, ocy - 12, 6, ocx, ocy, OBSTACLE_ARENA_RADIUS);
+    rockGrad.addColorStop(0, '#9a9490');
+    rockGrad.addColorStop(0.55, '#6b6560');
+    rockGrad.addColorStop(1, '#332f2b');
+    ctx.fillStyle = rockGrad;
+    ctx.beginPath(); ctx.arc(ocx, ocy, OBSTACLE_ARENA_RADIUS, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(ocx, ocy, OBSTACLE_ARENA_RADIUS, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = 'rgba(0,0,0,0.22)'; ctx.lineWidth = 1.5;
+    for (let i = 0; i < 5; i++) {
+      const ang = i * 1.31 + 0.4;
+      ctx.beginPath();
+      ctx.moveTo(ocx + Math.cos(ang) * 8, ocy + Math.sin(ang) * 8);
+      ctx.lineTo(ocx + Math.cos(ang) * OBSTACLE_ARENA_RADIUS * 0.92, ocy + Math.sin(ang) * OBSTACLE_ARENA_RADIUS * 0.92);
+      ctx.stroke();
+    }
   }
 
   // 格線
@@ -12613,6 +13230,26 @@ function render() {
     }
   }
 
+  // 通用召喚物（給未來新角色用，見 spawnSummon 等函式上方的說明）
+  drawSummons();
+
+  // 史蒂夫：挖礦碎屑（旋轉的石塊碎片）
+  if (state.steveMineDebris) {
+    for (const dp of state.steveMineDebris) {
+      const maxLife = dp.maxLife || 0.9;
+      const prog = dp.life / maxLife;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, prog);
+      ctx.translate(dp.x, dp.y);
+      ctx.rotate(dp.rot);
+      ctx.fillStyle = dp.color;
+      ctx.shadowColor = '#000000';
+      ctx.shadowBlur = 0;
+      ctx.fillRect(-dp.size / 2, -dp.size / 2, dp.size, dp.size);
+      ctx.restore();
+    }
+  }
+
   // 禪院直哉：路徑預覽線
   if (state.naoPathLines) {
     for (const line of state.naoPathLines) {
@@ -13125,6 +13762,112 @@ function render() {
       ctx.beginPath(); ctx.arc(t.x,t.y,RADIUS*prog*0.6,0,Math.PI*2);
       ctx.fillStyle = b.char.color + Math.floor(prog*80).toString(16).padStart(2,'0');
       ctx.fill();
+    }
+
+    // Steve 重錘衝刺：背後展開鞘翅（收緊貼身、全速衝刺的姿態）
+    if (b.char.type === 'steve' && b.steveHammerDashing) {
+      const moveAng = Math.hypot(b.vx, b.vy) > 1 ? Math.atan2(b.vy, b.vx) : 0;
+      const backAng = moveAng + Math.PI;
+      const spread = 0.4; // 全速衝刺，翅膀收緊貼身
+      const flap = Math.sin(elapsed * 26) * 0.1;
+      const wingLen = RADIUS * 2.1;
+      const wingWide = RADIUS * (0.9 + spread);
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(backAng);
+      for (const side of [1, -1]) {
+        ctx.save();
+        ctx.scale(1, side);
+        ctx.rotate((spread + flap) * 0.9);
+        const grad = ctx.createLinearGradient(0, 0, wingLen, 0);
+        grad.addColorStop(0, 'rgba(107,44,95,0.9)');
+        grad.addColorStop(0.55, 'rgba(140,60,130,0.75)');
+        grad.addColorStop(1, 'rgba(107,44,95,0.05)');
+        ctx.beginPath();
+        ctx.moveTo(RADIUS * 0.3, 0);
+        ctx.quadraticCurveTo(wingLen * 0.5, wingWide * 0.15, wingLen, wingWide * 0.55);
+        ctx.quadraticCurveTo(wingLen * 0.65, wingWide * 0.35, RADIUS * 0.5, wingWide * 0.1);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.shadowColor = '#b565a7';
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        // 翅脈紋
+        ctx.strokeStyle = 'rgba(230,200,255,0.5)';
+        ctx.lineWidth = 1.2;
+        ctx.shadowBlur = 0;
+        ctx.beginPath();
+        ctx.moveTo(RADIUS * 0.4, 2);
+        ctx.lineTo(wingLen * 0.85, wingWide * 0.45);
+        ctx.stroke();
+        ctx.restore();
+      }
+      ctx.restore();
+
+      // 尾隨光塵
+      if (Math.random() < 0.5) {
+        const pa = backAng + (Math.random() - 0.5) * 0.6;
+        state.hitFlashes.push({
+          x: b.x + Math.cos(pa) * RADIUS * 1.2,
+          y: b.y + Math.sin(pa) * RADIUS * 1.2,
+          r: 4 + Math.random() * 3, alpha: 0.6,
+          color: '#b565a7', t: 0.22
+        });
+      }
+    }
+
+    // Steve 鞘翅三連擊：背後展開一對鞘翅（依步驟做收緊/展開/發光變化）
+    if (b.char.type === 'steve' && b.steveElytraActive) {
+      const moveAng = Math.hypot(b.vx, b.vy) > 1 ? Math.atan2(b.vy, b.vx) : 0;
+      const backAng = moveAng + Math.PI;
+      const isThrust = b.steveElytraStep >= 3;
+      // 衝刺時翅膀收緊貼身（空氣力學），後退煞車時展開，第三擊穿刺時全開並發亮
+      const spread = isThrust ? 0.95 : (b.steveElytraPhaseIn ? 0.45 : 0.85);
+      const flap = Math.sin(elapsed * 24) * 0.12;
+      const wingLen = RADIUS * (1.9 + (isThrust ? 0.5 : 0));
+      const wingWide = RADIUS * (0.9 + spread);
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(backAng);
+      for (const side of [1, -1]) {
+        ctx.save();
+        ctx.scale(1, side);
+        ctx.rotate((spread + flap) * 0.9);
+        const grad = ctx.createLinearGradient(0, 0, wingLen, 0);
+        grad.addColorStop(0, isThrust ? 'rgba(255,224,102,0.95)' : 'rgba(107,44,95,0.9)');
+        grad.addColorStop(0.55, isThrust ? 'rgba(181,101,167,0.85)' : 'rgba(140,60,130,0.75)');
+        grad.addColorStop(1, 'rgba(107,44,95,0.05)');
+        ctx.beginPath();
+        ctx.moveTo(RADIUS * 0.3, 0);
+        ctx.quadraticCurveTo(wingLen * 0.5, wingWide * 0.15, wingLen, wingWide * 0.55);
+        ctx.quadraticCurveTo(wingLen * 0.65, wingWide * 0.35, RADIUS * 0.5, wingWide * 0.1);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.shadowColor = isThrust ? '#ffe066' : '#b565a7';
+        ctx.shadowBlur = isThrust ? 16 : 8;
+        ctx.fill();
+        // 翅脈紋
+        ctx.strokeStyle = 'rgba(230,200,255,0.5)';
+        ctx.lineWidth = 1.2;
+        ctx.shadowBlur = 0;
+        ctx.beginPath();
+        ctx.moveTo(RADIUS * 0.4, 2);
+        ctx.lineTo(wingLen * 0.85, wingWide * 0.45);
+        ctx.stroke();
+        ctx.restore();
+      }
+      ctx.restore();
+
+      // 尾隨光塵：隨機從翅膀後方灑落幾點光點
+      if (Math.random() < 0.5) {
+        const pa = backAng + (Math.random() - 0.5) * 0.6;
+        state.hitFlashes.push({
+          x: b.x + Math.cos(pa) * RADIUS * 1.2,
+          y: b.y + Math.sin(pa) * RADIUS * 1.2,
+          r: 4 + Math.random() * 3, alpha: 0.6,
+          color: isThrust ? '#ffe066' : '#b565a7', t: 0.22
+        });
+      }
     }
 
     // 暗夜領主衝刺特效：額外光暈
@@ -14377,6 +15120,28 @@ function render() {
     ctx.fillStyle = 'rgba(0,0,0,1)';
     ctx.fillRect(0, 0, W, H);
     ctx.restore();
+  }
+}
+
+// 無形：在角色頭頂顯示「距離下次變身還有幾秒」的倒計時
+function renderWuxingCountdown() {
+  if (!state.balls) return;
+  for (const b of state.balls) {
+    if (b.hp <= 0 || !b.wuxingBaseChar) continue;
+    const secsLeft = Math.max(0, Math.ceil(b.wuxingTimer));
+    const flash = b.wuxingFlash > 0;
+
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.font = '700 11px sans-serif';
+    ctx.fillStyle = flash ? '#ffe066' : 'rgba(230,220,255,0.85)';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 4;
+    ctx.fillText(`👻${secsLeft}s`, b.x, b.y - RADIUS - 10);
+    ctx.restore();
+
+    if (b.wuxingFlash > 0) b.wuxingFlash = Math.max(0, b.wuxingFlash - 0.016);
   }
 }
 
