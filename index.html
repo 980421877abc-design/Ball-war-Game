@@ -936,6 +936,10 @@
       <span>🔥</span>
       <span>模擬手札</span>
     </button>
+    <button id="assemble-btn" type="button" class="pill-select-btn endless-pill">
+      <span>🤖</span>
+      <span>組裝模式</span>
+    </button>
   </div>
 
   <div class="bg-color-select" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px">
@@ -1018,6 +1022,45 @@
   <button onclick="backToSelect()" style="padding:8px 28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:#aaa;font-size:0.85rem;cursor:pointer">回到選角</button>
 </div>
 
+<!-- ══ 組裝模式：零件挑選畫面 ══ -->
+<div id="assemble-pick-screen" style="display:none;position:fixed;inset:0;background:#04070a;z-index:200;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;font-family:sans-serif;color:#eee;overflow-y:auto;padding:24px 16px 40px;">
+  <div style="font-size:1.4rem;font-weight:900;letter-spacing:.15em;color:#8fd6ff;text-shadow:0 0 18px #2a7fbf;margin-bottom:4px">🤖 組裝你的機器人</div>
+  <div style="font-size:0.72rem;color:#f39c12;letter-spacing:.05em;margin-bottom:2px">⚠️ 4個部位只能裝3個，balance 一下要跳過其中一欄</div>
+  <div id="assemble-step-indicator" style="font-size:0.8rem;color:#8fd6ff;letter-spacing:.08em;margin-bottom:4px;font-weight:700"></div>
+  <div id="assemble-step-dots" style="display:flex;gap:6px;margin-bottom:16px"></div>
+  <div id="assemble-slots" style="display:flex;flex-direction:column;align-items:center;width:100%"></div>
+  <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center">
+    <button id="assemble-prev-btn" onclick="assemblePrevStep()" style="padding:12px 24px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:24px;color:#aaa;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:.08em">⬅ 上一步</button>
+    <button id="assemble-skip-btn" onclick="assembleSkipStep()" style="padding:12px 20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,120,80,0.4);border-radius:24px;color:#ff9966;font-size:0.85rem;font-weight:700;cursor:pointer;letter-spacing:.05em">🚫 跳過此欄</button>
+    <button id="assemble-next-btn" onclick="assembleNextStep()" disabled style="padding:12px 32px;background:rgba(143,214,255,0.15);border:1px solid rgba(143,214,255,0.5);border-radius:24px;color:#8fd6ff;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:.08em;opacity:0.4">下一步 ➡</button>
+  </div>
+  <button onclick="backToSelectFromAssemble()" style="margin-top:10px;padding:8px 28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:#aaa;font-size:0.85rem;cursor:pointer">回到選角</button>
+</div>
+
+<!-- ══ 組裝模式：關卡宣告畫面 ══ -->
+<div id="assemble-stage-screen" style="display:none;position:fixed;inset:0;background:#04070a;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:0;font-family:sans-serif;color:#eee;">
+  <div id="as-stage" style="font-size:1.5rem;font-weight:900;letter-spacing:.15em;color:#8fd6ff;text-shadow:0 0 18px #2a7fbf;margin-bottom:4px">第 1 關</div>
+  <div style="font-size:0.75rem;color:#888;letter-spacing:.12em;margin-bottom:2px">對手</div>
+  <div id="as-enemy" style="font-size:1.6rem;font-weight:700;margin-bottom:18px">─</div>
+  <div id="as-robot-summary" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:420px;margin-bottom:22px"></div>
+  <div style="display:flex;gap:14px">
+    <button onclick="launchAssembleBattle()" style="padding:12px 36px;background:rgba(143,214,255,0.15);border:1px solid rgba(143,214,255,0.5);border-radius:24px;color:#8fd6ff;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:.1em">⚔️ 出戰</button>
+    <button onclick="showAssemblePicker()" style="padding:12px 24px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:24px;color:#aaa;font-size:0.85rem;cursor:pointer">🔧 重新組裝</button>
+  </div>
+  <div id="as-best" style="margin-top:22px;font-size:0.78rem;color:#666;letter-spacing:.1em"></div>
+</div>
+
+<!-- ══ 組裝模式：結算畫面 ══ -->
+<div id="assemble-result-screen" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:201;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-family:sans-serif;color:#eee;">
+  <div style="font-size:2rem;font-weight:900;color:#ff4444;text-shadow:0 0 24px #ff2200">💀 挑戰失敗</div>
+  <div id="as-r-stage" style="font-size:1.1rem;color:#8fd6ff;font-weight:700"></div>
+  <div id="as-r-best" style="font-size:0.9rem;color:#888"></div>
+  <button onclick="assembleStage=1;showAssembleStage()" style="margin-top:16px;padding:12px 36px;background:rgba(143,214,255,0.15);border:1px solid rgba(143,214,255,0.5);border-radius:24px;color:#8fd6ff;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:.1em">⚔️ 用同一台機器人再戰</button>
+  <button onclick="showAssemblePicker()" style="padding:8px 28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:#aaa;font-size:0.85rem;cursor:pointer">🔧 重新組裝</button>
+  <button onclick="backToSelectFromAssemble()" style="padding:8px 28px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:#aaa;font-size:0.85rem;cursor:pointer">回到選角</button>
+</div>
+
+
 <div id="game-screen">
   <div id="rec-indicator"><span class="dot"></span>REC</div>
   <div class="speed-control" id="speed-control">
@@ -1035,6 +1078,7 @@
     <div class="hud-center">
       <div class="round-num" id="timer-display">0s</div>
       <button id="endless-stop-btn" onclick="endlessQuit()" style="display:none;margin-top:4px;padding:2px 10px;background:rgba(255,60,60,0.15);border:1px solid rgba(255,80,80,0.4);border-radius:12px;color:#ff7070;font-size:0.65rem;cursor:pointer;letter-spacing:.08em;">✕ 放棄闖關</button>
+      <button id="assemble-stop-btn" onclick="assembleQuit()" style="display:none;margin-top:4px;padding:2px 10px;background:rgba(255,60,60,0.15);border:1px solid rgba(255,80,80,0.4);border-radius:12px;color:#ff7070;font-size:0.65rem;cursor:pointer;letter-spacing:.08em;">✕ 放棄闖關</button>
     </div>
     <div class="hp-block right">
       <div class="hp-name" id="p2-hud-name" style="flex-direction:row-reverse">─</div>
@@ -1532,7 +1576,7 @@ cursed:'格蘭尼達.... '}
   id: 'tiger', emoji: '🐯', weapon: '👊', name: '虎天帝',
   desc: '​「只要還能動，我就會一直詛咒你。——接招吧，宿儺！」​歷經無數絕望與摯友的逝去，那個曾經只會用肉身搏擊的少年，終於在戰場上徹底覺醒為支配宿命的「虎天帝」。',
   stats: ['徑庭拳 ', '超新星 ', '穿血' , '宿儺容器'],
-  skills: ['「徑庭拳」：距離130內蓄力0.4秒揮拳，命中造成70傷，1秒後追加50傷並擊退；20%機率觸發「黑閃」，兩段傷害提升1.5倍並清除等量流血。（CD 2.6秒）', '被動「宿儺容器」：受到傷害的65%轉為流血，之後以18/秒扣除，流血上限600；觸發黑閃時可清除等同於1.5倍黑閃傷害量的流血。', '「穿血」：消耗自身50血量（不致命）發射血刃，造成60傷害，並在自身留下等量流血；命中處留下可存活12秒的血球。（CD 2.2秒）', '「超新星」：集滿3顆血球後，原地蓄力0.7秒引爆，射出14根血流針，每根25傷，射程140。（CD 至少4秒）'],
+  skills: ['「徑庭拳」：距離130內蓄力0.4秒揮拳，命中造成80傷，1秒後追加50傷並擊退；20%機率觸發「黑閃」，兩段傷害提升1.5倍並清除等量流血。（CD 2.6秒）', '被動「宿儺容器」：受到傷害的65%轉為流血，之後以18/秒扣除，流血上限600；觸發黑閃時可清除等同於1.5倍黑閃傷害量的流血。', '「穿血」：消耗自身50血量（不致命）發射血刃，造成60傷害，並在自身留下等量流血；命中處留下可存活12秒的血球。（CD 2.2秒）', '「超新星」：集滿3顆血球後，原地蓄力0.7秒引爆，射出14根血流針，每根30傷，射程140。（CD 至少4秒）'],
   color: '#cc2200', glowColor: 'rgba(204,34,0,0.6)', type: 'tiger',
   winQuote: '我只是個零件。就算我是個零件，也要盡可能地祓除詛咒。',
   vsQuotes: { yuta: '乙骨前輩，辛苦你了。',
@@ -1546,7 +1590,7 @@ yuki:'這是對我哥哥重要的人來說，她的理想'
   id: 'stargirl', emoji: '⭐', weapon: '🌟', name: '星星女孩',
   desc: '使用「星造術」，大星星碰牆時向周圍爆散出5顆小星星。小星星傷害敵人。不定時時召喚星隕，大量流星從天而降。',
   stats: ['大星星', '星散', '小星星', '星隕'],
-  skills: ['「星造術」：操控大星星，碰牆時向周圍爆散出5顆小星星(星散)。', '小星星：接觸敵人造成22傷害。', '「星隕」：不定時召喚流星雨，大量流星從天而降。'],
+  skills: ['「星造術」：操控大星星，碰牆時向周圍爆散出5顆小星星(星散)。', '小星星：接觸敵人造成傷害。', '「星隕」：不定時召喚流星雨，大量流星從天而降。'],
   color: '#ffe066', glowColor: 'rgba(255,224,102,0.6)', type: 'stargirl',
   winQuote: '一閃一閃亮晶晶。'
   },
@@ -1633,15 +1677,30 @@ yuki:'這是對我哥哥重要的人來說，她的理想'
   },
   {
     id: 'wuxing', emoji: '👻', weapon: '❔', name: '無形',
-    desc: '「你以為你在跟誰打？下一秒，我就是別人了。」沒有固定招式與樣貌的存在，會不斷奪取他人的姿態與力量。',
+    desc: '「你以為你在跟誰打？下一秒，我就是別人了。」沒有固定招式與樣貌的存在，會不斷奪取他人的姿態與力量—。',
     stats: ['無形'],
     skills: [
-      '被動「無形」：戰鬥開始立刻化身為隨機角色，之後每 7 秒隨機再變成不同角色，變身瞬間回復75血量。',
+      '被動「無形」：戰鬥開始立刻化身為隨機角色，之後每 7 秒隨機再變成不同角色，變身瞬間回復100血量。',
       '變身期間的技能、冷卻時間、攻擊方式完全比照當下化身的角色，等同直接操作那個角色。',
       '血量、位置以及當下所中的異常狀態（灼燒、麻痺、定身、緩速等）不會因變身而重置或清除。'
     ],
     color: '#9b8cce', glowColor: 'rgba(155,140,206,0.6)', type: 'wuxing',
     winQuote: '你甚至不知道，你剛剛打的到底是誰。'
+  },
+  {
+    id: 'sans', emoji: '🦴', weapon: '🦴', name: 'Sans🦴',
+    desc: '「嘿，兄弟。」一名看似隨便的骷髏，似乎非常慵懶，他想跟你說個玩笑。',
+    stats: ['完美閃避','骨牆','龍骨砲'],
+    skills: [
+      '被動「次數血條」：血量固定為23點，無論實際傷害多少，每次受傷固定只扣1點。',
+      '普攻「骨頭」：朝敵人射出一根骨頭，貫穿敵人，每0.1秒造成10點傷害，冷卻1秒。',
+      '技能一「骨牆」：隨機從地圖上/下/左/右其中一側生成一排骨頭（長度約邊長1/3），並平移至對面牆壁，碰到的敵人每0.1秒受到30點傷害，冷卻5秒。',
+      '重力：每使用兩次骨牆，會在第二次發動時額外將敵人強制往上下左右其中一方向拖走，敵人因此撞牆時依移動距離受到傷害。',
+      '技能二「龍骨砲」：從地圖外朝敵人方向射出一道大型光束，造成35點傷害，冷卻8秒。',
+      '大招「大風車」：剩餘1點血量時觸發，停止所有行動、原地不動並進入無敵，接著朝八個方向輪流釋放龍骨砲式攻擊，每次命中25點且範圍逐次縮小，共20次、每0.25秒一次；若次打完仍未擊敗敵人，自己會直接死亡。'
+    ],
+    color: '#e8e8e8', glowColor: 'rgba(120,190,230,0.6)', type: 'sans',
+    winQuote: '在這樣的日子裡，像你這樣的孩子……就該在地獄裡焚燒。'
   }
 ];
 
@@ -2102,11 +2161,6 @@ let selectedBgColor = '#000000'; // 玩家自訂背景顏色
 const WALL               = 1;
 const MAX_HP             = 1200;
 const BASE_SPEED         = 140;
-const MIN_SPEED          = 100;   // 最低移動速度（技能停止中除外）
-const BOOST_INTERVAL_MIN = 3;
-const BOOST_INTERVAL_MAX = 5;
-const BOOST_MAGNITUDE    = 50;
-const BOOST_MIN_MAGNITUDE = 25; // 最低加速合力，避免幾乎沒動
 
 //一拳超人常數
 const OPM_COUNTDOWN_START    = 45;   // 怒氣值上限
@@ -2360,7 +2414,7 @@ const STAR_BIG_LIFETIME         = 12.0;  // 大星星存活時間（秒）
 const STAR_SCATTER_RANGE        = 80;    // 星散感應範圍（px，比碰撞半徑大很多）
 const STAR_SMALL_COUNT          = 5;     // 星散爆出小星星數
 const STAR_SMALL_SPEED          = 300;   // 小星星速度（px/s）
-const STAR_SMALL_DAMAGE         = 22;    // 小星星碰敵人傷害
+const STAR_SMALL_DAMAGE         = 24;    // 小星星碰敵人傷害
 const STAR_SMALL_RADIUS         = 8;     // 小星星半徑（px）
 const STAR_SMALL_LIFETIME       = 10.0;  // 小星星存活時間（秒）
 const STAR_EXPLODE_DAMAGE       = 80;    // 小星星接觸爆炸傷害（碰小星星/大星星/女孩）
@@ -2403,7 +2457,7 @@ const OBITO_PHANTOM_DAMAGE       = 40;   // 假想子彈碰到對手傷害
 const TIGER_PUNCH_INTERVAL      = 2.6;   // 徑庭拳CD（秒）
 const TIGER_PUNCH_CHARGE_TIME   = 0.4;   // 蓄力時間（秒）
 const TIGER_PUNCH_RANGE         = 130;   // 徑庭拳判定範圍（px）
-const TIGER_PUNCH_DMG1          = 70;    // 徑庭拳第一段傷害
+const TIGER_PUNCH_DMG1          = 80;    // 徑庭拳第一段傷害
 const TIGER_PUNCH_DMG2          = 50;    // 徑庭拳第二段傷害（延遲追加）
 const TIGER_PUNCH_DELAY2        = 1;  // 第二段傷害延遲（秒）
 const TIGER_PUNCH_KNOCKBACK     = 280;   // 徑庭拳擊退力道
@@ -2421,7 +2475,7 @@ const TIGER_NOVA_COOLDOWN       = 4.0;   // 超新星最少CD（秒）：兩次�
 const TIGER_NOVA_CHARGE_TIME    = 0.7;   // 超新星發動前在原地蓄力的時間（秒）
 const TIGER_NOVA_NEEDLE_COUNT   = 14;    // 超新星血流針數量
 const TIGER_NOVA_NEEDLE_SPEED   = 400;   // 血流針飛行速度
-const TIGER_NOVA_NEEDLE_DMG     = 25;    // 每根血流針傷害
+const TIGER_NOVA_NEEDLE_DMG     = 30;    // 每根血流針傷害
 const TIGER_NOVA_NEEDLE_RANGE   = 140;   // 血流針有效射程
 const TIGER_BLEED_RATIO         = 0.65;  // 受傷有多少比例轉為流血
 const TIGER_BLEED_DPS           = 18;    // 流血每秒傷害
@@ -2688,7 +2742,7 @@ const DAJI_ENH_HEAL          = 10;    // 釋放強化技能時恢復生命值
 
 // 九十九由基 專屬常數
 const YUKI_PHOENIX_DELAY          = 0.2;   // 碰撞後延遲觸發「鳳輪」秒數
-const YUKI_PHOENIX_DAMAGE         = 120;   // 鳳輪基礎傷害
+const YUKI_PHOENIX_DAMAGE         = 100;   // 鳳輪基礎傷害
 const YUKI_PHOENIX_RADIUS         = 90;    // 鳳輪環繞由基身旁的掃蕩範圍
 const YUKI_COLLISION_COOLDOWN     = 0.6;   // 碰撞觸發鳳輪的內置CD（避免重疊瞬間重複觸發）
 const YUKI_GRAVITY_MAX_STACK      = 5;     // 重力最大層數
@@ -2705,7 +2759,470 @@ const YUKI_BLACKHOLE_SELF_COST    = 500;   // 假想黑洞結束後，由基自�
 const YUKI_GRAVITY_AURA_RADIUS    = 500;   // 被動引力場：作用範圍
 const YUKI_GRAVITY_AURA_PULL      = 70;    // 被動引力場：基礎拉力（px/s）
 const WUXING_TRANSFORM_INTERVAL = 7; // 無形：每隔幾秒重新變身一次
-const WUXING_TRANSFORM_HEAL     = 70; // 無形：每次變身回血量
+const WUXING_TRANSFORM_HEAL     = 100; // 無形：每次變身回血量
+// ── Sans🦴 專屬常數 ──
+const SANS_MAX_HP             = 23;    // 被動：次數血條，固定血量23
+const SANS_BONE_INTERVAL      = 1.0;   // 普攻「骨頭」冷卻
+const SANS_BONE_DAMAGE        = 10;     // 骨頭每次觸發傷害
+const SANS_BONE_TICK          = 0.1;   // 骨頭每0.1秒觸發一次
+const SANS_BONE_SPEED         = 400;   // 骨頭飛行速度
+const SANS_BONE_LIFESPAN      = 2.5;   // 骨頭存在秒數
+const SANS_WALL_INTERVAL      = 5.0;   // 技能一「骨牆」冷卻
+const SANS_WALL_DAMAGE        = 25;    // 骨牆每0.1秒傷害
+const SANS_WALL_TICK          = 0.1;
+const SANS_WALL_LEN_RATIO     = 1 / 3; // 骨牆長度佔邊長比例
+const SANS_WALL_SPEED         = 220;   // 骨牆平移速度(px/s)
+const SANS_GRAVITY_DMG_PER_PX = 0.6;   // 重力甩牆：每移動1px的傷害
+const SANS_GRAVITY_PULL_SPEED = 500;   // 重力牽引最高速度(px/s)
+const SANS_GRAVITY_RAMP_TIME  = 0.6;   // 重力牽引「加速拉起」所需秒數（從0慢慢拉到最高速度，而非瞬間拉走）
+const SANS_GRAVITY_DURATION   = 1.6;   // 重力牽引最長持續秒數（保險用，正常會提早撞牆結束）
+const SANS_LASER_INTERVAL     = 8.0;  // 技能二「龍骨砲」冷卻
+const SANS_LASER_DAMAGE       = 35;    // 龍骨砲傷害
+const SANS_LASER_WIDTH        = 50;    // 龍骨砲光束寬度
+const SANS_LASER_TRAVEL_TIME  = 0.35;  // 龍骨砲光束存在秒數
+const SANS_ULT_HITS           = 20;    // 大招「大風車」攻擊次數
+const SANS_ULT_INTERVAL       = 0.25;  // 大招攻擊間隔
+const SANS_ULT_DAMAGE         = 25;    // 大招每次命中傷害
+const SANS_ULT_WIDTH_START    = 34;    // 大招起始光束寬度
+const SANS_ULT_WIDTH_SHRINK   = 1.2;   // 大招每次縮小的寬度量
+const SANS_ULT_WARN_DUR       = 0.25;  // 大招光束預警時間（先顯示細線警示，結束後才真正發射並判定傷害，讓對手有時間躲）
+const SANS_LASER_WARN_DUR     = 0.35;  // 技能二「龍骨砲」預警時間（砲台先蓄力，結束後才真正發射）
+const MIN_SPEED          = 100;   // 最低移動速度（技能停止中除外）
+const BOOST_INTERVAL_MIN = 3;
+const BOOST_INTERVAL_MAX = 5;
+const BOOST_MAGNITUDE    = 50;
+const BOOST_MIN_MAGNITUDE = 25; // 最低加速合力，避免幾乎沒動
+
+
+// ══════════════ 組裝模式：零件數值 ══════════════
+const CUSTOM_BASIC_CHEF_INTERVAL   = CHEF_ATTACK_INTERVAL;   // 飛刀CD
+const CUSTOM_BASIC_DRUNK_INTERVAL  = DRUNK_ATTACK_INTERVAL;  // 拋酒CD
+const CUSTOM_BASIC_GUNNER_INTERVAL = 0.6;   // 速射CD
+const CUSTOM_BASIC_GUNNER_DAMAGE   = 45;    // 速射每發傷害
+const CUSTOM_BASIC_GUNNER_SPEED    = 420;   // 速射子彈速度
+const CUSTOM_CHARGE_INTERVAL       = 5;     // 蓄能裝彈：每幾秒獲得一層
+const CUSTOM_CHARGE_MAX_STACKS     = 3;     // 蓄能裝彈：層數上限
+const CUSTOM_CHARGE_BONUS_MULT     = 1.5;   // 消耗一層後，普攻傷害倍率
+const CUSTOM_TRAP_PASSIVE_INTERVAL = 6;     // 尖刺結界：每幾秒佈置一個
+const CUSTOM_SKILL1_VAMPIRE_INTERVAL = VAMPIRE_DASH_INTERVAL; // 蝙蝠狂襲CD
+const CUSTOM_SKILL1_VAMPIRE_DAMAGE   = 90;  // 蝙蝠狂襲撞擊傷害
+const CUSTOM_SKILL1_TRAPPER_INTERVAL = 7;   // 鎖鏈CD
+const CUSTOM_SKILL1_TRAPPER_DAMAGE   = 70;  // 鎖鏈命中傷害
+const CUSTOM_SKILL1_TRAPPER_PULL_SPD = 260; // 鎖鏈拉扯速度
+const CUSTOM_SKILL2_VAMPIRE_COOLDOWN = 1.0; // 咬擊結束後CD
+const CUSTOM_SKILL2_GUNNER_INTERVAL  = 10;  // 連射爆發CD
+const CUSTOM_SKILL2_GUNNER_BURST     = 4;   // 連射爆發：發數
+const CUSTOM_SKILL2_GUNNER_GAP       = 0.12;// 連射爆發：每發間隔
+const CUSTOM_OPM_DMG_REDUCE          = 0.3; // 超人體魄：全局減傷比例（對齊原角色數值）
+const CUSTOM_OPM_PUNCH_INTERVAL      = 45;  // 一拳：蓄力間隔（秒）
+const CUSTOM_CURSED_HAKI_COOLDOWN    = 1.5; // 捌：內建冷卻（碰撞觸發）
+const CUSTOM_CURSED_HAKI_DAMAGE      = 25;  // 捌：即時傷害
+const CUSTOM_CURSED_HAKI_DOT_DPS     = 25;  // 捌：持續傷害/秒
+const CUSTOM_CURSED_HAKI_DOT_DUR     = 2.0; // 捌：持續時間
+const CUSTOM_SAMURAI_PARRY_ACTIVE    = 1.0; // 招架：持續時間
+const CUSTOM_SAMURAI_PARRY_CD        = 2.0; // 招架：冷卻（不含持續時間）
+const CUSTOM_SAMURAI_PARRY_REDUCE    = 0.7; // 招架：減傷比例
+const CUSTOM_SAMURAI_IAIDO_DAMAGE    = 120; // 居合：斬擊傷害
+const CUSTOM_SAMURAI_ZENMETSU_HITS   = 4;   // 識滅斬：段數
+const CUSTOM_SAMURAI_ZENMETSU_DMG    = 140; // 識滅斬：每段傷害
+
+const CUSTOM_PARTS = {
+  passive: [
+    { id: 'p_drunk',   name: '喝茫',     emoji: '🍺', from: '酒鬼',   desc: '移動方向不定時隨機改變，難以預測、難以命中。' },
+    { id: 'p_trapper', name: '尖刺結界', emoji: '🪤', from: '陷阱大師', desc: `每 ${CUSTOM_TRAP_PASSIVE_INTERVAL} 秒在腳下佈置一個尖刺陷阱（上限6個），敵人踩到造成傷害並中毒。` },
+    { id: 'p_opm',        name: '超人體魄', emoji: '👊', from: '一拳超人', desc: `全程減免所受傷害 ${Math.round(CUSTOM_OPM_DMG_REDUCE*100)}%。` },
+    { id: 'p_gunner',  name: '蓄能裝彈', emoji: '🔋', from: '無名槍手', desc: `每 ${CUSTOM_CHARGE_INTERVAL} 秒累積 1 層蓄能（上限${CUSTOM_CHARGE_MAX_STACKS}層），普攻消耗一層造成 ${Math.round((CUSTOM_CHARGE_BONUS_MULT-1)*100)}% 加成傷害。` },
+    { id: 'p_mage',    name: '瞬移',     emoji: '🎩', from: '魔術師',   desc: '神出鬼沒：每次釋放技能一或技能二後，立即瞬間移動到場地隨機處，難以被鎖定反擊。' },
+  ],
+  basic: [
+    { id: 'a_chef',   name: '飛刀', emoji: '🔪', from: '地獄廚神', desc: `每 ${CUSTOM_BASIC_CHEF_INTERVAL}s 投擲一把穿透菜刀，造成 ${KNIFE_DAMAGE} 傷害。` },
+    { id: 'a_drunk',  name: '拋酒', emoji: '🍾', from: '酒鬼',   desc: `每 ${CUSTOM_BASIC_DRUNK_INTERVAL}s 投擲酒瓶，造成 ${BOTTLE_DAMAGE} 傷害。` },
+    { id: 'a_gunner', name: '連射', emoji: '💥', from: '無名槍手', desc: `撞牆裝彈，每次+${GUNNER_MAG_count}發（上限${GUNNER_MAG_SIZE}發）；彈滿後停下連射，每發${GUNNER_BULLET_DAMAGE}傷害並擊退。` },
+  ],
+  skill1: [
+    { id: 's1_vampire', name: '蝙蝠狂襲', emoji: '🦇', from: '暗夜領主', desc: `每 ${CUSTOM_SKILL1_VAMPIRE_INTERVAL}s 高速衝向最近的敵人，造成 ${CUSTOM_SKILL1_VAMPIRE_DAMAGE} 撞擊傷害。` },
+    { id: 's1_trapper', name: '鎖鏈',     emoji: '⛓️', from: '陷阱大師', desc: `每 ${CUSTOM_SKILL1_TRAPPER_INTERVAL}s 對最近敵人射出鎖鏈，將其拉向自己並造成 ${CUSTOM_SKILL1_TRAPPER_DAMAGE} 傷害。` },
+    { id: 's1_gunner',  name: '閃光彈',   emoji: '💡', from: '無名槍手', desc: `每 ${GUNNER_FLASH_INTERVAL}s 對最近敵人投擲閃光彈，造成 ${GUNNER_FLASH_DAMAGE} 範圍傷害並使其暈眩。` },
+    { id: 's1_gojo',    name: '順逆轉「蒼／赫」', emoji: '😎', from: '現代最強', desc: `每 ${GOJO_COOLDOWN}s 隨機發動：50%「蒼」朝最近敵人射出飛行引力球，沿途穿透造成${GOJO_BLUE_FRAMEDMG}傷害/幀並拉扯周圍敵人（存在${GOJO_BLUE_LIFESPAN}秒）；50%「赫」射出飛行紅球，命中造成${GOJO_RED_DAMAGE}傷害並強力擊退。與本尊一樣共用同一個技能槽，不會兩個同時噴。` },
+    { id: 's1_samurai', name: '招架',     emoji: '⚔️', from: '末代武士', desc: `每 ${CUSTOM_SAMURAI_PARRY_ACTIVE + CUSTOM_SAMURAI_PARRY_CD}s 進入招架狀態 ${CUSTOM_SAMURAI_PARRY_ACTIVE}秒（減傷${Math.round(CUSTOM_SAMURAI_PARRY_REDUCE*100)}%），期間碰到敵人觸發「居合」造成${CUSTOM_SAMURAI_IAIDO_DAMAGE}傷害；每${CUSTOM_SAMURAI_ZENMETSU_HITS}次居合後改為「識滅斬」，造成${CUSTOM_SAMURAI_ZENMETSU_DMG}×${CUSTOM_SAMURAI_ZENMETSU_HITS}傷害。` },
+    { id: 's1_cursed',  name: '「解」',   emoji: '💀', from: '詛咒之王', desc: '每 4.25s 對最近敵人造成 140 傷害並短暫定身（緩速簡化版）。' },
+  ],
+  skill2: [
+    { id: 's2_vampire', name: '咬擊',     emoji: '🧛', from: '暗夜領主', desc: '碰到敵人時鎖定撕咬，4段傷害並吸血（內建冷卻，咬擊時無法移動）。' },
+    { id: 's2_cursed',    name: '「捌」',   emoji: '💀', from: '詛咒之王', desc: `碰到敵人時觸發近戰斬擊，造成${CUSTOM_CURSED_HAKI_DAMAGE}傷害並附加${CUSTOM_CURSED_HAKI_DOT_DUR}秒持續傷害（內建冷卻${CUSTOM_CURSED_HAKI_COOLDOWN}秒）。` },
+    { id: 's2_yi',        name: '本手／圍斃', emoji: '⚫', from: '奕',       desc: `每 ${YI_BLACK_INTERVAL}s 在最近敵人腳下放一顆看得見的黑棋，造成${YI_BLACK_DAMAGE}傷害；棋盤上累積${YI_BLACK_MAX}顆後發白旗，黑棋齊飛引爆，共${YI_WHITE_DAMAGE}傷害。` },
+    { id: 's2_opm_punch', name: '一拳',     emoji: '👊', from: '一拳超人', desc: `每 ${CUSTOM_OPM_PUNCH_INTERVAL} 秒蓄力完成，對最近敵人使出必殺一拳，直接造成 ${MAX_HP} 傷害（形同秒殺）。` },
+  ],
+};
+
+// ══════════════ 組裝模式：全角色零件庫（泛用引擎驅動） ══════════════
+// 這批零件不是照搬原角色程式碼，而是用幾種「泛用招式引擎」重新實作、對齊原角色的數值精神。
+// 每個零件對應的引擎：heal（定時回血）／projectile（定時射出飛行物）／dash（定時衝刺撞擊）／
+// debuff（定時對最近敵人施加傷害+異常狀態：poison中毒／root定身／stun暈眩／knockback擊退）／
+// delayedAoe（定時在敵人腳下標記，延遲後對範圍內敵人造成傷害，類似地雷）。
+const CUSTOM_PART_CFG = {
+  p_opm:        { engine: 'reduce' },
+  s1_cursed:    { engine: 'debuff', interval: 4.25, damage: 140, kind: 'root', duration: 0.6, color: '#c0392b' },
+};
+
+function customExtraGet(b, key, def) {
+  if (b.customExtra[key] === undefined) b.customExtra[key] = def;
+  return b.customExtra[key];
+}
+
+// 泛用：定時回血
+function runCustomPeriodicHeal(b, dt, ns, cfg) {
+  const timerKey = ns + '_t';
+  b.customExtra[timerKey] = customExtraGet(b, timerKey, cfg.interval) - dt;
+  if (b.customExtra[timerKey] <= 0) {
+    b.customExtra[timerKey] = cfg.interval;
+    b.hp = Math.min(MAX_HP, b.hp + cfg.amount);
+    state.hitFlashes.push({ x: b.x, y: b.y, r: 26, alpha: 0.85, color: '#66ff88', t: 0.4 });
+  }
+}
+
+// 泛用：定時對最近敵人射出飛行物
+function runCustomProjectileSkill(b, dt, ns, cfg) {
+  const timerKey = ns + '_t';
+  b.customExtra[timerKey] = customExtraGet(b, timerKey, cfg.interval) - dt;
+  if (b.customExtra[timerKey] <= 0) {
+    b.customExtra[timerKey] = cfg.interval;
+    const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+    if (enemy) fireProjectile(b, enemy, cfg.projType || 'bullet', cfg.damage, cfg.speed);
+  }
+}
+
+// 泛用：定時高速衝向最近敵人，命中造成撞擊傷害
+function runCustomDashSkill(b, dt, ns, cfg) {
+  const timerKey = ns + '_t', dashKey = ns + '_d', elapKey = ns + '_e';
+  if (customExtraGet(b, dashKey, false)) {
+    b.customExtra[elapKey] += dt;
+    const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+    if (enemy) {
+      const ddx = enemy.x - b.x, ddy = enemy.y - b.y, dd = Math.sqrt(ddx*ddx + ddy*ddy);
+      if (dd > 0) { b.vx = (ddx/dd) * cfg.speed; b.vy = (ddy/dd) * cfg.speed; }
+      if (dd < RADIUS*2 + 4) {
+        dealDamage(enemy, cfg.damage, { attackerPlayer: b.player });
+        state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 26, alpha: 1, color: cfg.color || '#ffffff', t: 0.3 });
+        b.customExtra[dashKey] = false; b.customExtra[elapKey] = 0;
+      }
+    }
+    if (b.customExtra[dashKey] && b.customExtra[elapKey] >= cfg.duration) {
+      b.customExtra[dashKey] = false; b.customExtra[elapKey] = 0;
+      const ang = Math.random() * Math.PI * 2;
+      b.vx = Math.cos(ang) * BASE_SPEED; b.vy = Math.sin(ang) * BASE_SPEED;
+    }
+  } else {
+    b.customExtra[timerKey] = customExtraGet(b, timerKey, cfg.interval) - dt;
+    if (b.customExtra[timerKey] <= 0) {
+      b.customExtra[timerKey] = cfg.interval;
+      b.customExtra[dashKey] = true; b.customExtra[elapKey] = 0;
+    }
+  }
+}
+
+// 泛用：定時對最近敵人造成傷害＋異常狀態（poison中毒／root定身／stun暈眩／knockback擊退）
+function runCustomDebuffSkill(b, dt, ns, cfg) {
+  const timerKey = ns + '_t';
+  b.customExtra[timerKey] = customExtraGet(b, timerKey, cfg.interval) - dt;
+  if (b.customExtra[timerKey] <= 0) {
+    b.customExtra[timerKey] = cfg.interval;
+    const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+    if (enemy) {
+      if (cfg.damage) dealDamage(enemy, cfg.damage, { attackerPlayer: b.player });
+      if (cfg.kind === 'poison') {
+        enemy.trapDotTimer = cfg.duration; enemy.trapDotOwnerPlayer = b.player; enemy.trapDotDps = cfg.dps || 40;
+      } else if (cfg.kind === 'root') {
+        enemy.itachiPinnedTimer = Math.max(enemy.itachiPinnedTimer || 0, cfg.duration);
+        enemy.vx = 0; enemy.vy = 0;
+      } else if (cfg.kind === 'stun') {
+        enemy.gunnerStunTimer = cfg.duration;
+      } else if (cfg.kind === 'knockback') {
+        const kx = enemy.x - b.x, ky = enemy.y - b.y, kd = Math.sqrt(kx*kx + ky*ky) || 1;
+        enemy.vx += (kx/kd) * (cfg.force || 300); enemy.vy += (ky/kd) * (cfg.force || 300);
+      }
+      state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 24, alpha: 1, color: cfg.color || '#ffffff', t: 0.35 });
+      playHitSound('trap_hit');
+    }
+  }
+}
+
+// 泛用：定時在最近敵人當前位置標記地雷，delay秒後對範圍內敵人造成傷害
+function runCustomDelayedAoeSkill(b, dt, ns, cfg) {
+  const timerKey = ns + '_t', pendingKey = ns + '_p';
+  const pending = b.customExtra[pendingKey];
+  if (pending) {
+    pending.t -= dt;
+    if (pending.t <= 0) {
+      for (const target of state.balls) {
+        if (target.player === b.player || target.hp <= 0) continue;
+        if (Math.hypot(target.x - pending.x, target.y - pending.y) < cfg.radius) {
+          dealDamage(target, cfg.damage, { attackerPlayer: b.player });
+        }
+      }
+      state.hitFlashes.push({ x: pending.x, y: pending.y, r: cfg.radius, alpha: 1, color: cfg.color || '#ffaa00', t: 0.4 });
+      b.customExtra[pendingKey] = null;
+    }
+  } else {
+    b.customExtra[timerKey] = customExtraGet(b, timerKey, cfg.interval) - dt;
+    if (b.customExtra[timerKey] <= 0) {
+      const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+      if (enemy) {
+        b.customExtra[timerKey] = cfg.interval;
+        b.customExtra[pendingKey] = { x: enemy.x, y: enemy.y, t: cfg.delay };
+        state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 16, alpha: 0.7, color: '#ff4444', t: cfg.delay });
+      }
+    }
+  }
+}
+
+// 泛用引擎總入口：passive / skill1 / skill2 共用（basic 攻擊走 attackTimer 那條 chain，不經過這裡）
+function runCustomEngine(b, dt, slot, partId) {
+  const cfg = CUSTOM_PART_CFG[partId];
+  if (!cfg || cfg.engine === 'reduce') return; // 'reduce'（超人體魄）在 dealDamage 內處理，這裡不用做事
+  const ns = slot + '_' + partId;
+  const before = b.customExtra[ns + '_t'];
+  if (cfg.engine === 'heal') runCustomPeriodicHeal(b, dt, ns, cfg);
+  else if (cfg.engine === 'projectile') runCustomProjectileSkill(b, dt, ns, cfg);
+  else if (cfg.engine === 'dash') runCustomDashSkill(b, dt, ns, cfg);
+  else if (cfg.engine === 'debuff') runCustomDebuffSkill(b, dt, ns, cfg);
+  else if (cfg.engine === 'delayedAoe') runCustomDelayedAoeSkill(b, dt, ns, cfg);
+  // 若這次剛好觸發了技能一/技能二（計時器被重置回滿），且裝有「瞬移」被動，順便觸發瞬移
+  if ((slot === 'skill1' || slot === 'skill2') && before !== undefined && before <= 0 && b.customExtra[ns + '_t'] > before) {
+    customMageTeleportProc(b);
+  }
+}
+
+// ── 魔術師「瞬移」被動：釋放技能一或技能二後，立即瞬間移動到場地隨機處（比照真身魔術師的瞬移邏輯） ──
+function customMageTeleportProc(b) {
+  if (!b.customParts || b.customParts.passive !== 'p_mage') return;
+  const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+  let bx, by, tries = 0;
+  do {
+    bx = RADIUS*2 + Math.random() * (W - RADIUS*4);
+    by = RADIUS*2 + Math.random() * (H - RADIUS*4);
+    tries++;
+  } while (enemy && Math.hypot(bx - enemy.x, by - enemy.y) < 120 && tries < 20);
+  b.x = bx; b.y = by;
+  state.hitFlashes.push({ x: b.x, y: b.y, r: 40, alpha: 0.9, color: b.char.color, t: 0.4 });
+  for (let i = 0; i < 8; i++) {
+    const a = (Math.PI * 2 / 8) * i;
+    state.hitFlashes.push({ x: b.x + Math.cos(a)*30, y: b.y + Math.sin(a)*30, r: 8, alpha: 0.7, color: '#ffffff', t: 0.3 });
+  }
+  playHitSound('knife');
+}
+
+// ── 一拳超人「一拳」：蓄力後對最近敵人使出必殺一拳（等同秒殺）──
+function runOpmPunchSkill(b, dt) {
+  b.customExtra.opmPunchTimer = customExtraGet(b, 'opmPunchTimer', CUSTOM_OPM_PUNCH_INTERVAL) - dt;
+  if (b.customExtra.opmPunchTimer <= 0) {
+    b.customExtra.opmPunchTimer = CUSTOM_OPM_PUNCH_INTERVAL;
+    const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+    if (enemy) {
+      dealDamage(enemy, MAX_HP, { attackerPlayer: b.player });
+      state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 60, alpha: 1, color: '#ffffff', t: 0.5 });
+      state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 40, alpha: 1, color: '#ffcc00', t: 0.3 });
+      playHitSound('opm');
+      customMageTeleportProc(b);
+    }
+  }
+}
+
+// ── 現代最強「蒼／赫」：與本尊一樣共用同一個技能槽與CD，時間到隨機決定這次噴蒼還是赫 ──
+function runGojoDualSkill(b, dt) {
+  // 冷卻計時，時間到就隨機噴一顆蒼或赫（50/50，跟本尊機率一致，只是不含解鎖後的紫）
+  b.customExtra.gojoDualTimer = customExtraGet(b, 'gojoDualTimer', GOJO_COOLDOWN) - dt;
+  if (b.customExtra.gojoDualTimer <= 0) {
+    b.customExtra.gojoDualTimer = GOJO_COOLDOWN;
+    const target = getNearestEnemyTo(b.x, b.y, b.player);
+    if (target) {
+      const ddx = target.x - b.x, ddy = target.y - b.y;
+      const dd = Math.sqrt(ddx*ddx + ddy*ddy) || 1;
+      if (Math.random() < 0.5) {
+        // 順轉「蒼」
+        const balls = customExtraGet(b, 'gojoBlueBalls', []);
+        balls.push({
+          x: b.x, y: b.y,
+          vx: (ddx/dd) * GOJO_BLUE_SPEED + (Math.random()-0.5)*0.5,
+          vy: (ddy/dd) * GOJO_BLUE_SPEED + (Math.random()-0.5)*0.5,
+          type: 'blue', r: GOJO_BLUE_RADIUS, frameDmg: GOJO_BLUE_FRAMEDMG,
+          active: true, ringAngle: 0, life: GOJO_BLUE_LIFESPAN,
+        });
+        playHitSound('vampire_bite');
+      } else {
+        // 反轉「赫」
+        const balls = customExtraGet(b, 'gojoRedBalls', []);
+        balls.push({
+          x: b.x, y: b.y,
+          vx: (ddx/dd) * GOJO_RED_SPEED + (Math.random()-0.5)*0.5,
+          vy: (ddy/dd) * GOJO_RED_SPEED + (Math.random()-0.5)*0.5,
+          type: 'red', r: GOJO_BLUE_RADIUS, damage: GOJO_RED_DAMAGE, active: true
+        });
+        playHitSound('knife');
+      }
+      customMageTeleportProc(b);
+    }
+  }
+
+  const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+
+  // ── 蒼球：移動 / 引力場 / 碰撞（穿透飛行，撞牆反彈不消失） ──
+  b.customExtra.gojoBlueBalls = customExtraGet(b, 'gojoBlueBalls', []).filter(bl => bl.active);
+  for (const ball of b.customExtra.gojoBlueBalls) {
+    ball.x += ball.vx * dt * 60; ball.y += ball.vy * dt * 60;
+    ball.ringAngle = (ball.ringAngle || 0) + dt * 3.5;
+
+    ball.life -= dt;
+    if (ball.life <= 0) { ball.active = false; continue; }
+
+    // 引力場：把自己（蒼球本身）對周圍角色施力
+    applyGojoForce(ball, state.balls, b);
+    // 光線引力：射程內敵人被持續拉向蒼球
+    for (const f of state.balls) {
+      if (f === b) continue;
+      const dx = f.x - ball.x, dy = f.y - ball.y;
+      const d = Math.sqrt(dx*dx + dy*dy) || 1;
+      if (d < GOJO_BLUE_RAY_RANGE) {
+        const pull = GOJO_BLUE_RAY_FORCE * (1 - d / GOJO_BLUE_RAY_RANGE);
+        f.vx -= (dx/d) * pull;
+        f.vy -= (dy/d) * pull;
+      }
+    }
+
+    // 碰邊界：反彈（蒼球不會消失）
+    let hitWall = false;
+    if (ball.x - ball.r < 0) { ball.x = ball.r; ball.vx *= -1; hitWall = true; }
+    if (ball.x + ball.r > W) { ball.x = W - ball.r; ball.vx *= -1; hitWall = true; }
+    if (ball.y - ball.r < 0) { ball.y = ball.r; ball.vy *= -1; hitWall = true; }
+    if (ball.y + ball.r > H) { ball.y = H - ball.r; ball.vy *= -1; hitWall = true; }
+    if (state.arena === 'obstacle') {
+      const odx = ball.x - W / 2, ody = ball.y - H / 2;
+      const odist = Math.hypot(odx, ody) || 1;
+      const minDist = OBSTACLE_ARENA_RADIUS + ball.r;
+      if (odist < minDist) {
+        const onx = odx / odist, ony = ody / odist;
+        ball.x = W / 2 + onx * minDist;
+        ball.y = H / 2 + ony * minDist;
+        const dot = ball.vx * onx + ball.vy * ony;
+        ball.vx -= 2 * dot * onx;
+        ball.vy -= 2 * dot * ony;
+        hitWall = true;
+      }
+    }
+    if (hitWall) {
+      state.hitFlashes.push({ x: ball.x, y: ball.y, r: ball.r + 10, alpha: 0.7, color: '#00cfff', t: 0.25 });
+    }
+
+    // 穿透飛行，經過敵人時每幀扣血
+    if (enemy) {
+      const ed = Math.sqrt((ball.x-enemy.x)**2 + (ball.y-enemy.y)**2);
+      if (ed < ball.r + RADIUS) {
+        dealDamage(enemy, ball.frameDmg, { attackerPlayer: b.player });
+        state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 22, alpha: 0.9, color: '#00cfff', t: 0.12 });
+      }
+    }
+  }
+
+  // ── 赫球：移動 / 碰撞（命中或撞牆即消失，強力擊退） ──
+  b.customExtra.gojoRedBalls = customExtraGet(b, 'gojoRedBalls', []).filter(bl => bl.active);
+  for (const ball of b.customExtra.gojoRedBalls) {
+    ball.x += ball.vx * dt * 60; ball.y += ball.vy * dt * 60;
+
+    let hitWall = false;
+    if (ball.x - ball.r < 0) { ball.x = ball.r; hitWall = true; }
+    if (ball.x + ball.r > W) { ball.x = W - ball.r; hitWall = true; }
+    if (ball.y - ball.r < 0) { ball.y = ball.r; hitWall = true; }
+    if (ball.y + ball.r > H) { ball.y = H - ball.r; hitWall = true; }
+    if (state.arena === 'obstacle') {
+      const odx = ball.x - W / 2, ody = ball.y - H / 2;
+      const odist = Math.hypot(odx, ody) || 1;
+      if (odist < OBSTACLE_ARENA_RADIUS + ball.r) hitWall = true;
+    }
+    if (hitWall) { ball.active = false; continue; }
+
+    if (enemy) {
+      const ed = Math.sqrt((ball.x-enemy.x)**2 + (ball.y-enemy.y)**2);
+      if (ed < ball.r + RADIUS) {
+        dealDamage(enemy, ball.damage, { attackerPlayer: b.player });
+        const kdx = enemy.x - ball.x, kdy = enemy.y - ball.y;
+        const kd = Math.sqrt(kdx*kdx + kdy*kdy) || 1;
+        const knx = kdx / kd, kny = kdy / kd;
+        enemy.x += knx * 22;
+        enemy.y += kny * 22;
+        enemy.vx += knx * GOJO_RED_KNOCKBACK;
+        enemy.vy += kny * GOJO_RED_KNOCKBACK;
+        state.hitFlashes.push({ x: ball.x, y: ball.y, r: 25, alpha: 1, color: '#ff4444', t: 0.3 });
+        playHitSound('knife');
+        ball.active = false;
+      }
+    }
+  }
+}
+
+// ── 奕「本手／圍斃」：定時放置可見黑棋（造成傷害），累積4顆後發白旗把黑棋吸向敵人並引爆（與真身共用棋子系統） ──
+function runYiStoneSkill(b, dt) {
+  b.customExtra.yiStoneTimer = customExtraGet(b, 'yiStoneTimer', YI_BLACK_INTERVAL) - dt;
+  if (b.customExtra.yiStoneTimer > 0) return;
+  b.customExtra.yiStoneTimer = YI_BLACK_INTERVAL;
+
+  const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+  if (!enemy) return;
+
+  const count = customExtraGet(b, 'yiStoneCount', 0);
+  if (count < YI_BLACK_MAX) {
+    // 本手：放一顆看得見的黑棋在敵人位置
+    state.yiBlackStones.push({
+      x: enemy.x, y: enemy.y,
+      owner: b.player,
+      color: b.char.color,
+      phase: 'stone',
+      pullTimer: 0,
+      targetX: 0, targetY: 0,
+      spawnFlash: 0.4
+    });
+    b.customExtra.yiStoneCount = count + 1;
+    dealDamage(enemy, YI_BLACK_DAMAGE, { attackerPlayer: b.player });
+    state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 22, alpha: 0.9, color: '#888888', t: 0.35 });
+    playHitSound('trap_place');
+  } else {
+    // 圍斃：發射白旗，讓場上黑棋一起飛向敵人並引爆（爆炸判定由共用的黑棋 pulling 迴圈處理）
+    const myStones = state.yiBlackStones.filter(s => s.owner === b.player && s.phase === 'stone');
+    if (myStones.length > 0) {
+      const cx = enemy.x, cy = enemy.y;
+      for (const s of myStones) {
+        s.phase = 'pulling';
+        s.pullTimer = 0;
+        s.targetX = cx;
+        s.targetY = cy;
+      }
+      state.hitFlashes.push({ x: cx, y: cy, r: 40, alpha: 1.2, color: '#ffffff', t: 0.8 });
+      state.hitFlashes.push({ x: cx, y: cy, r: 20, alpha: 1.0, color: '#ffeeaa', t: 0.5 });
+      playHitSound('opm');
+    }
+    b.customExtra.yiStoneCount = 0;
+  }
+  customMageTeleportProc(b);
+}
+
+// ── 末代武士「招架」：定時進入招架狀態（減傷、可觸發居合），與碰撞觸發的居合/識滅斬配合 ──
+function runSamuraiParrySkill(b, dt) {
+  if (b.customExtra.samuraiParryActive) {
+    b.customExtra.samuraiParryTimer -= dt;
+    if (b.customExtra.samuraiParryTimer <= 0) {
+      b.customExtra.samuraiParryActive = false;
+      b.customExtra.samuraiParryTimer = CUSTOM_SAMURAI_PARRY_CD;
+    }
+  } else {
+    b.customExtra.samuraiParryTimer = customExtraGet(b, 'samuraiParryTimer', CUSTOM_SAMURAI_PARRY_CD) - dt;
+    if (b.customExtra.samuraiParryTimer <= 0) {
+      b.customExtra.samuraiParryActive = true;
+      b.customExtra.samuraiParryTimer = CUSTOM_SAMURAI_PARRY_ACTIVE;
+      state.hitFlashes.push({ x: b.x, y: b.y, r: 30, alpha: 0.6, color: '#d4af37', t: CUSTOM_SAMURAI_PARRY_ACTIVE });
+      customMageTeleportProc(b);
+    }
+  }
+  if (b.customExtra.samuraiIaidoCd > 0) b.customExtra.samuraiIaidoCd -= dt;
+}
 
 
 let gameLoop = null;
@@ -3000,8 +3517,8 @@ function forfeitGame() {
   overlay.classList.add('show');
 }
 
-const P1_COLORS ={ chef:'#e84545',drunk:'#7b4cca', opm:'#f5f5f5', vampire:'#8b1a8b', gojo:'#00cfff', cursed:'#c0392b', trapper:'#27ae60', yi:'#e8e8e8', gunner:'#b8860b', samurai:'#d4af37', mage:'#9b59b6', thunder:'#f1c40f', blacksmith:'#cd7f32', naobito:'#c8c8e8', itachi:'#8b0000', yuta:'#ff6fa5', engineer:'#3a8fd6', cannondad:'#bdbdbd', dio:'#f5d020', tiger:'#cc2200', stargirl:'#ffe066', obito:'#ff6600', fisherman:'#4a90d9', geto:'#5b3a8e', sakiko:'#c9a4d1', joseph:'#2f7dc0', steve:'#4a8f3c',daji:'#e08ac7',yuki:'#b8860b',wuxing:'#9b8cce' };
-const P2_COLORS = { chef:'#ff9f43', drunk:'#48dbfb', opm:'#aaaaaa', vampire:'#cc44cc', gojo:'#7ff8ff', cursed:'#e74c3c', trapper:'#2ecc71', yi:'#cccccc', gunner:'#f0c040', samurai:'#ffe88a', mage:'#d7aefb', thunder:'#ffe066', blacksmith:'#e8a840', naobito:'#aaaacc', itachi:'#ff3333', yuta:'#ffa3c8', engineer:'#7ec8ff', cannondad:'#787878', dio:'#fff066', tiger:'#ff4422', stargirl:'#fff5aa', obito:'#ffaa44', fisherman:'#8ec6ff', geto:'#a678e0', sakiko:'#e8cdf0', joseph:'#6fb8ee', steve:'#8fd96b',daji:'#e8cdf8' ,yuki:'#b8960b',wuxing:'#c3b8e8'};
+const P1_COLORS ={ chef:'#e84545',drunk:'#7b4cca', opm:'#f5f5f5', vampire:'#8b1a8b', gojo:'#00cfff', cursed:'#c0392b', trapper:'#27ae60', yi:'#e8e8e8', gunner:'#b8860b', samurai:'#d4af37', mage:'#9b59b6', thunder:'#f1c40f', blacksmith:'#cd7f32', naobito:'#c8c8e8', itachi:'#8b0000', yuta:'#ff6fa5', engineer:'#3a8fd6', cannondad:'#bdbdbd', dio:'#f5d020', tiger:'#cc2200', stargirl:'#ffe066', obito:'#ff6600', fisherman:'#4a90d9', geto:'#5b3a8e', sakiko:'#c9a4d1', joseph:'#2f7dc0', steve:'#4a8f3c',daji:'#e08ac7',yuki:'#b8860b',wuxing:'#9b8cce',sans:'#e8e8e8' };
+const P2_COLORS = { chef:'#ff9f43', drunk:'#48dbfb', opm:'#aaaaaa', vampire:'#cc44cc', gojo:'#7ff8ff', cursed:'#e74c3c', trapper:'#2ecc71', yi:'#cccccc', gunner:'#f0c040', samurai:'#ffe88a', mage:'#d7aefb', thunder:'#ffe066', blacksmith:'#e8a840', naobito:'#aaaacc', itachi:'#ff3333', yuta:'#ffa3c8', engineer:'#7ec8ff', cannondad:'#787878', dio:'#fff066', tiger:'#ff4422', stargirl:'#fff5aa', obito:'#ffaa44', fisherman:'#8ec6ff', geto:'#a678e0', sakiko:'#e8cdf0', joseph:'#6fb8ee', steve:'#8fd96b',daji:'#e8cdf8' ,yuki:'#b8960b',wuxing:'#c3b8e8',sans:'#a8d8f0'};
 
 // 玩家 1、2 用既有的兩張色表；玩家 3 以上（多人混戰用）用同一顏色做色調偏移，避免撞色。
 // 之後若要幫玩家 3/4 手動指定色表，只要新增 P3_COLORS / P4_COLORS 並在這裡優先讀取即可。
@@ -3263,6 +3780,14 @@ const PROGRESS_HANDLERS = {
       atFrac: Math.min(1, b.attackTimer / b.attackInterval),
       barColor: (b.char.type !== 'chef' || b.knives > 0) ? b.char.color : '#555'
     };
+  },
+  sans(b) {
+    if (b.sansUltActive) return { atFrac: 1, barColor: '#ffffff' };
+    if (b.hp <= 1) return { atFrac: 1, barColor: '#ff5050' };
+    return {
+      atFrac: Math.max(0, Math.min(1, 1 - (b.sansLaserTimer || 0) / SANS_LASER_INTERVAL)),
+      barColor: b.char.color
+    };
   }
 };
 
@@ -3313,9 +3838,11 @@ function startGame() {
 
   function makeBall(x, y, vx, vy, ch, player) {
     return {
-      x, y, vx, vy, hp: MAX_HP, char: ch, player,
+      x, y, vx, vy, hp: ch.type === 'sans' ? SANS_MAX_HP : MAX_HP, char: ch, player,
       attackTimer: 0,
-      attackInterval: ch.type === 'chef' ? CHEF_ATTACK_INTERVAL : ch.type === 'yi' ? YI_BLACK_INTERVAL : DRUNK_ATTACK_INTERVAL,
+      attackInterval: ch.type === 'chef' ? CHEF_ATTACK_INTERVAL : ch.type === 'yi' ? YI_BLACK_INTERVAL :
+        ch.type === 'custom' ? (ch.parts.basic === 'a_chef' ? CUSTOM_BASIC_CHEF_INTERVAL : ch.parts.basic === 'a_gunner' ? CUSTOM_BASIC_GUNNER_INTERVAL : CUSTOM_BASIC_DRUNK_INTERVAL) :
+        DRUNK_ATTACK_INTERVAL,
       knives: ch.type === 'chef' ? KNIFE_MAX_COUNT : null,
       knifeRecalling: false,   // 是否回收中
       drunkTimer: ch.type === 'drunk' ? randBetween(DRUNK_DIR_CHANGE_MIN, DRUNK_DIR_CHANGE_MAX) : null,
@@ -3379,6 +3906,11 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       gunnerFireTimer: ch.type === 'gunner' ? 0 : null,       // 連射間隔計時
       gunnerAmmoFired: ch.type === 'gunner' ? 0 : null,       // 本輪已射出幾發
       gunnerFlashTimer: ch.type === 'gunner' ? GUNNER_FLASH_INTERVAL : null, // 閃光彈CD
+      // 組裝模式「連射」零件專屬狀態（比照無名槍手撞牆裝彈→連射）
+      customGunnerAmmo:      ch.type === 'custom' && ch.parts.basic === 'a_gunner' ? 0 : null,
+      customGunnerFiring:    ch.type === 'custom' && ch.parts.basic === 'a_gunner' ? false : null,
+      customGunnerAmmoFired: ch.type === 'custom' && ch.parts.basic === 'a_gunner' ? 0 : null,
+      customGunnerFireTimer: ch.type === 'custom' && ch.parts.basic === 'a_gunner' ? 0 : null,
       // 被閃光彈命中的狀態（任何角色）
       gunnerStunTimer: 0,
       // 魔術師專屬狀態
@@ -3675,6 +4207,47 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       wuxingBaseChar: ch.type === 'wuxing' ? ch : null,   // 保留「這是無形」的標記（角色定義本身）
       wuxingTimer:    ch.type === 'wuxing' ? 0 : null,     // 距離下次變身倒數（0 = 開局立刻變身一次）
       wuxingFlash:    ch.type === 'wuxing' ? 0 : null,     // 變身瞬間的短暫特效倒數
+      // 組裝模式（自組機器人）專屬狀態
+      customParts:        ch.type === 'custom' ? ch.parts : null,
+      customDrunkTimer:   ch.type === 'custom' && ch.parts.passive === 'p_drunk'   ? randBetween(DRUNK_DIR_CHANGE_MIN, DRUNK_DIR_CHANGE_MAX) : null,
+      customTrapTimer:    ch.type === 'custom' && ch.parts.passive === 'p_trapper' ? CUSTOM_TRAP_PASSIVE_INTERVAL : null,
+      customChargeTimer:  ch.type === 'custom' && ch.parts.passive === 'p_gunner'  ? CUSTOM_CHARGE_INTERVAL : null,
+      customChargeStacks: ch.type === 'custom' && ch.parts.passive === 'p_gunner'  ? 0 : null,
+      customSkill1Timer:  ch.type === 'custom' ? (ch.parts.skill1 === 's1_vampire' ? CUSTOM_SKILL1_VAMPIRE_INTERVAL : ch.parts.skill1 === 's1_trapper' ? CUSTOM_SKILL1_TRAPPER_INTERVAL : GUNNER_FLASH_INTERVAL) : null,
+      customDashing:      ch.type === 'custom' && ch.parts.skill1 === 's1_vampire' ? false : null,
+      customDashElapsed:  ch.type === 'custom' && ch.parts.skill1 === 's1_vampire' ? 0 : null,
+      customChainPulling: ch.type === 'custom' && ch.parts.skill1 === 's1_trapper' ? false : null,
+      customChainElapsed: ch.type === 'custom' && ch.parts.skill1 === 's1_trapper' ? 0 : null,
+      customChainTarget:  ch.type === 'custom' && ch.parts.skill1 === 's1_trapper' ? null : null,
+      customSkill2Timer:  ch.type === 'custom' ? (ch.parts.skill2 === 's2_gunner' ? CUSTOM_SKILL2_GUNNER_INTERVAL : 0) : null,
+      customBiting:       ch.type === 'custom' && ch.parts.skill2 === 's2_vampire' ? false : null,
+      customBiteStep:     ch.type === 'custom' && ch.parts.skill2 === 's2_vampire' ? 0 : null,
+      customBiteTimer:    ch.type === 'custom' && ch.parts.skill2 === 's2_vampire' ? 0 : null,
+      customBiteCooldown: ch.type === 'custom' && ch.parts.skill2 === 's2_vampire' ? 0 : null,
+      customGunnerBurstActive: ch.type === 'custom' && ch.parts.skill2 === 's2_gunner' ? false : null,
+      customGunnerBurstCount:  ch.type === 'custom' && ch.parts.skill2 === 's2_gunner' ? 0 : null,
+      customGunnerBurstTimer:  ch.type === 'custom' && ch.parts.skill2 === 's2_gunner' ? 0 : null,
+      customExtra: ch.type === 'custom' ? {} : null, // 全角色零件庫：泛用零件的計時器/狀態統一放這裡
+
+      // ── Sans 專屬欄位 ──
+      sansBoneTimer:   ch.type === 'sans' ? 0 : null,               // 骨頭普攻CD
+      sansBones:       ch.type === 'sans' ? [] : null,               // 飛行中的骨頭列表
+      sansWallTimer:   ch.type === 'sans' ? SANS_WALL_INTERVAL : null, // 骨牆CD
+      sansWallUses:    ch.type === 'sans' ? 0 : null,                 // 骨牆已使用次數（偶數次觸發重力）
+      sansLaserTimer:  ch.type === 'sans' ? SANS_LASER_INTERVAL : null, // 龍骨砲CD
+      sansUltUsed:     ch.type === 'sans' ? false : null,             // 大風車是否已觸發過
+      sansUltActive:   ch.type === 'sans' ? false : null,             // 大風車進行中
+      sansUltStep:     ch.type === 'sans' ? 0 : null,                 // 大風車目前第幾次攻擊
+      sansUltTimer:    ch.type === 'sans' ? 0 : null,                 // 大風車攻擊間隔倒數
+      sansUltPending:  false,        // 任何球都可能被dealDamage標記：血量歸零前先攔截，交給更新迴圈觸發大招
+      // 重力機制（任何角色都可能被Sans的骨牆重力強制拖走去撞牆）
+      sansGravityTimer:      0,
+      sansGravityElapsed:    0,
+      sansGravityDirX:       0,
+      sansGravityDirY:       0,
+      sansGravityStartX:     0,
+      sansGravityStartY:     0,
+      sansGravityOwnerPlayer: null,
     };
   }
 
@@ -3682,8 +4255,9 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
   function pickWuxingForm(ball) {
     // DIO（一擊必殺 MAX_HP 傷害）跟一拳超人（一拳一擊必殺）機制太極端，
     // 無形變身抽到等於瞬間獲得一擊必殺技，直接停用這兩種形態。
-    const pool = CHARACTERS.filter(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm' && c.id !== ball.char.id);
-    if (pool.length === 0) return CHARACTERS.find(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm') || ball.char;
+    // Sans（固定23點的次數血條，跟一般MAX_HP血量制不相容）同樣排除。
+    const pool = CHARACTERS.filter(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm' && c.id !== 'sans' && c.id !== ball.char.id);
+    if (pool.length === 0) return CHARACTERS.find(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm' && c.id !== 'sans') || ball.char;
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
@@ -3789,6 +4363,8 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
     turrets: [],        // 工程師：炮台列表
     engGrids: [],        // 工程師：電網列表
     engLaserFX: [],        // 工程師：雷射視覺特效列表
+    sansWalls: [],          // Sans：骨牆列表
+    sansLaserFX: [],        // Sans：龍骨砲／大風車光束視覺特效列表
     matchEnded: false,      // 比賽是否已分出勝負（凍結後續戰鬥邏輯用）
     cannonBeamFX: [],        // 砲爹：光柱視覺特效列表
     cannonBlastFX: [],       // 砲爹：光砲視覺特效列表
@@ -4131,8 +4707,17 @@ function dealDamage(target, dmg, options = {}) {
   if (isOpmReduced) mul *= (1 - OPM_DMG_REDUCE);
   // 工程師：機甲模式減傷
   if (target.char && target.char.type === 'engineer' && target.engMechActive && !options.bypassParry) mul *= (1 - ENGINEER_MECH_DMG_REDUCE);
+  // 組裝機器人（超人體魄零件）：全局減傷
+  if (target.char && target.char.type === 'custom' && target.customParts && target.customParts.passive === 'p_opm' && !options.bypassParry) mul *= (1 - CUSTOM_OPM_DMG_REDUCE);
+  // 組裝機器人（招架零件）：招架狀態中減傷
+  if (target.char && target.char.type === 'custom' && target.customParts && target.customParts.skill1 === 's1_samurai' &&
+      target.customExtra && target.customExtra.samuraiParryActive && !options.bypassParry) mul *= (1 - CUSTOM_SAMURAI_PARRY_REDUCE);
   const prevHp = target.hp;
   let rawAmount = dmg * mul;
+  // Sans 被動「次數血條」：無論實際傷害多少，每次受傷固定只扣1點（真正的系統殺 bypassParry 除外）
+  if (target.char && target.char.type === 'sans' && !options.bypassParry) {
+    rawAmount = Math.min(rawAmount, 1);
+  }
   // 夏油條被動「護身」：特級咒靈承擔夏油條所受30%傷害（直接分擔在特級咒靈血量上）
   // 注意：必須在「傷害封頂於目前血量」之前扣除護身部分，否則致命一擊永遠會被護身分走一小部分，
   // 導致 actual 永遠小於 target.hp，血量只會無限趨近於 0 卻永遠扣不完（卡血無法擊敗的bug）。
@@ -4154,6 +4739,11 @@ function dealDamage(target, dmg, options = {}) {
     }
   }
   let actual = Math.min(target.hp, rawAmount);
+  // Sans 大招觸發：血量歸零前，若大招尚未使用過，攔截這一下傷害，改為觸發「大風車」（血量停在1不會真的死）
+  if (target.char && target.char.type === 'sans' && !target.sansUltUsed && !options.bypassParry && target.hp - actual <= 0) {
+    actual = 0;
+    target.sansUltPending = true;
+  }
   // 系統殺：若原始傷害本應致命，一拳超人的減傷不應讓他逃過一死
   if (isOpmReduced && dmg >= prevHp) {
     actual = prevHp;
@@ -4223,6 +4813,15 @@ function purgeDeadPlayerEntities(player) {
   if (state.starSmallStars) state.starSmallStars = state.starSmallStars.filter(x => x.owner !== player);
   if (state.obitoFireballs) state.obitoFireballs = state.obitoFireballs.filter(x => x.owner !== player);
   if (state.yiBlackStones) state.yiBlackStones = state.yiBlackStones.filter(x => x.owner !== player);
+  if (state.sansWalls) state.sansWalls = state.sansWalls.filter(x => x.owner !== player);
+  if (state.sansLaserFX) state.sansLaserFX = state.sansLaserFX.filter(x => x.owner !== player);
+  // 死亡玩家自己飛在半空中的骨頭也一併清除
+  {
+    const ownerBall = state.balls.find(x => x.player === player);
+    if (ownerBall && ownerBall.sansBones) ownerBall.sansBones = [];
+    // 死亡玩家如果正被Sans重力拖走，解除該效果，避免卡死狀態
+    if (ownerBall) ownerBall.sansGravityTimer = 0;
+  }
 
   // 通用召喚物：主人死亡時，該主人所有召喚物一併消滅（避免遺孤沒人管、也避免死人還在場上出手）
   if (state.summons && state.summons.length) {
@@ -4996,6 +5595,206 @@ function update(dt) {
       }
     }
 
+    // ══════ 組裝機器人：被動 / 技能1 / 技能2 ══════
+    if (b.char.type === 'custom' && b.customParts) {
+      const cp = b.customParts;
+
+      // 全角色零件庫：泛用引擎驅動的零件（第一批6隻角色的零件仍走下面的手工邏輯，兩邊不會衝突）
+      runCustomEngine(b, dt, 'passive', cp.passive);
+      runCustomEngine(b, dt, 'skill1', cp.skill1);
+      runCustomEngine(b, dt, 'skill2', cp.skill2);
+
+      // 前十隻角色的忠實還原零件（非泛用引擎，各自獨立實作）
+      if (cp.skill1 === 's2_opm_punch' || cp.skill2 === 's2_opm_punch') runOpmPunchSkill(b, dt);
+      if (cp.skill1 === 's1_gojo') runGojoDualSkill(b, dt);
+      if (cp.skill2 === 's2_yi') runYiStoneSkill(b, dt);
+      if (cp.skill1 === 's1_samurai') runSamuraiParrySkill(b, dt);
+      if (b.customExtra.cursedHakiCd > 0) b.customExtra.cursedHakiCd -= dt;
+
+      // ── 被動：喝茫（隨機亂走）──
+      if (cp.passive === 'p_drunk' && b.customDrunkTimer !== null) {
+        b.customDrunkTimer -= dt;
+        if (b.customDrunkTimer <= 0) {
+          const newAngle = Math.random() * Math.PI * 2;
+          b.vx = Math.cos(newAngle) * BASE_SPEED;
+          b.vy = Math.sin(newAngle) * BASE_SPEED;
+          b.customDrunkTimer = randBetween(DRUNK_DIR_CHANGE_MIN, DRUNK_DIR_CHANGE_MAX);
+        }
+      }
+      // ── 被動：尖刺結界 ──
+      if (cp.passive === 'p_trapper') {
+        b.customTrapTimer -= dt;
+        if (b.customTrapTimer <= 0) {
+          b.customTrapTimer = CUSTOM_TRAP_PASSIVE_INTERVAL;
+          const myTraps = state.traps.filter(t => t.owner === b.player);
+          if (myTraps.length < 6) {
+            state.traps.push({ x: b.x, y: b.y, owner: b.player, color: b.char.color, hitCooldown: 0, chainPulling: false, spawnFlash: 0.4 });
+          }
+        }
+      }
+      // ── 被動：蓄能裝彈 ──
+      if (cp.passive === 'p_gunner') {
+        b.customChargeTimer -= dt;
+        if (b.customChargeTimer <= 0) {
+          b.customChargeTimer = CUSTOM_CHARGE_INTERVAL;
+          if (b.customChargeStacks < CUSTOM_CHARGE_MAX_STACKS) {
+            b.customChargeStacks++;
+            state.hitFlashes.push({ x: b.x, y: b.y, r: 14, alpha: 0.7, color: '#5fd0ff', t: 0.25 });
+          }
+        }
+      }
+
+      // ── 技能1：蝙蝠狂襲 ──
+      if (cp.skill1 === 's1_vampire') {
+        if (!b.customDashing) b.customSkill1Timer -= dt;
+        if (b.customDashing) {
+          b.customDashElapsed += dt;
+          const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+          if (enemy) {
+            const ddx = enemy.x - b.x, ddy = enemy.y - b.y;
+            const dd = Math.sqrt(ddx*ddx + ddy*ddy);
+            if (dd > 0) { b.vx = (ddx/dd) * VAMPIRE_DASH_SPEED; b.vy = (ddy/dd) * VAMPIRE_DASH_SPEED; }
+          }
+          if (Math.random() < 0.6) spawnBatParticles(b.x, b.y, b.char.color, 1);
+          if (b.customDashElapsed >= VAMPIRE_DASH_DURATION) {
+            b.customDashing = false;
+            b.customDashElapsed = 0;
+            const ang = Math.random() * Math.PI * 2;
+            b.vx = Math.cos(ang) * BASE_SPEED;
+            b.vy = Math.sin(ang) * BASE_SPEED;
+          }
+        }
+        if (!b.customDashing && !b.customBiting && b.customSkill1Timer <= 0) {
+          b.customDashing = true;
+          b.customDashElapsed = 0;
+          b.customSkill1Timer = CUSTOM_SKILL1_VAMPIRE_INTERVAL;
+          playHitSound('vampire_dash');
+          spawnBatParticles(b.x, b.y, b.char.color, 8);
+          customMageTeleportProc(b);
+        }
+      }
+      // ── 技能1：鎖鏈 ──
+      if (cp.skill1 === 's1_trapper') {
+        if (!b.customChainPulling) {
+          b.customSkill1Timer -= dt;
+          if (b.customSkill1Timer <= 0) {
+            b.customSkill1Timer = CUSTOM_SKILL1_TRAPPER_INTERVAL;
+            const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+            if (enemy) {
+              b.customChainPulling = true;
+              b.customChainElapsed = 0;
+              b.customChainTarget = enemy;
+              state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 20, alpha: 0.8, color: '#27ae60', t: 0.3 });
+              playHitSound('trap_hit');
+              customMageTeleportProc(b);
+            }
+          }
+        } else {
+          const enemy = b.customChainTarget;
+          b.customChainElapsed += dt;
+          if (enemy && enemy.hp > 0) {
+            const px = b.x - enemy.x, py = b.y - enemy.y;
+            const pd = Math.sqrt(px*px + py*py) || 1;
+            enemy.vx = (px/pd) * CUSTOM_SKILL1_TRAPPER_PULL_SPD;
+            enemy.vy = (py/pd) * CUSTOM_SKILL1_TRAPPER_PULL_SPD;
+            if (pd < RADIUS*2 + 10 || b.customChainElapsed >= TRAP_CHAIN_PULL_DUR) {
+              dealDamage(enemy, CUSTOM_SKILL1_TRAPPER_DAMAGE, { attackerPlayer: b.player });
+              state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 26, alpha: 1, color: '#27ae60', t: 0.3 });
+              b.customChainPulling = false;
+              b.customChainTarget = null;
+            }
+          } else {
+            b.customChainPulling = false;
+            b.customChainTarget = null;
+          }
+        }
+      }
+      // ── 技能1：閃光彈 ──
+      if (cp.skill1 === 's1_gunner') {
+        b.customSkill1Timer -= dt;
+        if (b.customSkill1Timer <= 0) {
+          b.customSkill1Timer = GUNNER_FLASH_INTERVAL;
+          const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+          if (enemy) {
+            const angle = Math.atan2(enemy.y - b.y, enemy.x - b.x);
+            state.projectiles.push({
+              x: b.x, y: b.y,
+              vx: Math.cos(angle) * GUNNER_FLASH_SPEED,
+              vy: Math.sin(angle) * GUNNER_FLASH_SPEED,
+              type: 'flashbang', owner: b.player, color: '#ffffaa',
+              damage: GUNNER_FLASH_DAMAGE, r: 9, active: true,
+              angle
+            });
+            customMageTeleportProc(b);
+          }
+        }
+      }
+
+      // ── 技能2：咬擊 ──
+      if (cp.skill2 === 's2_vampire') {
+        if (b.customBiteCooldown > 0) {
+          b.customBiteCooldown -= dt;
+          if (b.customBiteCooldown < 0) b.customBiteCooldown = 0;
+        }
+        if (b.customBiting) {
+          b.customBiteTimer -= dt;
+          if (b.customBiteTimer <= 0 && b.customBiteStep < VAMPIRE_BITE_COUNT) {
+            const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+            if (enemy) {
+              dealDamage(enemy, VAMPIRE_BITE_DAMAGE, { attackerPlayer: b.player });
+              b.hp = Math.min(MAX_HP, b.hp + VAMPIRE_BITE_HEAL);
+              state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 30, alpha: 1.0, color: '#ff0055', t: 0.3 });
+              state.hitFlashes.push({ x: b.x, y: b.y, r: 20, alpha: 0.8, color: '#aa00ff', t: 0.25 });
+              playHitSound('vampire_bite');
+              spawnBatParticles(enemy.x, enemy.y, b.char.color, 3);
+            }
+            b.customBiteStep++;
+            b.customBiteTimer = VAMPIRE_BITE_INTERVAL;
+            if (b.customBiteStep >= VAMPIRE_BITE_COUNT) {
+              b.customBiting = false;
+              b.customBiteStep = 0;
+              b.customBiteTimer = 0;
+              b.customBiteCooldown = CUSTOM_SKILL2_VAMPIRE_COOLDOWN;
+              if (enemy) {
+                enemy.frozenByVampire = false;
+                enemy.frozenTimer = 0;
+                const ex2 = b.x - enemy.x, ey2 = b.y - enemy.y;
+                const ed = Math.sqrt(ex2*ex2 + ey2*ey2) || 1;
+                b.vx = (ex2/ed) * BASE_SPEED * 2.5;
+                b.vy = (ey2/ed) * BASE_SPEED * 2.5;
+              } else {
+                const ang = Math.random() * Math.PI * 2;
+                b.vx = Math.cos(ang) * BASE_SPEED;
+                b.vy = Math.sin(ang) * BASE_SPEED;
+              }
+            }
+          }
+        }
+      }
+      // ── 技能2：連射爆發 ──
+      if (cp.skill2 === 's2_gunner') {
+        if (b.customGunnerBurstActive) {
+          b.customGunnerBurstTimer -= dt;
+          if (b.customGunnerBurstTimer <= 0 && b.customGunnerBurstCount > 0) {
+            const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+            if (enemy) fireProjectile(b, enemy, 'bullet', CUSTOM_BASIC_GUNNER_DAMAGE, CUSTOM_BASIC_GUNNER_SPEED);
+            b.customGunnerBurstCount--;
+            b.customGunnerBurstTimer = CUSTOM_SKILL2_GUNNER_GAP;
+            if (b.customGunnerBurstCount <= 0) b.customGunnerBurstActive = false;
+          }
+        } else {
+          b.customSkill2Timer -= dt;
+          if (b.customSkill2Timer <= 0) {
+            b.customSkill2Timer = CUSTOM_SKILL2_GUNNER_INTERVAL;
+            b.customGunnerBurstActive = true;
+            b.customGunnerBurstCount = CUSTOM_SKILL2_GUNNER_BURST;
+            b.customGunnerBurstTimer = 0;
+            customMageTeleportProc(b);
+          }
+        }
+      }
+    }
+
     // 被凍結計時器更新（保險用）
     if (b.frozenByVampire) {
       b.frozenTimer -= dt;
@@ -5084,7 +5883,7 @@ function update(dt) {
     }
 
     // 移動（凍結則不移動；虎天帝超新星蓄力視為被束縛定身，完全不動；被帶土抓進神威空間者完全凍結；冰雪場地凍結同樣完全不動；被妲己魅惑拉近時也暫停自身移動，避免抵銷拉近效果）
-    if (!b.frozenByVampire && !b.obitoInSpace && !(b.char.type === 'vampire' && b.vampireBiting) && !(b.mageFreezeTimer > 0) && !(b.itachiPinnedTimer > 0) && !b.itachiBiting && !b.tigerNovaCharging && !(b.thunderStunTimer > 0) && !(b.arenaFrozen > 0) && !(b.getoBoundTimer > 0) && !b.getoUltimateCharging && !(b.beachCurrentSuckTimer > 0) && !b.frozenByJoseph && !(b.char.type === 'joseph' && (b.josephState === 'charging' || b.josephUltimateActive)) && !(b.dajiCharmedTimer > 0)) {
+    if (!b.frozenByVampire && !b.obitoInSpace && !(b.char.type === 'vampire' && b.vampireBiting) && !(b.mageFreezeTimer > 0) && !(b.itachiPinnedTimer > 0) && !b.itachiBiting && !b.tigerNovaCharging && !(b.thunderStunTimer > 0) && !(b.arenaFrozen > 0) && !(b.getoBoundTimer > 0) && !b.getoUltimateCharging && !(b.beachCurrentSuckTimer > 0) && !b.frozenByJoseph && !(b.char.type === 'joseph' && (b.josephState === 'charging' || b.josephUltimateActive)) && !(b.dajiCharmedTimer > 0) && !(b.sansGravityTimer > 0) && !b.sansUltActive) {
       const speedMul = (b.curseSlowTimer > 0 ? CURSE_SLASH_SLOW_FACTOR : 1.0) * (b.inSandZone ? ARENA_SAND_SLOW_FACTOR : 1.0);
 
       // 最低速度保證（排除技能主動停止的情況）
@@ -5165,6 +5964,15 @@ function update(dt) {
         b.gunnerFiring = true; if(state&&state.stats) state.stats[b.player].skillUses++;
         b.gunnerAmmoFired = 0;
         b.gunnerFireTimer = 0;
+      }
+    }
+    // 組裝機器人（連射零件）：撞牆裝彈，邏輯比照無名槍手
+    if (hitWall && b.char.type === 'custom' && b.customParts && b.customParts.basic === 'a_gunner' && !b.customGunnerFiring) {
+      b.customGunnerAmmo = Math.min(GUNNER_MAG_SIZE, b.customGunnerAmmo + GUNNER_MAG_count);
+      if (b.customGunnerAmmo >= GUNNER_MAG_SIZE) {
+        b.customGunnerFiring = true; if (state && state.stats) state.stats[b.player].skillUses++;
+        b.customGunnerAmmoFired = 0;
+        b.customGunnerFireTimer = 0;
       }
     }
     // 雷電法王：碰牆放置閃電柱（貼牆）
@@ -5324,12 +6132,66 @@ function update(dt) {
         // 暗夜領主停止移動（定在敵人旁邊）
         vamp.vx = 0; vamp.vy = 0;
       }
+      // 組裝機器人（咬擊零件）：觸發咬擊，邏輯比照暗夜領主
+      if (vamp.char.type === 'custom' && vamp.customParts && vamp.customParts.skill2 === 's2_vampire' &&
+          !vamp.customBiting && !target.frozenByVampire && vamp.customBiteCooldown <= 0) {
+        vamp.customDashing = false;
+        vamp.customDashElapsed = 0;
+        vamp.customBiting = true;
+        vamp.customBiteStep = 0;
+        vamp.customBiteTimer = 0.05;
+        target.frozenByVampire = true;
+        target.frozenTimer = VAMPIRE_BITE_COUNT * VAMPIRE_BITE_INTERVAL + 0.5;
+        vamp.vx = 0; vamp.vy = 0;
+        customMageTeleportProc(vamp);
+      }
+      // 組裝機器人（蝙蝠狂襲零件）：衝刺中撞到敵人，造成一次撞擊傷害並結束衝刺
+      if (vamp.char.type === 'custom' && vamp.customDashing && target.player !== vamp.player) {
+        const closeEnough = Math.hypot(vamp.x - target.x, vamp.y - target.y) < RADIUS*2 + 4;
+        if (closeEnough) {
+          dealDamage(target, CUSTOM_SKILL1_VAMPIRE_DAMAGE, { attackerPlayer: vamp.player });
+          state.hitFlashes.push({ x: target.x, y: target.y, r: 28, alpha: 1, color: '#ff44ff', t: 0.3 });
+          vamp.customDashing = false;
+          vamp.customDashElapsed = 0;
+        }
+      }
+      // 組裝機器人（詛咒之王「捌」零件）：碰撞觸發近戰斬擊＋持續傷害
+      if (vamp.char.type === 'custom' && vamp.customParts && vamp.customParts.skill2 === 's2_cursed' &&
+          !(vamp.customExtra.cursedHakiCd > 0)) {
+        dealDamage(target, CUSTOM_CURSED_HAKI_DAMAGE, { attackerPlayer: vamp.player });
+        target.trapDotTimer = CUSTOM_CURSED_HAKI_DOT_DUR;
+        target.trapDotOwnerPlayer = vamp.player;
+        target.trapDotDps = CUSTOM_CURSED_HAKI_DOT_DPS;
+        state.hitFlashes.push({ x: target.x, y: target.y, r: 26, alpha: 1, color: '#c0392b', t: 0.3 });
+        vamp.customExtra.cursedHakiCd = CUSTOM_CURSED_HAKI_COOLDOWN;
+        playHitSound('trap_hit');
+        customMageTeleportProc(vamp);
+      }
+      // 組裝機器人（末代武士「招架」零件）：招架狀態中碰撞觸發居合／識滅斬
+      if (vamp.char.type === 'custom' && vamp.customParts && vamp.customParts.skill1 === 's1_samurai' &&
+          vamp.customExtra.samuraiParryActive && !(vamp.customExtra.samuraiIaidoCd > 0)) {
+        const count = customExtraGet(vamp, 'samuraiIaidoCount', 0) + 1;
+        if (count >= CUSTOM_SAMURAI_ZENMETSU_HITS) {
+          dealDamage(target, CUSTOM_SAMURAI_ZENMETSU_DMG * CUSTOM_SAMURAI_ZENMETSU_HITS, { attackerPlayer: vamp.player });
+          state.hitFlashes.push({ x: target.x, y: target.y, r: 50, alpha: 1, color: '#fff2c0', t: 0.5 });
+          playHitSound('opm');
+          vamp.customExtra.samuraiIaidoCount = 0;
+        } else {
+          dealDamage(target, CUSTOM_SAMURAI_IAIDO_DAMAGE, { attackerPlayer: vamp.player });
+          state.hitFlashes.push({ x: target.x, y: target.y, r: 28, alpha: 1, color: '#d4af37', t: 0.3 });
+          vamp.customExtra.samuraiIaidoCount = count;
+        }
+        vamp.customExtra.samuraiIaidoCd = 0.5;
+        playHitSound('knife');
+      }
     }
 
     // 物理碰撞分離（若都沒被凍結）
     const shouldPhysics = !b0.frozenByVampire && !b1.frozenByVampire &&
       !(b0.char.type==='vampire' && b0.vampireBiting) &&
       !(b1.char.type==='vampire' && b1.vampireBiting) &&
+      !(b0.char.type==='custom' && b0.customBiting) &&
+      !(b1.char.type==='custom' && b1.customBiting) &&
       !(b0.char.type==='samurai' && b0.samuraiIaidoing) &&
       !(b1.char.type==='samurai' && b1.samuraiIaidoing) &&
       !(b0.char.type==='samurai' && b0.samuraiParrying) &&
@@ -5600,6 +6462,41 @@ for (let bi = 0; bi < state.balls.length; bi++) {
               state.hitFlashes.push({ x: b.x, y: b.y, r: 20, alpha: 0.8, color: '#f1c40f', t: 0.4 });
             } else {
               b.attackTimer = 0; fireProjectile(b, enemy, 'bottle');
+            }
+        }
+    } else if (b.char.type === 'custom') {
+        // 連射零件（a_gunner）改用撞牆裝彈系統，不走一般計時普攻
+        if (b.attackTimer >= b.attackInterval && enemy && b.customParts.basic !== 'a_gunner') {
+            if (b.thunderParalyzed > 0) {
+              b.thunderParalyzed = 0;
+              b.thunderStunTimer = 0.5;
+              b.vx = 0; b.vy = 0;
+              state.thunderStunFX = state.thunderStunFX || [];
+              state.thunderStunFX.push({ x: b.x, y: b.y, life: 0.5, maxLife: 0.5 });
+              b.attackTimer = 0;
+              state.hitFlashes.push({ x: b.x, y: b.y, r: 20, alpha: 0.8, color: '#f1c40f', t: 0.4 });
+            } else {
+              b.attackTimer = 0;
+              // 蓄能裝彈被動：消耗一層，普攻加成傷害
+              let chargeMult = 1;
+              if (b.customChargeStacks > 0) {
+                b.customChargeStacks--;
+                chargeMult = CUSTOM_CHARGE_BONUS_MULT;
+                state.hitFlashes.push({ x: b.x, y: b.y, r: 16, alpha: 0.8, color: '#5fd0ff', t: 0.2 });
+              }
+              const basicId = b.customParts.basic;
+              if (basicId === 'a_chef') {
+                fireProjectile(b, enemy, 'knife', KNIFE_DAMAGE * chargeMult);
+              } else if (basicId === 'a_drunk') {
+                fireProjectile(b, enemy, 'bottle', BOTTLE_DAMAGE * chargeMult);
+              } else if (basicId === 'a_gunner') {
+                fireProjectile(b, enemy, 'bullet', CUSTOM_BASIC_GUNNER_DAMAGE * chargeMult, CUSTOM_BASIC_GUNNER_SPEED);
+              } else {
+                const bcfg = CUSTOM_PART_CFG[basicId];
+                if (bcfg && bcfg.engine === 'projectile') {
+                  fireProjectile(b, enemy, bcfg.projType || 'bullet', bcfg.damage * chargeMult, bcfg.speed);
+                }
+              }
             }
         }
     }
@@ -6132,6 +7029,53 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         angle
       });
       } // end else (not paralyzed)
+    }
+  }
+
+  // ── 組裝機器人（連射零件）邏輯：比照無名槍手撞牆裝彈→連射 ──
+  for (let bi = 0; bi < state.balls.length; bi++) {
+    const b = state.balls[bi];
+    if (b.hp <= 0) continue;
+    if (b.char.type !== 'custom' || !b.customParts || b.customParts.basic !== 'a_gunner') continue;
+    const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+    if (!enemy) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if (!b.customGunnerFiring) continue;
+
+    // 停下來連射
+    b.vx = b.vx * (1 - dt * 18);
+    b.vy = b.vy * (1 - dt * 18);
+    b.customGunnerFireTimer -= dt;
+    if (b.customGunnerFireTimer <= 0 && b.customGunnerAmmoFired < GUNNER_MAG_SIZE) {
+      const angle = Math.atan2(enemy.y - b.y, enemy.x - b.x);
+      const spread = (Math.random() - 0.5) * 0.15;
+      // 若同時選了「蓄能裝彈」被動，消耗一層為這發子彈加成傷害
+      let chargeMult = 1;
+      if (b.customChargeStacks > 0) {
+        b.customChargeStacks--;
+        chargeMult = CUSTOM_CHARGE_BONUS_MULT;
+        state.hitFlashes.push({ x: b.x, y: b.y, r: 16, alpha: 0.8, color: '#5fd0ff', t: 0.2 });
+      }
+      state.projectiles.push({
+        x: b.x, y: b.y,
+        vx: Math.cos(angle + spread) * GUNNER_BULLET_SPEED,
+        vy: Math.sin(angle + spread) * GUNNER_BULLET_SPEED,
+        type: 'bullet', owner: b.player, color: b.char.color,
+        damage: GUNNER_BULLET_DAMAGE * chargeMult, r: 5, active: true,
+        angle: angle + spread
+      });
+      b.customGunnerAmmoFired++;
+      b.customGunnerFireTimer = GUNNER_BULLET_INTERVAL;
+      playHitSound('knife');
+      state.hitFlashes.push({ x: b.x, y: b.y, r: 12, alpha: 0.8, color: b.char.color, t: 0.12 });
+    }
+    if (b.customGunnerAmmoFired >= GUNNER_MAG_SIZE) {
+      b.customGunnerFiring = false;
+      b.customGunnerAmmo = 0;
+      b.customGunnerAmmoFired = 0;
+      const ang = Math.random() * Math.PI * 2;
+      b.vx = Math.cos(ang) * BASE_SPEED;
+      b.vy = Math.sin(ang) * BASE_SPEED;
     }
   }
 
@@ -7456,6 +8400,267 @@ waypoints.push({
     if (b.itachiPinnedTimer > 0) {
       b.itachiPinnedTimer -= dt;
       if (b.itachiPinnedTimer <= 0) b.itachiPinnedTimer = 0;
+    }
+  }
+
+  // ── Sans🦴 重力機制：任何球都可能被強制拖走去撞牆（由骨牆的重力效果觸發）──
+  for (const b of state.balls) {
+    if (b.hp <= 0) continue;
+    if (b.sansGravityTimer > 0) {
+      b.sansGravityTimer -= dt;
+      b.sansGravityElapsed = (b.sansGravityElapsed || 0) + dt;
+      // 牽引過程：速度從0隨時間慢慢拉到最高速，而不是一開始就瞬間拉走
+      const rampFrac = Math.min(1, b.sansGravityElapsed / SANS_GRAVITY_RAMP_TIME);
+      const curSpeed = SANS_GRAVITY_PULL_SPEED * rampFrac;
+      const moveDist = curSpeed * dt;
+      b.x += b.sansGravityDirX * moveDist;
+      b.y += b.sansGravityDirY * moveDist;
+      b.vx = 0; b.vy = 0; // 位移期間由本區塊直接控制位置，避免一般移動邏輯干擾
+      let hitEdge = false;
+      let hitEdgeDir = null; // 記錄撞到的是哪一面牆（up/down/left/right）
+      if (b.x - RADIUS < WALL)     { b.x = WALL + RADIUS;     hitEdge = true; hitEdgeDir = 'left'; }
+      if (b.x + RADIUS > W - WALL) { b.x = W - WALL - RADIUS; hitEdge = true; hitEdgeDir = 'right'; }
+      if (b.y - RADIUS < WALL)     { b.y = WALL + RADIUS;     hitEdge = true; hitEdgeDir = 'up'; }
+      if (b.y + RADIUS > H - WALL) { b.y = H - WALL - RADIUS; hitEdge = true; hitEdgeDir = 'down'; }
+      if (hitEdge || b.sansGravityTimer <= 0) {
+        const dist = Math.hypot(b.x - b.sansGravityStartX, b.y - b.sansGravityStartY);
+        if (dist > 0) {
+          dealDamage(b, dist * SANS_GRAVITY_DMG_PER_PX, { attackerPlayer: b.sansGravityOwnerPlayer });
+          state.hitFlashes.push({ x: b.x, y: b.y, r: 32, alpha: 1, color: '#a0e0ff', t: 0.35 });
+          playHitSound('opm');
+        }
+        // 重力牽引撞牆時，從撞到的那面牆再升起一次骨牆追擊
+        if (hitEdge && hitEdgeDir && b.hp > 0) {
+          const horizontal2 = (hitEdgeDir === 'up' || hitEdgeDir === 'down');
+          const totalLen2 = horizontal2 ? W : H;
+          const bandLen2 = totalLen2 * SANS_WALL_LEN_RATIO;
+          const half2 = bandLen2 / 2;
+          let center2 = horizontal2 ? b.x : b.y;
+          center2 = Math.max(WALL + half2, Math.min(totalLen2 - WALL - half2, center2));
+          state.sansWalls.push({
+            owner: b.sansGravityOwnerPlayer, color: '#e8e8e8', horizontal: horizontal2, center: center2,
+            pos: hitEdgeDir === 'up' ? WALL : hitEdgeDir === 'down' ? H - WALL : hitEdgeDir === 'left' ? WALL : W - WALL,
+            dir: (hitEdgeDir === 'up' || hitEdgeDir === 'left') ? 1 : -1,
+            speed: SANS_WALL_SPEED, len: bandLen2, tickTimer: 0, life: 6
+          });
+          playHitSound('trap_place');
+        }
+        b.sansGravityTimer = 0;
+        const ang = Math.random() * Math.PI * 2;
+        b.vx = Math.cos(ang) * BASE_SPEED;
+        b.vy = Math.sin(ang) * BASE_SPEED;
+      }
+    }
+  }
+
+  // ── Sans🦴 主邏輯 ──
+  for (let bi = 0; bi < state.balls.length; bi++) {
+    const b = state.balls[bi];
+    if (b.hp <= 0) continue;
+    if (b.char.type !== 'sans') continue;
+    const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+
+    // 大招「大風車」：觸發判定（dealDamage攔截到致命一擊時會設定sansUltPending）
+    if (b.sansUltPending && !b.sansUltActive) {
+      b.sansUltPending = false;
+      b.sansUltActive = true;
+      b.sansUltUsed = true;
+      b.sansUltStep = 0;
+      b.sansUltTimer = 0;
+      b.invincible = true;
+      b.vx = 0; b.vy = 0;
+      state.hitFlashes.push({ x: b.x, y: b.y, r: 50, alpha: 1, color: '#ffffff', t: 0.6 });
+      playHitSound('opm');
+    }
+    // 大招進行中：停止一切行動、原地不動、無敵，朝八方向輪流釋放龍骨砲
+    if (b.sansUltActive) {
+      b.vx = 0; b.vy = 0; b.invincible = true;
+      b.sansUltTimer -= dt;
+      if (b.sansUltTimer <= 0) {
+        if (b.sansUltStep < SANS_ULT_HITS) {
+          b.sansUltTimer = SANS_ULT_INTERVAL;
+          const dirAngle = (Math.PI * 2 / 8) * (b.sansUltStep % 8);
+          const originDist = 300;
+          const targetX = enemy ? enemy.x : b.x;
+          const targetY = enemy ? enemy.y : b.y;
+          const ox = targetX - Math.cos(dirAngle) * originDist;
+          const oy = targetY - Math.sin(dirAngle) * originDist;
+          const width = Math.max(8, SANS_ULT_WIDTH_START - b.sansUltStep * SANS_ULT_WIDTH_SHRINK);
+          state.sansLaserFX.push({
+            x: ox, y: oy, angle: dirAngle, owner: b.player,
+            warn: true, warnTimer: SANS_ULT_WARN_DUR, warnMax: SANS_ULT_WARN_DUR,
+            life: 0.3, maxLife: 0.3,
+            length: originDist * 2, width, damage: SANS_ULT_DAMAGE,
+            hit: false, ult: true
+          });
+          state.hitFlashes.push({ x: b.x, y: b.y, r: 20, alpha: 0.7, color: '#ffffff', t: 0.2 });
+          playHitSound('knife');
+          b.sansUltStep++;
+        } else {
+          // 16次攻擊全部結束：若敵人尚未被擊敗，自己直接死亡
+          b.sansUltActive = false;
+          b.invincible = false;
+          const stillAlive = getEnemies(b).some(e => e.hp > 0);
+          if (stillAlive) {
+            b.hp = 0;
+            state.hitFlashes.push({ x: b.x, y: b.y, r: 60, alpha: 1, color: '#888888', t: 0.6 });
+            purgeDeadPlayerEntities(b.player);
+          }
+        }
+      }
+      continue; // 大招期間不執行普攻／技能
+    }
+
+    if (!enemy) continue;
+
+    // 普攻「骨頭」：發射 + 飛行中每0.1秒判定傷害（貫穿、不因命中而消失）
+    b.sansBoneTimer -= dt;
+    if (b.sansBoneTimer <= 0) {
+      b.sansBoneTimer = SANS_BONE_INTERVAL;
+      const angle = Math.atan2(enemy.y - b.y, enemy.x - b.x);
+      b.sansBones.push({
+        x: b.x, y: b.y,
+        vx: Math.cos(angle) * SANS_BONE_SPEED, vy: Math.sin(angle) * SANS_BONE_SPEED,
+        life: SANS_BONE_LIFESPAN, tickTimer: 0
+      });
+      playHitSound('knife');
+    }
+    for (let boneI = b.sansBones.length - 1; boneI >= 0; boneI--) {
+      const bone = b.sansBones[boneI];
+      bone.x += bone.vx * dt; bone.y += bone.vy * dt;
+      bone.life -= dt; bone.tickTimer -= dt;
+      if (bone.life <= 0 || bone.x < -20 || bone.x > W + 20 || bone.y < -20 || bone.y > H + 20) {
+        b.sansBones.splice(boneI, 1); continue;
+      }
+      if (bone.tickTimer <= 0) {
+        for (const target of state.balls) {
+          if (target.hp <= 0 || target.player === b.player) continue;
+          const bd = Math.hypot(bone.x - target.x, bone.y - target.y);
+          if (bd < RADIUS + 8) {
+            bone.tickTimer = SANS_BONE_TICK;
+            dealDamage(target, SANS_BONE_DAMAGE, { attackerPlayer: b.player });
+            state.hitFlashes.push({ x: target.x, y: target.y, r: 16, alpha: 0.8, color: '#f4f1de', t: 0.2 });
+            break;
+          }
+        }
+      }
+    }
+
+    // 技能一「骨牆」（含重力甩牆機制）
+    b.sansWallTimer -= dt;
+    if (b.sansWallTimer <= 0) {
+      b.sansWallTimer = SANS_WALL_INTERVAL;
+      b.sansWallUses = (b.sansWallUses || 0) + 1;
+      const dirs = ['up', 'down', 'left', 'right'];
+      const dir = dirs[Math.floor(Math.random() * 4)];
+      const horizontal = (dir === 'up' || dir === 'down');
+      const totalLen = horizontal ? W : H;
+      const bandLen = totalLen * SANS_WALL_LEN_RATIO;
+      const half = bandLen / 2;
+      let center = horizontal ? enemy.x : enemy.y;
+      center = Math.max(WALL + half, Math.min(totalLen - WALL - half, center));
+      const wall = {
+        owner: b.player, color: b.char.color, horizontal, center,
+        pos: dir === 'up' ? WALL : dir === 'down' ? H - WALL : dir === 'left' ? WALL : W - WALL,
+        dir: (dir === 'up' || dir === 'left') ? 1 : -1,
+        speed: SANS_WALL_SPEED, len: bandLen, tickTimer: 0, life: 6
+      };
+      state.sansWalls.push(wall);
+      playHitSound('trap_place');
+      state.hitFlashes.push({
+        x: horizontal ? center : wall.pos, y: horizontal ? wall.pos : center,
+        r: 20, alpha: 0.8, color: '#e8e8e8', t: 0.3
+      });
+
+      // 重力機制：每使用兩次骨牆，第二次額外強制拖走敵人（方向與這次骨牆平移方向一致）
+      if (b.sansWallUses % 2 === 0 && enemy.hp > 0 && !(enemy.sansGravityTimer > 0)) {
+        const gx = wall.horizontal ? 0 : -wall.dir;
+        const gy = wall.horizontal ? -wall.dir : 0;
+        enemy.sansGravityTimer = SANS_GRAVITY_DURATION;
+        enemy.sansGravityElapsed = 0;
+        enemy.sansGravityDirX = gx; enemy.sansGravityDirY = gy;
+        enemy.sansGravityStartX = enemy.x; enemy.sansGravityStartY = enemy.y;
+        enemy.sansGravityOwnerPlayer = b.player;
+        state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 26, alpha: 0.9, color: '#a0e0ff', t: 0.4 });
+        playHitSound('vampire_dash');
+      }
+    }
+
+    // 技能二「龍骨砲」：從地圖外朝敵人方向射出光束
+    b.sansLaserTimer -= dt;
+    if (b.sansLaserTimer <= 0) {
+      b.sansLaserTimer = SANS_LASER_INTERVAL;
+      const angle = Math.atan2(enemy.y - b.y, enemy.x - b.x);
+      const originDist = W + H; // 拉遠到場外，避免在小場地上距離不夠、看起來像從Sans本人身上發射
+      const ox = enemy.x - Math.cos(angle) * originDist;
+      const oy = enemy.y - Math.sin(angle) * originDist;
+      state.sansLaserFX.push({
+        x: ox, y: oy, angle, owner: b.player,
+        warn: true, warnTimer: SANS_LASER_WARN_DUR, warnMax: SANS_LASER_WARN_DUR,
+        life: SANS_LASER_TRAVEL_TIME, maxLife: SANS_LASER_TRAVEL_TIME,
+        length: originDist + (W + H), width: SANS_LASER_WIDTH, damage: SANS_LASER_DAMAGE,
+        hit: false
+      });
+      playHitSound('vampire_dash');
+    }
+  }
+
+  // ── Sans🦴 骨牆：移動＋命中判定（環境物件，獨立於角色迴圈之外）──
+  for (let i = state.sansWalls.length - 1; i >= 0; i--) {
+    const wall = state.sansWalls[i];
+    wall.life -= dt;
+    wall.pos += wall.dir * wall.speed * dt;
+    wall.tickTimer -= dt;
+    let expired = wall.life <= 0;
+    if (wall.horizontal) { if (wall.pos < -20 || wall.pos > H + 20) expired = true; }
+    else { if (wall.pos < -20 || wall.pos > W + 20) expired = true; }
+    if (expired) { state.sansWalls.splice(i, 1); continue; }
+    if (wall.tickTimer <= 0) {
+      wall.tickTimer = SANS_WALL_TICK;
+      for (const target of state.balls) {
+        if (target.hp <= 0 || target.player === wall.owner) continue;
+        const withinBand = wall.horizontal
+          ? Math.abs(target.x - wall.center) < wall.len / 2 + RADIUS
+          : Math.abs(target.y - wall.center) < wall.len / 2 + RADIUS;
+        const closeToLine = wall.horizontal
+          ? Math.abs(target.y - wall.pos) < RADIUS + 6
+          : Math.abs(target.x - wall.pos) < RADIUS + 6;
+        if (withinBand && closeToLine) {
+          dealDamage(target, SANS_WALL_DAMAGE, { attackerPlayer: wall.owner });
+          state.hitFlashes.push({ x: target.x, y: target.y, r: 22, alpha: 0.9, color: '#e8e8e8', t: 0.25 });
+        }
+      }
+    }
+  }
+
+  // ── Sans🦴 龍骨砲／大風車：光束移動＋命中判定（共用同一組視覺特效陣列）──
+  for (let i = state.sansLaserFX.length - 1; i >= 0; i--) {
+    const lz = state.sansLaserFX[i];
+    if (lz.warn) {
+      lz.warnTimer -= dt;
+      if (lz.warnTimer <= 0) lz.warn = false; // 預警結束，本幀開始才真正發射、進入判定
+      continue;
+    }
+    lz.life -= dt;
+    if (lz.life <= 0) { state.sansLaserFX.splice(i, 1); continue; }
+    if (!lz.hit) {
+      for (const target of state.balls) {
+        if (target.hp <= 0 || target.player === lz.owner) continue;
+       const spread = 40; // 想讓大風車多好躲，就調這個數字（px）
+ const dx = target.x - lz.x, dy = target.y - lz.y;
+ 
+
+ const cosA = Math.cos(lz.angle), sinA = Math.sin(lz.angle);
+        const localX = dx * cosA + dy * sinA;
+        const localY = -dx * sinA + dy * cosA;
+        if (localX > 0 && localX < lz.length && Math.abs(localY) < lz.width / 2 + RADIUS) {
+          dealDamage(target, lz.damage, { attackerPlayer: lz.owner });
+          lz.hit = true;
+          state.hitFlashes.push({ x: target.x, y: target.y, r: 30, alpha: 1, color: '#dff0ff', t: 0.3 });
+          playHitSound('opm');
+          break;
+        }
+      }
     }
   }
 
@@ -10812,13 +12017,13 @@ function spawnBatParticles(x, y, color, count) {
   }
 }
 
-function fireProjectile(ball, enemy, type) {
+function fireProjectile(ball, enemy, type, dmgOverride, spdOverride) {
   if (state && state.stats) state.stats[ball.player].skillUses++;
   const dx = enemy.x-ball.x, dy = enemy.y-ball.y;
   const d  = Math.sqrt(dx*dx + dy*dy);
   const nx = dx/d, ny = dy/d;
-  const spd = type==='knife' ? KNIFE_SPEED : BOTTLE_SPEED;
-  const dmg = type==='knife' ? KNIFE_DAMAGE : BOTTLE_DAMAGE;
+  const spd = spdOverride != null ? spdOverride : (type==='knife' ? KNIFE_SPEED : BOTTLE_SPEED);
+  const dmg = dmgOverride != null ? dmgOverride : (type==='knife' ? KNIFE_DAMAGE : BOTTLE_DAMAGE);
   state.projectiles.push({
     x: ball.x + nx*(RADIUS+5), y: ball.y + ny*(RADIUS+5),
     vx: nx*spd, vy: ny*spd,
@@ -10972,6 +12177,70 @@ function drawHamonRing(ctx, x, y, r, alpha, color, lineWidth) {
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.stroke();
+  ctx.restore();
+}
+
+// Sans🦴：骷髏砲台（Gaster Blaster風格）。angle方向＝嘴巴張開、光束射出的方向。
+// glowAmt（0~1）：嘴巴內部蓄力光的亮度，預警期間由暗漸亮，發射瞬間最亮。
+function drawSansSkullCannon(ctx, x, y, angle, size, alpha, glowAmt) {
+  if (alpha <= 0 || size <= 0) return;
+  const s = size;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.globalAlpha = alpha;
+
+  // 主體外型：後方（-x）寬並帶兩隻後翹的角，前方（+x）收窄成張開的嘴
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.62, -s * 0.38);
+  ctx.quadraticCurveTo(-s * 0.70, 0, -s * 0.62, s * 0.38);
+  ctx.quadraticCurveTo(-s * 0.40, s * 0.12, -s * 0.16, s * 0.30);
+  ctx.lineTo(s * 0.30, s * 0.10);
+  ctx.lineTo(s * 0.38, s * 0.045);
+  ctx.lineTo(s * 0.30, 0.02 * s);
+  ctx.lineTo(s * 0.50, 0);
+  ctx.lineTo(s * 0.30, -0.02 * s);
+  ctx.lineTo(s * 0.38, -s * 0.045);
+  ctx.lineTo(s * 0.30, -s * 0.10);
+  ctx.lineTo(-s * 0.16, -s * 0.30);
+  ctx.quadraticCurveTo(-s * 0.40, -s * 0.12, -s * 0.62, -s * 0.38);
+  ctx.closePath();
+  ctx.fillStyle = '#f4f4f4';
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = Math.max(1.5, s * 0.06);
+  ctx.shadowColor = '#a0e0ff';
+  ctx.shadowBlur = 6 + glowAmt * 10;
+  ctx.fill();
+  ctx.stroke();
+
+  // 兩個黑色眼窩
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath();
+  ctx.ellipse(-s * 0.20, -s * 0.15, s * 0.11, s * 0.14, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(-s * 0.20, s * 0.15, s * 0.11, s * 0.14, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 眼間裂縫延伸到嘴部
+  ctx.strokeStyle = '#1a1a1a';
+  ctx.lineWidth = Math.max(1, s * 0.045);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(s * 0.28, 0);
+  ctx.stroke();
+
+  // 嘴巴內部蓄力光（預警期間漸亮，發射時最亮）
+  if (glowAmt > 0) {
+    ctx.globalAlpha = alpha * glowAmt;
+    ctx.fillStyle = '#dff6ff';
+    ctx.shadowColor = '#5fd0ff';
+    ctx.shadowBlur = 14 * glowAmt;
+    ctx.beginPath();
+    ctx.ellipse(s * 0.16, 0, s * 0.16 * glowAmt + 0.02 * s, s * 0.11 * glowAmt + 0.02 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
   ctx.restore();
 }
 
@@ -11400,6 +12669,32 @@ function render() {
     }
   }
 
+  // 組裝機器人（鎖鏈零件）：連線視覺，比照真身陷阱大師（拉扯目標是機器人本體，不是陷阱）
+  for (const b of state.balls) {
+    if (b.char.type !== 'custom' || !b.customChainPulling) continue;
+    const enemy = b.customChainTarget;
+    if (!enemy || enemy.hp <= 0) continue;
+    ctx.save();
+    const chainAlpha = 0.55 + 0.35 * Math.sin(elapsed * 25);
+    ctx.strokeStyle = `rgba(39,174,96,${chainAlpha})`;
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([5, 3]);
+    ctx.shadowColor = '#27ae60';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.moveTo(b.x, b.y);
+    ctx.lineTo(enemy.x, enemy.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    if (Math.random() < 0.5) {
+      const t = Math.random();
+      const px = b.x + (enemy.x - b.x) * t;
+      const py = b.y + (enemy.y - b.y) * t;
+      state.hitFlashes.push({ x: px, y: py, r: 5, alpha: 0.6, color: '#2ecc71', t: 0.15 });
+    }
+  }
+
   // 陷阱大師：尖刺
   for (const trap of state.traps) {
     ctx.save();
@@ -11538,7 +12833,80 @@ function render() {
     ctx.restore();
   }
 
-  // 砲爹：光柱渲染（橙黃色，比照工程師雷射）
+  // Sans🦴：龍骨砲／大風車光束渲染（骨白色系，比照工程師雷射樣式）
+  for (const lz of state.sansLaserFX) {
+    const cannonSize = Math.max(30, lz.width * 1.3);
+    if (lz.warn) {
+      // 預警階段：砲台顯現並蓄力（嘴巴內部光芒漸亮），細線示警讓對手能看清方向並閃避
+      const chargeFrac = 1 - Math.max(0, lz.warnTimer) / lz.warnMax;
+      const pulse = 0.5 + 0.5 * Math.sin((lz.warnMax - lz.warnTimer) * 40);
+      drawSansSkullCannon(ctx, lz.x, lz.y, lz.angle, cannonSize, 0.5 + 0.5 * chargeFrac, chargeFrac);
+      ctx.save();
+      ctx.translate(lz.x, lz.y);
+      ctx.rotate(lz.angle);
+      ctx.globalAlpha = 0.55 + 0.35 * pulse;
+      ctx.beginPath();
+      ctx.moveTo(cannonSize * 0.5, 0);
+      ctx.lineTo(lz.length, 0);
+      ctx.strokeStyle = 'rgba(160,224,255,0.9)';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = '#a0e0ff';
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
+    const prog = lz.life / lz.maxLife;
+    drawSansSkullCannon(ctx, lz.x, lz.y, lz.angle, cannonSize, Math.max(0, prog), Math.max(0, prog));
+    ctx.save();
+    ctx.translate(lz.x, lz.y);
+    ctx.rotate(lz.angle);
+    ctx.globalAlpha = Math.max(0, prog);
+    const grad = ctx.createLinearGradient(0, 0, lz.length, 0);
+    grad.addColorStop(0, 'rgba(232,232,232,0.95)');
+    grad.addColorStop(0.5, 'rgba(160,224,255,0.55)');
+    grad.addColorStop(1, 'rgba(160,224,255,0)');
+    ctx.fillStyle = grad;
+    ctx.shadowColor = '#a0e0ff';
+    ctx.shadowBlur = 20;
+    ctx.fillRect(0, -lz.width / 2, lz.length, lz.width);
+    ctx.fillStyle = `rgba(255,255,255,${0.85 * prog})`;
+    ctx.fillRect(0, -lz.width * 0.12, lz.length, lz.width * 0.24);
+    ctx.restore();
+  }
+
+  // Sans🦴：骨牆渲染（一整排平移中的骨頭）
+  for (const wall of state.sansWalls) {
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.font = '20px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const segCount = Math.max(3, Math.round(wall.len / 14));
+    for (let s = 0; s < segCount; s++) {
+      const t = segCount === 1 ? 0.5 : s / (segCount - 1);
+      const off = (t - 0.5) * wall.len;
+      const x = wall.horizontal ? wall.center + off : wall.pos;
+      const y = wall.horizontal ? wall.pos : wall.center + off;
+      ctx.fillText('🦴', x, y);
+    }
+    ctx.restore();
+  }
+
+  // Sans🦴：飛行中的骨頭渲染
+  for (const b of state.balls) {
+    if (b.char.type !== 'sans' || !b.sansBones) continue;
+    for (const bone of b.sansBones) {
+      ctx.save();
+      ctx.translate(bone.x, bone.y);
+      ctx.rotate(Math.atan2(bone.vy, bone.vx));
+      ctx.font = '18px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🦴', 0, 0);
+      ctx.restore();
+    }
+  }
   for (const lz of state.cannonBeamFX) {
     const prog = lz.life / lz.maxLife;
     ctx.save();
@@ -11749,6 +13117,67 @@ function render() {
     ctx.fillText('🔪',0,0); ctx.restore();
   }
 
+// ── 蒼球視覺（共用：真身現代最強 與 組裝機器人「蒼」零件都用這套） ──
+  function drawGojoBlueBall(ball) {
+    ctx.save();
+    // ── 蒼球光線（朝附近角色，加強亮度） ──
+    for (const f of state.balls) {
+      const dx = f.x - ball.x, dy = f.y - ball.y;
+      const d = Math.sqrt(dx*dx+dy*dy) || 1;
+      if (d < GOJO_BLUE_RAY_RANGE) {
+        const alpha = 0.85 * (1 - d / GOJO_BLUE_RAY_RANGE) + 0.1;
+        const grad = ctx.createLinearGradient(ball.x, ball.y, f.x, f.y);
+        grad.addColorStop(0, `rgba(180,245,255,${alpha})`);
+        grad.addColorStop(0.5, `rgba(0,207,255,${alpha*0.7})`);
+        grad.addColorStop(1, `rgba(0,207,255,0)`);
+        ctx.beginPath();
+        ctx.moveTo(ball.x, ball.y);
+        ctx.lineTo(f.x, f.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 4.5;
+        ctx.shadowColor = '#00eaff';
+        ctx.shadowBlur = 22;
+        ctx.stroke();
+        // 核心亮線，讓光束更銳利明顯
+        ctx.beginPath();
+        ctx.moveTo(ball.x, ball.y);
+        ctx.lineTo(f.x, f.y);
+        ctx.strokeStyle = `rgba(255,255,255,${alpha*0.6})`;
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 0;
+        ctx.stroke();
+      }
+    }
+
+    // ── 旋轉光圈（加強亮度） ──
+    const ang = ball.ringAngle || 0;
+    const pulse = 0.7 + 0.3 * Math.sin(Date.now() / 200);
+    ctx.shadowColor = '#00eaff';
+    ctx.shadowBlur = 28 * pulse;
+    ctx.strokeStyle = `rgba(120,235,255,${0.9 * pulse})`;
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.ellipse(ball.x, ball.y, GOJO_BLUE_RING_R, GOJO_BLUE_RING_R * 0.35, ang, 0, Math.PI * 2);
+    ctx.stroke();
+    // 第二圈，垂直方向
+    ctx.strokeStyle = `rgba(200,250,255,${0.6 * pulse})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(ball.x, ball.y, GOJO_BLUE_RING_R, GOJO_BLUE_RING_R * 0.35, ang + Math.PI/2, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // ── 蒼球主體（加強光暈） ──
+    ctx.shadowColor = '#00eaff'; ctx.shadowBlur = 34;
+    const bg = ctx.createRadialGradient(ball.x - 3, ball.y - 3, 1, ball.x, ball.y, ball.r);
+    bg.addColorStop(0, '#ffffff');
+    bg.addColorStop(0.35, '#aaf0ff');
+    bg.addColorStop(0.7, '#00cfff');
+    bg.addColorStop(1, '#0066aa');
+    ctx.fillStyle = bg;
+    ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
 // ── 繪製 GOJO 術式球 ──
   for (const b of state.balls) {
     if (b.char.type !== 'gojo') continue;
@@ -11763,73 +13192,41 @@ function render() {
     }
     for (const ball of b.gojoBalls) {
       if (!ball.active && !ball.sticking) continue;
-      ctx.save();
       if (ball.type==='blue') {
-        // ── 蒼球光線（朝附近角色，加強亮度） ──
-        for (const f of state.balls) {
-          const dx = f.x - ball.x, dy = f.y - ball.y;
-          const d = Math.sqrt(dx*dx+dy*dy) || 1;
-          if (d < GOJO_BLUE_RAY_RANGE) {
-            const alpha = 0.85 * (1 - d / GOJO_BLUE_RAY_RANGE) + 0.1;
-            const grad = ctx.createLinearGradient(ball.x, ball.y, f.x, f.y);
-            grad.addColorStop(0, `rgba(180,245,255,${alpha})`);
-            grad.addColorStop(0.5, `rgba(0,207,255,${alpha*0.7})`);
-            grad.addColorStop(1, `rgba(0,207,255,0)`);
-            ctx.beginPath();
-            ctx.moveTo(ball.x, ball.y);
-            ctx.lineTo(f.x, f.y);
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 4.5;
-            ctx.shadowColor = '#00eaff';
-            ctx.shadowBlur = 22;
-            ctx.stroke();
-            // 核心亮線，讓光束更銳利明顯
-            ctx.beginPath();
-            ctx.moveTo(ball.x, ball.y);
-            ctx.lineTo(f.x, f.y);
-            ctx.strokeStyle = `rgba(255,255,255,${alpha*0.6})`;
-            ctx.lineWidth = 1.5;
-            ctx.shadowBlur = 0;
-            ctx.stroke();
-          }
-        }
-
-        // ── 旋轉光圈（加強亮度） ──
-        const ang = ball.ringAngle || 0;
-        const pulse = 0.7 + 0.3 * Math.sin(Date.now() / 200);
-        ctx.shadowColor = '#00eaff';
-        ctx.shadowBlur = 28 * pulse;
-        ctx.strokeStyle = `rgba(120,235,255,${0.9 * pulse})`;
-        ctx.lineWidth = 3.5;
-        ctx.beginPath();
-        ctx.ellipse(ball.x, ball.y, GOJO_BLUE_RING_R, GOJO_BLUE_RING_R * 0.35, ang, 0, Math.PI * 2);
-        ctx.stroke();
-        // 第二圈，垂直方向
-        ctx.strokeStyle = `rgba(200,250,255,${0.6 * pulse})`;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.ellipse(ball.x, ball.y, GOJO_BLUE_RING_R, GOJO_BLUE_RING_R * 0.35, ang + Math.PI/2, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // ── 蒼球主體（加強光暈） ──
-        ctx.shadowColor = '#00eaff'; ctx.shadowBlur = 34;
-        const bg = ctx.createRadialGradient(ball.x - 3, ball.y - 3, 1, ball.x, ball.y, ball.r);
-        bg.addColorStop(0, '#ffffff');
-        bg.addColorStop(0.35, '#aaf0ff');
-        bg.addColorStop(0.7, '#00cfff');
-        bg.addColorStop(1, '#0066aa');
-        ctx.fillStyle = bg;
-        ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
-
+        drawGojoBlueBall(ball);
       } else if (ball.type==='red') {
+        ctx.save();
         ctx.shadowColor='#ff4444'; ctx.shadowBlur=18; ctx.fillStyle='#ff4444';
         ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
       } else {
+        ctx.save();
         const pulse = 0.7+0.3*Math.sin(Date.now()/150);
         ctx.shadowColor='#bf00ff'; ctx.shadowBlur=28*pulse;
         ctx.fillStyle='#bf00ff'; ctx.globalAlpha=pulse;
         ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
       }
+    }
+  }
+
+  // ── 繪製 組裝機器人「蒼」零件 的飛行引力球 ──
+  for (const b of state.balls) {
+    if (b.char.type !== 'custom' || !b.customExtra || !b.customExtra.gojoBlueBalls) continue;
+    for (const ball of b.customExtra.gojoBlueBalls) {
+      if (!ball.active) continue;
+      drawGojoBlueBall(ball);
+    }
+  }
+
+  // ── 繪製 組裝機器人「赫」零件 的飛行紅球 ──
+  for (const b of state.balls) {
+    if (b.char.type !== 'custom' || !b.customExtra || !b.customExtra.gojoRedBalls) continue;
+    for (const ball of b.customExtra.gojoRedBalls) {
+      if (!ball.active) continue;
+      ctx.save();
+      ctx.shadowColor = '#ff4444'; ctx.shadowBlur = 18; ctx.fillStyle = '#ff4444';
+      ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2); ctx.fill();
       ctx.restore();
     }
   }
@@ -11994,11 +13391,13 @@ function render() {
     ctx.restore();
   }
 
-  // 無名槍手：閃光暈眩光暈 & 彈藥顯示
+  // 無名槍手／組裝機器人（連射零件）：閃光暈眩光暈 & 彈藥顯示
   for (const b of state.balls) {
-    if (b.char.type !== 'gunner') continue;
-    // 暈眩白光
-    if (b.gunnerStunTimer > 0) {
+    const isGunner = b.char.type === 'gunner';
+    const isCustomGunner = b.char.type === 'custom' && b.customParts && b.customParts.basic === 'a_gunner';
+    if (!isGunner && !isCustomGunner) continue;
+    // 暈眩白光（僅原版槍手有閃光彈技能會造成暈眩狀態顯示）
+    if (isGunner && b.gunnerStunTimer > 0) {
       const sa = 0.25 + 0.15 * Math.sin(elapsed * 20);
       ctx.save();
       ctx.beginPath(); ctx.arc(b.x, b.y, RADIUS + 10, 0, Math.PI*2);
@@ -12006,7 +13405,9 @@ function render() {
       ctx.fill(); ctx.restore();
     }
     // 彈藥格子
-    const ammo = b.gunnerFiring ? 0 : b.gunnerAmmo;
+    const ammo = isGunner
+      ? (b.gunnerFiring ? 0 : b.gunnerAmmo)
+      : (b.customGunnerFiring ? 0 : b.customGunnerAmmo);
     const slotW = (RADIUS * 2) / GUNNER_MAG_SIZE; // 自動等分，調彈數不會跑版
     for (let i = 0; i < GUNNER_MAG_SIZE; i++) {
       const bx = b.x - RADIUS + i * slotW + slotW * 0.1;
@@ -14180,6 +15581,33 @@ function render() {
       ctx.restore();
     }
 
+    // 組裝機器人（招架零件）：招架光盾，比照末代武士本尊
+    if (b.char.type === 'custom' && b.customParts && b.customParts.skill1 === 's1_samurai' && b.customExtra.samuraiParryActive) {
+      const parryProg = 1 - (b.customExtra.samuraiParryTimer / CUSTOM_SAMURAI_PARRY_ACTIVE);
+      const pulse = 0.6 + 0.4 * Math.sin(elapsed * 18);
+      const iaidoCount = customExtraGet(b, 'samuraiIaidoCount', 0);
+      const isShimetsuNextCustom = (iaidoCount + 1) >= CUSTOM_SAMURAI_ZENMETSU_HITS;
+      const shieldColor = isShimetsuNextCustom ? '#ff4400' : '#d4af37';
+      // 外光暈
+      const shieldGrad = ctx.createRadialGradient(b.x, b.y, RADIUS, b.x, b.y, RADIUS + 22);
+      shieldGrad.addColorStop(0, `${shieldColor}88`);
+      shieldGrad.addColorStop(1, `${shieldColor}00`);
+      ctx.beginPath(); ctx.arc(b.x, b.y, RADIUS + 22, 0, Math.PI * 2);
+      ctx.fillStyle = shieldGrad; ctx.fill();
+      // 招架環（消耗進度）
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, RADIUS + 10, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - parryProg));
+      ctx.strokeStyle = `rgba(${isShimetsuNextCustom?'255,68,0':'212,175,55'},${pulse})`;
+      ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke();
+      // 招架文字
+      ctx.save(); ctx.translate(b.x, b.y - RADIUS - 16);
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillStyle = `rgba(${isShimetsuNextCustom?'255,100,50':'255,220,80'},${0.8 + 0.2 * Math.sin(elapsed * 20)})`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(isShimetsuNextCustom ? '🔥 識滅斬！' : '🛡️ 招架中', 0, 0);
+      ctx.restore();
+    }
+
     // 鍛造師：鍛造層數光環 & 揮劍弧線
     if (b.char.type === 'blacksmith') {
       const stackRatio = (b.smithForgeStacks || 0) / SMITH_FORGE_MAX_STACKS;
@@ -14388,7 +15816,7 @@ function render() {
     }
 
     // HP 圓弧
-    const hpFrac = b.hp/MAX_HP;
+    const hpFrac = b.char.type === 'sans' ? b.hp / SANS_MAX_HP : b.hp / MAX_HP;
     ctx.beginPath(); ctx.arc(b.x,b.y,RADIUS+4,-Math.PI/2,-Math.PI/2+Math.PI*2*hpFrac);
     ctx.strokeStyle = b.char.color; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.stroke();
 
@@ -15151,18 +16579,19 @@ function updateHUD() {
     const n = i + 1;
     if (n > 4) return; // HUD 目前最多顯示4位
     const hp = Math.max(0, b.hp);
+    const hpScale = b.char.type === 'sans' ? SANS_MAX_HP : MAX_HP; // Sans：次數血條，改用23為滿血基準
     const bleed = Math.min(b.tigerBleedPool || 0, MAX_HP - hp);
     const barEl = document.getElementById(`p${n}-bar`);
-    if (barEl) barEl.style.width = (hp/MAX_HP*100)+'%';
+    if (barEl) barEl.style.width = (hp/hpScale*100)+'%';
     const bleedEl = document.getElementById(`p${n}-bleed-bar`);
     if (bleedEl) {
-      const bleedWidth = (bleed/MAX_HP*100).toFixed(1)+'%';
-      const pos = (hp/MAX_HP*100).toFixed(1)+'%';
+      const bleedWidth = (bleed/hpScale*100).toFixed(1)+'%';
+      const pos = (hp/hpScale*100).toFixed(1)+'%';
       bleedEl.style.width = bleedWidth;
       if (n % 2 === 1) bleedEl.style.left = pos; else bleedEl.style.right = pos;
     }
     const numEl = document.getElementById(`p${n}-hp-num`);
-    if (numEl) numEl.textContent = `${Math.ceil(hp)} / ${MAX_HP}`;
+    if (numEl) numEl.textContent = `${Math.ceil(hp)} / ${hpScale}`;
   });
   document.getElementById('timer-display').textContent =
     ({lava:'🌋 ', snow:'❄️ ', grass:'🌿 ', sand:'🏜️ ', beach:'🏖️ '}[state.arena] || '') + Math.floor(elapsed) + 's';
@@ -15352,6 +16781,16 @@ function updateHUD() {
       if (b.yukiBlackHoleActive) return `⚫ 假想黑洞！${Math.max(0, b.yukiBlackHoleTimer).toFixed(1)}s`;
       if (b.yukiPlasmaActive) return `🌌 星漿體！${Math.max(0, b.yukiPlasmaTimer).toFixed(1)}s 星之怒${Math.max(0, b.yukiStarWrathTimer).toFixed(1)}s`;
       return `🪐 重力${b.yukiGravityStacks || 0}/${YUKI_GRAVITY_MAX_STACK}`;
+    } else if (b.char.type === 'custom' && b.customParts && b.customParts.basic === 'a_gunner') {
+      if (b.customGunnerFiring) return `🔫 連射中！`;
+      return `🔫 ${b.customGunnerAmmo}/${GUNNER_MAG_SIZE}彈`;
+    } else if (b.char.type === 'sans') {
+      if (b.sansUltActive) return `🌀 大風車！${b.sansUltStep}/${SANS_ULT_HITS}`;
+      if (b.hp <= 1 && !b.sansUltUsed) return `☠️ 命懸一線...`;
+      const wallCd = Math.max(0, b.sansWallTimer || 0).toFixed(1);
+      const laserCd = Math.max(0, b.sansLaserTimer || 0).toFixed(1);
+      const gravityHint = (b.sansWallUses % 2 === 1) ? ' 🌀下次骨牆有重力！' : '';
+      return `🦴 剩餘${Math.ceil(b.hp)}次 骨牆${wallCd}s 龍骨砲${laserCd}s${gravityHint}`;
     } else {
       return '';
     }
@@ -15409,6 +16848,14 @@ const quote = pickQuote(specialQuote || winner.char.winQuote);
       <div style="width:100%;text-align:center;font-size:0.75rem;color:#888;margin-bottom:6px;letter-spacing:.1em">⚔️ 戰鬥紀錄　${mm}:${ss}</div>
       ${rows.join('')}
     `;
+  }
+
+  if (assembleMode) {
+    // 組裝模式：判斷 P1（自組機器人）是否獲勝
+    const p1Won = deadBalls.length === 2 ? false : !deadBalls.find(b => b.player === 1);
+    const sid = assembleSessionId;
+    setTimeout(() => { if (assembleSessionId === sid) handleAssembleResult(p1Won); }, 800);
+    return; // 不顯示一般 overlay
   }
 
   if (endlessMode) {
@@ -15615,6 +17062,311 @@ function backToSelect() {
 }
 
 document.getElementById('endless-btn').addEventListener('click', startEndless);
+
+// ══════════════ 組裝模式（自組機器人闖關） ══════════════
+let assembleMode = false;
+let assembleStage = 1;
+let assembleSessionId = 0;
+let assembleBest = parseInt(localStorage.getItem('assembleBest') || '0');
+let assembleEnemyId = null;
+let assembleSelectedParts = { passive: null, basic: null, skill1: null, skill2: null };
+let assembleSlotIndex = 0;
+const ASSEMBLE_SLOT_ORDER = ['passive', 'basic', 'skill1', 'skill2'];
+const ASSEMBLE_SKIP = 'SKIP'; // 4選3：其中一欄可以跳過不裝備
+
+function buildCustomCharacter(parts) {
+  const passiveDef = CUSTOM_PARTS.passive.find(p => p.id === parts.passive) || null;
+  const basicDef   = CUSTOM_PARTS.basic.find(p => p.id === parts.basic) || null;
+  const skill1Def  = CUSTOM_PARTS.skill1.find(p => p.id === parts.skill1) || null;
+  const skill2Def  = CUSTOM_PARTS.skill2.find(p => p.id === parts.skill2) || null;
+  const defs = [
+    { key: '被動', def: passiveDef },
+    { key: '普攻', def: basicDef },
+    { key: '技能一', def: skill1Def },
+    { key: '技能二', def: skill2Def },
+  ];
+  const equipped = defs.filter(d => d.def);
+  const skipped  = defs.find(d => !d.def);
+  return {
+    id: 'custom_assembled', emoji: '🤖', weapon: '🔧', name: '自組機器人',
+    desc: `由 ${equipped.map(d => d.def.from).join('／')} 的零件拼裝而成的娛樂模式限定角色（${skipped ? skipped.key + '欄空裝，只裝了3個部位' : '4個部位齊裝'}）。`,
+    stats: equipped.map(d => d.def.name),
+    skills: equipped.map(d => `${d.key}「${d.def.name}」（來自${d.def.from}）：${d.def.desc}`),
+    color: '#8fd6ff', glowColor: 'rgba(143,214,255,0.6)', type: 'custom',
+    winQuote: '零件雖雜，戰力不減！',
+    parts: { ...parts },
+  };
+}
+
+function startAssembleMode() {
+  assembleMode = true;
+  playerModeCount = 2;
+  assembleSelectedParts = { passive: null, basic: null, skill1: null, skill2: null };
+  assembleSlotIndex = 0;
+  showAssemblePicker();
+}
+
+function showAssemblePicker() {
+  document.getElementById('select-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('assemble-stage-screen').style.display = 'none';
+  document.getElementById('assemble-result-screen').style.display = 'none';
+  document.getElementById('assemble-pick-screen').style.display = 'flex';
+  assembleSlotIndex = 0;
+  renderAssemblePicker();
+}
+
+const ASSEMBLE_SLOT_NAMES = { passive: '🛡️ 被動', basic: '⚔️ 普攻', skill1: '✨ 技能一', skill2: '🌀 技能二' };
+
+function assembleFilledCount() {
+  return ASSEMBLE_SLOT_ORDER.filter(s => assembleSelectedParts[s] && assembleSelectedParts[s] !== ASSEMBLE_SKIP).length;
+}
+function assembleSkippedCount() {
+  return ASSEMBLE_SLOT_ORDER.filter(s => assembleSelectedParts[s] === ASSEMBLE_SKIP).length;
+}
+
+function renderAssemblePicker() {
+  const slot = ASSEMBLE_SLOT_ORDER[assembleSlotIndex];
+  const isLast = assembleSlotIndex === ASSEMBLE_SLOT_ORDER.length - 1;
+
+  // 4選3：已經裝滿3個部位了，這欄不能再裝，自動標記為跳過
+  if (!assembleSelectedParts[slot] && assembleFilledCount() >= 3) {
+    assembleSelectedParts[slot] = ASSEMBLE_SKIP;
+  }
+
+  // 步驟指示文字 + 圓點
+  document.getElementById('assemble-step-indicator').textContent =
+    `步驟 ${assembleSlotIndex + 1}／${ASSEMBLE_SLOT_ORDER.length} － 選擇${ASSEMBLE_SLOT_NAMES[slot]}`;
+  const dotsWrap = document.getElementById('assemble-step-dots');
+  dotsWrap.innerHTML = '';
+  ASSEMBLE_SLOT_ORDER.forEach((s, i) => {
+    const dot = document.createElement('div');
+    const val = assembleSelectedParts[s];
+    const done = val && val !== ASSEMBLE_SKIP;
+    const skipped = val === ASSEMBLE_SKIP;
+    const active = i === assembleSlotIndex;
+    dot.style.cssText = `width:${active ? 20 : 8}px;height:8px;border-radius:4px;transition:width .15s;
+      background:${active ? '#8fd6ff' : done ? 'rgba(143,214,255,0.5)' : skipped ? 'rgba(255,120,80,0.6)' : 'rgba(255,255,255,0.15)'}`;
+    dotsWrap.appendChild(dot);
+  });
+
+  // 只畫當前欄位的零件卡
+  const container = document.getElementById('assemble-slots');
+  container.innerHTML = '';
+  const row = document.createElement('div');
+  row.style.cssText = 'width:100%;max-width:900px';
+
+  const wasAutoSkipped = assembleSelectedParts[slot] === ASSEMBLE_SKIP && assembleFilledCount() >= 3;
+  if (wasAutoSkipped) {
+    const note = document.createElement('div');
+    note.style.cssText = 'padding:20px;text-align:center;color:#ff9966;font-size:0.85rem;background:rgba(255,120,80,0.08);border:1px dashed rgba(255,120,80,0.4);border-radius:12px';
+    note.textContent = `已經裝備了3個部位，${ASSEMBLE_SLOT_NAMES[slot]}自動跳過不裝備。想改選這欄的話，回上一步把其他欄改掉。`;
+    row.appendChild(note);
+  } else {
+    const optsWrap = document.createElement('div');
+    optsWrap.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;';
+    CUSTOM_PARTS[slot].forEach(opt => {
+      const srcChar = CHARACTERS.find(c => c.name === opt.from);
+      const accent = srcChar ? srcChar.color : '#8fd6ff';
+      const selected = assembleSelectedParts[slot] === opt.id;
+      const card = document.createElement('button');
+      card.style.cssText = `position:relative;padding:0;border-radius:14px;cursor:pointer;text-align:left;overflow:hidden;
+        background:${selected ? `linear-gradient(160deg, ${accent}33, rgba(255,255,255,0.04))` : 'rgba(255,255,255,0.04)'};
+        border:2px solid ${selected ? accent : 'rgba(255,255,255,0.12)'};
+        box-shadow:${selected ? `0 0 16px ${accent}66` : 'none'};
+        font-family:sans-serif;transition:transform .1s;`;
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 10px 4px;background:${accent}22;border-bottom:1px solid ${accent}44">
+          <div style="width:30px;height:30px;border-radius:50%;background:${accent}33;display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:1px solid ${accent}66">${opt.emoji}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:0.82rem;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${opt.name}</div>
+            <div style="font-size:0.55rem;color:${accent};letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">No.${String(CHARACTERS.indexOf(srcChar)+1).padStart(2,'0')} ${opt.from}</div>
+          </div>
+          ${selected ? `<div style="font-size:0.9rem">✅</div>` : ''}
+        </div>
+        <div style="font-size:0.6rem;color:#aaa;line-height:1.45;padding:6px 10px 10px;min-height:44px">${opt.desc}</div>
+      `;
+      card.onclick = () => {
+        assembleSelectedParts[slot] = opt.id;
+        // 選好自動跳下一步，最後一步留給玩家自己按「組裝完成」確認
+        if (!isLast) {
+          assembleSlotIndex++;
+        }
+        renderAssemblePicker();
+      };
+      optsWrap.appendChild(card);
+    });
+    row.appendChild(optsWrap);
+  }
+  container.appendChild(row);
+
+  // 上一步／跳過／下一步按鈕狀態
+  const prevBtn = document.getElementById('assemble-prev-btn');
+  prevBtn.disabled = assembleSlotIndex === 0;
+  prevBtn.style.opacity = assembleSlotIndex === 0 ? '0.3' : '1';
+
+  // 跳過此欄：只有還沒用掉唯一的跳過名額、而且這欄還沒被自動跳過時才能手動按
+  const skipBtn = document.getElementById('assemble-skip-btn');
+  const canSkip = !wasAutoSkipped && assembleSkippedCount() < 1;
+  skipBtn.style.display = canSkip ? 'inline-block' : 'none';
+
+  const chosen = !!assembleSelectedParts[slot];
+  const nextBtn = document.getElementById('assemble-next-btn');
+  nextBtn.textContent = isLast ? '🚀 組裝完成，出發闖關' : '下一步 ➡';
+  nextBtn.disabled = !chosen;
+  nextBtn.style.opacity = chosen ? '1' : '0.4';
+}
+
+function assemblePrevStep() {
+  if (assembleSlotIndex > 0) {
+    assembleSlotIndex--;
+    renderAssemblePicker();
+  }
+}
+
+function assembleSkipStep() {
+  const slot = ASSEMBLE_SLOT_ORDER[assembleSlotIndex];
+  if (assembleSkippedCount() >= 1 && assembleSelectedParts[slot] !== ASSEMBLE_SKIP) return; // 只能跳過一欄
+  assembleSelectedParts[slot] = ASSEMBLE_SKIP;
+  if (assembleSlotIndex < ASSEMBLE_SLOT_ORDER.length - 1) {
+    assembleSlotIndex++;
+  }
+  renderAssemblePicker();
+}
+
+function assembleNextStep() {
+  const slot = ASSEMBLE_SLOT_ORDER[assembleSlotIndex];
+  if (!assembleSelectedParts[slot]) return;
+  if (assembleSlotIndex === ASSEMBLE_SLOT_ORDER.length - 1) {
+    confirmAssemble();
+  } else {
+    assembleSlotIndex++;
+    renderAssemblePicker();
+  }
+}
+
+function confirmAssemble() {
+  const allDecided = ASSEMBLE_SLOT_ORDER.every(s => assembleSelectedParts[s]);
+  const filled = assembleFilledCount();
+  if (!allDecided || filled !== 3) return;
+  const customChar = buildCustomCharacter(assembleSelectedParts);
+  const existingIdx = CHARACTERS.findIndex(c => c.id === 'custom_assembled');
+  if (existingIdx >= 0) CHARACTERS.splice(existingIdx, 1, customChar);
+  else CHARACTERS.push(customChar);
+  assembleStage = 1;
+  showAssembleStage();
+}
+
+function pickAssembleEnemy() {
+  const pool = CHARACTERS.filter(c => c.id !== 'custom_assembled');
+  let enemyChar;
+  do { enemyChar = pool[Math.floor(Math.random() * pool.length)]; }
+  while (enemyChar.id === assembleEnemyId && pool.length > 1);
+  return enemyChar;
+}
+
+function showAssembleStage() {
+  document.getElementById('assemble-pick-screen').style.display = 'none';
+  document.getElementById('assemble-result-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('assemble-stage-screen').style.display = 'flex';
+
+  document.getElementById('as-stage').textContent = `第 ${assembleStage} 關`;
+  document.getElementById('as-best').textContent = assembleBest > 0 ? `🏆 最高紀錄：第 ${assembleBest} 關` : '';
+
+  const enemyChar = pickAssembleEnemy();
+  assembleEnemyId = enemyChar.id;
+  document.getElementById('as-enemy').textContent = `${enemyChar.emoji} ${enemyChar.name}`;
+
+  const robot = CHARACTERS.find(c => c.id === 'custom_assembled');
+  const summaryEl = document.getElementById('as-robot-summary');
+  if (robot && summaryEl) {
+    const parts = [
+      CUSTOM_PARTS.passive.find(p => p.id === robot.parts.passive),
+      CUSTOM_PARTS.basic.find(p => p.id === robot.parts.basic),
+      CUSTOM_PARTS.skill1.find(p => p.id === robot.parts.skill1),
+      CUSTOM_PARTS.skill2.find(p => p.id === robot.parts.skill2),
+    ].filter(Boolean); // 4選3，跳過的那欄找不到零件定義，過濾掉
+    summaryEl.innerHTML = parts.map(p => `<span style="padding:5px 10px;background:rgba(143,214,255,0.1);border:1px solid rgba(143,214,255,0.3);border-radius:14px;font-size:0.72rem;color:#cde">${p.emoji} ${p.name}</span>`).join('');
+  }
+}
+
+function launchAssembleBattle() {
+  p1Choice = 'custom_assembled';
+  p2Choice = assembleEnemyId;
+  document.getElementById('assemble-stage-screen').style.display = 'none';
+  startGame();
+  document.getElementById('assemble-stop-btn').style.display = 'block';
+}
+
+function handleAssembleResult(p1Won) {
+  if (p1Won) {
+    assembleStage++;
+    showAssembleStage();
+  } else {
+    const reached = assembleStage;
+    if (reached > assembleBest) {
+      assembleBest = reached;
+      localStorage.setItem('assembleBest', assembleBest);
+    }
+    document.getElementById('assemble-stage-screen').style.display = 'none';
+    document.getElementById('assemble-result-screen').style.display = 'flex';
+    document.getElementById('as-r-stage').textContent = `抵達第 ${reached} 關`;
+    document.getElementById('as-r-best').textContent = `🏆 最高紀錄：第 ${assembleBest} 關`;
+    document.getElementById('overlay').classList.remove('show');
+  }
+}
+
+function assembleQuit() {
+  const btn = document.getElementById('assemble-stop-btn');
+  if (btn.dataset.confirming === '1') {
+    btn.dataset.confirming = '0';
+    btn.textContent = '✕ 放棄闖關';
+    btn.style.background = 'rgba(255,60,60,0.15)';
+    assembleMode = false;
+    assembleSessionId++;
+    if (gameLoop) { cancelAnimationFrame(gameLoop); gameLoop = null; }
+    document.getElementById('assemble-stop-btn').style.display = 'none';
+    backToSelectFromAssemble();
+  } else {
+    btn.dataset.confirming = '1';
+    btn.textContent = '確定放棄？再按一次';
+    btn.style.background = 'rgba(255,60,60,0.4)';
+    setTimeout(() => {
+      if (btn.dataset.confirming === '1') {
+        btn.dataset.confirming = '0';
+        btn.textContent = '✕ 放棄闖關';
+        btn.style.background = 'rgba(255,60,60,0.15)';
+      }
+    }, 2500);
+  }
+}
+
+function backToSelectFromAssemble() {
+  assembleMode = false;
+  p1Choice = null; p2Choice = null;
+  // 自組機器人只在組裝模式流程中暫時存在，離開時要從共用的 CHARACTERS 移除，
+  // 不然一般選角輪播的 CHARACTERS.length 會多一個，導致頁碼/滑動對不上實際卡片數
+  const customIdx = CHARACTERS.findIndex(c => c.id === 'custom_assembled');
+  if (customIdx >= 0) CHARACTERS.splice(customIdx, 1);
+  document.getElementById('assemble-stop-btn').style.display = 'none';
+  document.getElementById('assemble-result-screen').style.display = 'none';
+  document.getElementById('assemble-pick-screen').style.display = 'none';
+  document.getElementById('assemble-stage-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('select-screen').style.display = 'flex';
+  document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected','p1','p2'));
+  const lbl1 = document.getElementById('p1-selected-label');
+  const lbl2 = document.getElementById('p2-selected-label');
+  if (lbl1) lbl1.textContent = '請選擇角色';
+  if (lbl2) lbl2.textContent = '請選擇角色';
+  const startBtn = document.getElementById('start-btn');
+  if (startBtn) startBtn.disabled = true;
+}
+
+document.getElementById('assemble-btn').addEventListener('click', startAssembleMode);
 </script>
 </body>
 </html>
