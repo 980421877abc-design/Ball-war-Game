@@ -744,19 +744,6 @@
     animation: rosterFadeIn 0.15s ease;
   }
   @keyframes rosterFadeIn { from { opacity:0; transform:translateY(-4px);} to {opacity:1; transform:translateY(0);} }
-  @keyframes recBlink { 0%, 100% { opacity:1; } 50% { opacity:0.25; } }
-  #rec-indicator {
-    display:none; position:fixed; top:10px; left:10px; z-index:60;
-    align-items:center; gap:6px; background:rgba(0,0,0,0.55);
-    padding:4px 10px; border-radius:12px; font-size:0.7rem; color:#ff6b6b;
-    letter-spacing:.05em; font-family:sans-serif; font-weight:700;
-    border:1px solid rgba(255,80,80,0.4);
-  }
-  #rec-indicator .dot {
-    width:8px; height:8px; border-radius:50%; background:#ff3333;
-    display:inline-block; animation:recBlink 1s infinite;
-  }
-  #download-video-btn { display:none; margin-top:6px; }
   .roster-detail-top { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.55rem; }
   .roster-detail-emoji { font-size: 1.9rem; flex-shrink: 0; }
   .roster-detail-name { font-size: 1rem; font-weight: 700; letter-spacing: 0.05em; }
@@ -1062,7 +1049,6 @@
 
 
 <div id="game-screen">
-  <div id="rec-indicator"><span class="dot"></span>REC</div>
   <div class="speed-control" id="speed-control">
     <button class="speed-btn" data-speed="0.5">0.5x</button>
     <button class="speed-btn" data-speed="1">1x</button>
@@ -1116,7 +1102,6 @@
   "></div>
   <button class="replay-btn" id="replay-btn">再戰一局</button>
   <button class="replay-btn" id="back-btn" style="opacity:0.6">角色選擇</button>
-  <button class="replay-btn" id="download-video-btn" style="border-color:#4caf50;color:#7fdb7f">⬇️ 下載對戰影片</button>
 </div>
 
 <script>
@@ -1127,18 +1112,24 @@ function getAudioCtx() {
   return audioCtx;
 }
 
+// 失真曲線只跟這個數學式有關，跟音效種類無關，預先算好重複使用即可，
+// 避免每次 playHitSound（槍手連射時每 0.09 秒觸發一次）都重算 256 筆陣列造成主執行緒卡頓
+const HIT_SOUND_DISTORTION_CURVE = (() => {
+  const curve = new Float32Array(256);
+  for (let i = 0; i < 256; i++) {
+    const x = (i * 2) / 256 - 1;
+    curve[i] = (Math.PI + 300) * x / (Math.PI + 300 * Math.abs(x));
+  }
+  return curve;
+})();
+
 function playHitSound(type) {
   try {
     const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     const dist = ctx.createWaveShaper();
-    const curve = new Float32Array(256);
-    for (let i = 0; i < 256; i++) {
-      const x = (i * 2) / 256 - 1;
-      curve[i] = (Math.PI + 300) * x / (Math.PI + 300 * Math.abs(x));
-    }
-    dist.curve = curve;
+    dist.curve = HIT_SOUND_DISTORTION_CURVE;
     osc.connect(dist); dist.connect(gain); gain.connect(ctx.destination);
     const now = ctx.currentTime;
 
@@ -1692,7 +1683,7 @@ yuki:'這是對我哥哥重要的人來說，她的理想'
     desc: '「嘿，兄弟。」一名看似隨便的骷髏，似乎非常慵懶，他想跟你說個玩笑。',
     stats: ['完美閃避','骨牆','龍骨砲'],
     skills: [
-      '被動「次數血條」：血量固定為23點，無論實際傷害多少，每次受傷固定只扣1點。',
+      '被動「完美閃避」：血量固定為23點，無論實際傷害多少，每次受傷固定只扣1點，無視場地效果。',
       '普攻「骨頭」：朝敵人射出一根骨頭，貫穿敵人，每0.1秒造成10點傷害，冷卻1秒。',
       '技能一「骨牆」：隨機從地圖上/下/左/右其中一側生成一排骨頭（長度約邊長1/3），並平移至對面牆壁，碰到的敵人每0.1秒受到30點傷害，冷卻5秒。',
       '重力：每使用兩次骨牆，會在第二次發動時額外將敵人強制往上下左右其中一方向拖走，敵人因此撞牆時依移動距離受到傷害。',
@@ -1701,6 +1692,19 @@ yuki:'這是對我哥哥重要的人來說，她的理想'
     ],
     color: '#e8e8e8', glowColor: 'rgba(120,190,230,0.6)', type: 'sans',
     winQuote: '在這樣的日子裡，像你這樣的孩子……就該在地獄裡焚燒。'
+  },
+  {
+    id: 'pucci', emoji: '🤵🏾', weapon: '🐍', name: '普奇神父',
+    desc: '「你相信引力嗎？」隱藏在監獄深處的神父，以白蛇窺探敵人的動向，於寂靜中低聲唸誦通往天堂的密語。當重力降臨、時間開始加速，通往「天堂」的階梯便無人能夠阻擋。',
+    stats: ['白蛇', '密語', '新月', '天堂製造'],
+    skills: [
+      '「白蛇」：白蛇如替身般環繞在普奇身旁；敵人進入偵測範圍時，白蛇會迅速衝出以刺擊攻擊，造成60傷害後歸位（冷卻3秒）。命中瞬間會在場地隨機處丟出一片CD光碟，光碟未被踩到之前，被咬中的敵人所有技能冷卻都像時間靜止一樣不再流動；敵人踩到光碟後，冷卻才重新開始運作。同一名敵人的光碟效果尚未解除前，白蛇不會再對其出擊。',
+      '「密語」：若白蛇有一小段時間沒有出擊，普奇會停下腳步，依序低聲唸出十四句密語：「螺旋階梯」「獨角仙」「廢棄街道」「無花果塔」「獨角仙」「苦傷道」「獨角仙」「特異點」「喬托」「天使」「繡球花」「獨角仙」「特異點」「秘密皇帝」。受傷或出擊都會打斷唸誦（已唸出的部分不會歸零），十四句唸畢後，場上隨機處會誕生一名爬向普奇的綠色嬰兒。',
+      '「新月」：嬰兒觸碰到普奇後，白蛇消失、替身進化為新月；範圍內敵人會被捲入重力隨機甩向上下左右一方，依甩飛距離造成傷害（冷卻1秒），受影響的敵人有一段時間只能貼牆移動。新月降臨約8秒後，場地正中央會出現一座🚀。',
+      '「天堂製造」：普奇觸碰到🚀後停止移動，蓄力3秒，新月進化為天堂製造。此後普奇自身與己方攻擊的速度提升1.2倍，之後每3秒再加倍一次，普奇的碰撞傷害也隨速度倍率同步提升；天堂製造在場時，DIO的世界時停持續時間會縮短，且時停中普奇仍可以極慢速度移動。'
+    ],
+    color: '#8e6bbf', glowColor: 'rgba(142,107,191,0.6)', type: 'pucci',
+    winQuote: ['我很敬佩第一個吃香菇的人。', '再說一次，時間要加速了！', '你相信引力嗎？']
   }
 ];
 
@@ -2787,6 +2791,39 @@ const SANS_ULT_WIDTH_START    = 34;    // 大招起始光束寬度
 const SANS_ULT_WIDTH_SHRINK   = 1.2;   // 大招每次縮小的寬度量
 const SANS_ULT_WARN_DUR       = 0.25;  // 大招光束預警時間（先顯示細線警示，結束後才真正發射並判定傷害，讓對手有時間躲）
 const SANS_LASER_WARN_DUR     = 0.35;  // 技能二「龍骨砲」預警時間（砲台先蓄力，結束後才真正發射）
+const SANS_HIT_IFRAME_DUR     = 0.25;  // 受傷無敵：每次受傷後短暫無敵秒數，避免同一瞬間被多重攻擊疊加扣光格數
+const SANS_CONTINUOUS_TICK_INTERVAL = 0.35;  // 持續傷害對Sans的最短命中間隔（DPS數值是照一般血量設計的，需要限頻避免瞬間燒光）
+// ── 普奇神父 專屬常數 ──
+const PUCCI_SNAKE_RADIUS        = 30;   // 白蛇環繞半徑（同DIO替身）
+const PUCCI_SNAKE_DETECT_RANGE  = 140;  // 白蛇偵測敵人並出擊的範圍
+const PUCCI_SNAKE_DASH_SPEED    = 900;  // 白蛇衝刺／歸位速度(px/s)
+const PUCCI_SNAKE_STAB_DAMAGE   = 60;   // 白蛇刺擊傷害
+const PUCCI_SNAKE_ATTACK_CD     = 3;    // 白蛇出擊冷卻
+const PUCCI_SNAKE_HIT_RANGE     = RADIUS + 14; // 白蛇刺擊命中判定距離
+const PUCCI_DISC_FREEZE_CD      = 6;    // 光碟凍結效果：與白蛇出擊共用冷卻，同一目標效果結束前不會再出擊
+const PUCCI_CHANT_IDLE_DELAY    = 2;    // 白蛇多久沒出擊，普奇才開始唸密語
+const PUCCI_CHANT_LINE_TIME     = 0.4;  // 密語每句所需時間
+const PUCCI_CHANT_LINES = ['螺旋階梯','獨角仙','廢棄街道','無花果塔','獨角仙','苦傷道','獨角仙','特異點','喬托','天使','繡球花','獨角仙','特異點','秘密皇帝'];
+const PUCCI_BABY_SPEED          = 90;   // 綠色嬰兒爬行速度
+const PUCCI_BABY_CATCH_RANGE    = RADIUS + 20; // 嬰兒觸碰普奇判定距離
+const PUCCI_MOON_RADIUS         = 140;  // 新月重力圈半徑
+const PUCCI_MOON_GRAVITY_CD     = 1;    // 新月重力甩動冷卻
+const PUCCI_MOON_WALLCLING_DUR  = 2.5;  // 新月甩飛落地後，貼牆限制移動的持續秒數
+const PUCCI_MOON_WALLCLING_SLOW = 0.25; // 貼牆限制移動期間的速度倍率
+const PUCCI_GRAVITY_DMG_PER_PX  = 0.7;  // 新月重力甩牆：每移動1px的傷害（獨立於Sans的骨牆重力，不會觸發骨牆）
+const PUCCI_GRAVITY_PULL_SPEED  = 600;  // 新月重力牽引最高速度(px/s)
+const PUCCI_GRAVITY_RAMP_TIME   = 0.5;  // 新月重力牽引「加速拉起」所需秒數
+const PUCCI_GRAVITY_DURATION    = 1.5;  // 新月重力牽引最長持續秒數（保險用，正常會提早撞牆結束）
+const PUCCI_MOON_ROCKET_DELAY   = 8;    // 新月開始後多久場中生成🚀
+const PUCCI_ROCKET_HIT_RANGE    = RADIUS + 18; // 觸碰🚀判定（嚴一點）
+const PUCCI_HEAVEN_CHARGE_TIME  = 2;    // 觸碰🚀後蓄力進化天堂製造所需秒數
+const PUCCI_HEAVEN_SPEED_BASE     = 1.5; // 天堂製造初始加速倍率
+const PUCCI_HEAVEN_SPEED_INTERVAL = 3;   // 天堂製造：每隔幾秒速度倍率再翻倍
+const PUCCI_HEAVEN_SPEED_CAP      = 18;  // 速度倍率上限（避免數值失控無法遊玩）
+const PUCCI_HEAVEN_COLLIDE_BASE   = 12;  // 天堂製造：碰撞傷害基礎值（隨速度倍率提升）
+const PUCCI_HEAVEN_TIMESTOP_CRAWL = 0.12; // 天堂製造期間，他人時停中普奇仍可用此比例速度緩慢移動
+const PUCCI_HEAVEN_DIOWORLD_SHORTEN = 0.5; // 天堂製造在場時，DIO世界時停持續時間的縮減倍率
+const PUCCI_HEAVEN_CONTACT_CD     = 0.45; // 天堂製造：碰撞傷害觸發CD（避免同一次貼身重複計算）
 const MIN_SPEED          = 100;   // 最低移動速度（技能停止中除外）
 const BOOST_INTERVAL_MIN = 3;
 const BOOST_INTERVAL_MAX = 5;
@@ -2798,11 +2835,11 @@ const BOOST_MIN_MAGNITUDE = 25; // 最低加速合力，避免幾乎沒動
 const CUSTOM_BASIC_CHEF_INTERVAL   = CHEF_ATTACK_INTERVAL;   // 飛刀CD
 const CUSTOM_BASIC_DRUNK_INTERVAL  = DRUNK_ATTACK_INTERVAL;  // 拋酒CD
 const CUSTOM_BASIC_GUNNER_INTERVAL = 0.6;   // 速射CD
-const CUSTOM_BASIC_GUNNER_DAMAGE   = 45;    // 速射每發傷害
+const CUSTOM_BASIC_GUNNER_DAMAGE   = 40;    // 速射每發傷害
 const CUSTOM_BASIC_GUNNER_SPEED    = 420;   // 速射子彈速度
 const CUSTOM_CHARGE_INTERVAL       = 5;     // 蓄能裝彈：每幾秒獲得一層
 const CUSTOM_CHARGE_MAX_STACKS     = 3;     // 蓄能裝彈：層數上限
-const CUSTOM_CHARGE_BONUS_MULT     = 1.5;   // 消耗一層後，普攻傷害倍率
+const CUSTOM_CHARGE_BONUS_MULT     = 1.2;   // 消耗一層後，普攻傷害倍率
 const CUSTOM_TRAP_PASSIVE_INTERVAL = 6;     // 尖刺結界：每幾秒佈置一個
 const CUSTOM_SKILL1_VAMPIRE_INTERVAL = VAMPIRE_DASH_INTERVAL; // 蝙蝠狂襲CD
 const CUSTOM_SKILL1_VAMPIRE_DAMAGE   = 90;  // 蝙蝠狂襲撞擊傷害
@@ -3232,160 +3269,6 @@ let gameSpeed = 1;
 let state    = {};
 let updateWuxingFn = null; // 無形的變身更新邏輯（在 startGame 內賦值，因為需要用到 makeBall 閉包）
 
-// ══════════════ 對戰錄影功能 ══════════════
-const RECORD_SCALE = 2;      // 錄影解析度倍率（畫布本身只有 350x350，放大避免影片太糊）
-const HUD_STRIP_H  = 62;     // 錄影畫面頂部留給血條/名稱的高度
-let recording        = false;
-let mediaRecorder     = null;
-let recordedChunks    = [];
-let recordCanvas      = null;
-let recordCtx         = null;
-let recordStream      = null;
-let recordRAF         = null;
-let recordedBlobUrl   = null;
-let recordStartTimestamp = 0;
-let currentMatchLabel = '';
-
-function setupRecordCanvas() {
-  if (recordCanvas) return;
-  recordCanvas = document.createElement('canvas');
-  recordCanvas.width  = W * RECORD_SCALE;
-  recordCanvas.height = (H + HUD_STRIP_H) * RECORD_SCALE;
-  recordCtx = recordCanvas.getContext('2d');
-}
-
-// 把某一位玩家的名稱／血條畫到錄影畫布上（讀取現有 DOM 的即時數值，不用另外算血量）
-function drawHudSlot(rc, n, x, y, align) {
-  const nameEl = document.getElementById(`p${n}-hud-name`);
-  const numEl  = document.getElementById(`p${n}-hp-num`);
-  const barEl  = document.getElementById(`p${n}-bar`);
-  if (!nameEl || !barEl) return;
-
-  // 注意：1、2 號玩家的外層血條容器沒有 id（只有 3、4 號才有 p3-block/p4-block），
-  // 所以改用血條元素本身往上找 .hp-block 容器來判斷目前是否顯示，較穩妥。
-  const wrap = barEl.closest('.hp-block');
-  if (wrap) {
-    const cs = getComputedStyle(wrap);
-    if (wrap.style.display === 'none' || cs.display === 'none') return;
-  }
-
-  const barW = 150;
-  const pct  = Math.max(0, Math.min(100, parseFloat(barEl.style.width) || 0));
-  let barColor = '#8bc34a';
-  try { barColor = getComputedStyle(barEl).backgroundColor || barColor; } catch (e) {}
-
-  const barX = (align === 'left') ? x : x - barW;
-
-  rc.textAlign = align;
-  rc.textBaseline = 'top';
-  rc.fillStyle = '#e8dcc8';
-  rc.font = '700 13px "Noto Serif TC", sans-serif';
-  rc.fillText((nameEl.textContent || '').trim(), align === 'left' ? barX : barX + barW, y);
-
-  rc.fillStyle = 'rgba(255,255,255,0.15)';
-  rc.fillRect(barX, y + 17, barW, 7);
-  rc.fillStyle = barColor;
-  const fillW = barW * (pct / 100);
-  rc.fillRect(align === 'left' ? barX : barX + barW - fillW, y + 17, fillW, 7);
-
-  rc.fillStyle = '#bbb';
-  rc.font = '10px sans-serif';
-  rc.fillText((numEl ? numEl.textContent : '').trim(), align === 'left' ? barX : barX + barW, y + 27);
-}
-
-function drawRecordFrame() {
-  if (!recordCtx) return;
-  const rc = recordCtx;
-  rc.setTransform(RECORD_SCALE, 0, 0, RECORD_SCALE, 0, 0);
-  rc.fillStyle = '#0a0a0f';
-  rc.fillRect(0, 0, W, H + HUD_STRIP_H);
-
-  drawHudSlot(rc, 1, 6, 4, 'left');
-  drawHudSlot(rc, 2, W - 6, 4, 'right');
-  drawHudSlot(rc, 3, 6, 34, 'left');
-  drawHudSlot(rc, 4, W - 6, 34, 'right');
-
-  const timerEl = document.getElementById('timer-display');
-  if (timerEl) {
-    rc.fillStyle = '#c8a84b';
-    rc.font = '700 12px sans-serif';
-    rc.textAlign = 'center';
-    rc.textBaseline = 'top';
-    rc.fillText(timerEl.textContent || '', W / 2, 4);
-  }
-
-  rc.drawImage(canvas, 0, HUD_STRIP_H, W, H);
-}
-
-function recordTick() {
-  if (!recording) return;
-  drawRecordFrame();
-  recordRAF = requestAnimationFrame(recordTick);
-}
-
-function startRecording() {
-  try {
-    if (recording) stopRecording();
-    if (typeof MediaRecorder === 'undefined' || !canvas.captureStream) {
-      console.warn('此瀏覽器不支援錄影功能（缺少 MediaRecorder / captureStream）');
-      return;
-    }
-    setupRecordCanvas();
-    recordedChunks = [];
-    recordStream = recordCanvas.captureStream(30);
-
-    let mimeType = 'video/webm;codecs=vp9';
-    if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm;codecs=vp8';
-    if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
-
-    mediaRecorder = new MediaRecorder(recordStream, { mimeType, videoBitsPerSecond: 4_000_000 });
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data && e.data.size > 0) recordedChunks.push(e.data);
-    };
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
-      if (recordedBlobUrl) URL.revokeObjectURL(recordedBlobUrl);
-      recordedBlobUrl = URL.createObjectURL(blob);
-      const dlBtn = document.getElementById('download-video-btn');
-      if (dlBtn) dlBtn.style.display = 'inline-block';
-    };
-
-    mediaRecorder.start();
-    recording = true;
-    recordStartTimestamp = Date.now();
-    const indicator = document.getElementById('rec-indicator');
-    if (indicator) indicator.style.display = 'flex';
-    const dlBtn = document.getElementById('download-video-btn');
-    if (dlBtn) dlBtn.style.display = 'none';
-    recordRAF = requestAnimationFrame(recordTick);
-  } catch (err) {
-    console.warn('錄影啟動失敗：', err);
-    recording = false;
-  }
-}
-
-function stopRecording() {
-  if (!recording) return;
-  recording = false;
-  if (recordRAF) { cancelAnimationFrame(recordRAF); recordRAF = null; }
-  const indicator = document.getElementById('rec-indicator');
-  if (indicator) indicator.style.display = 'none';
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
-  }
-}
-
-document.getElementById('download-video-btn').addEventListener('click', () => {
-  if (!recordedBlobUrl) return;
-  const a = document.createElement('a');
-  a.href = recordedBlobUrl;
-  const safeLabel = (currentMatchLabel || 'match').replace(/[\\/:*?"<>|]/g, '');
-  a.download = `對戰錄影_${safeLabel}_${Date.now()}.webm`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-});
-
 // ──────────────── BUTTONS ────────────────
 document.getElementById('start-btn').addEventListener('click', startGame);
 document.getElementById('replay-btn').addEventListener('click', startGame);
@@ -3485,7 +3368,6 @@ document.getElementById('bg-color-picker').addEventListener('input', (e) => {
   selectedBgColor = e.target.value;
 });
 document.getElementById('back-btn').addEventListener('click', () => {
-  stopRecording();
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('select-screen').style.display = 'flex';
@@ -3505,7 +3387,6 @@ document.querySelectorAll('.speed-btn').forEach(btn => {
 
 function forfeitGame() {
   if (!gameLoop) return;
-  stopRecording();
   cancelAnimationFrame(gameLoop);
   gameLoop = null;
   const overlay = document.getElementById('overlay');
@@ -3517,8 +3398,8 @@ function forfeitGame() {
   overlay.classList.add('show');
 }
 
-const P1_COLORS ={ chef:'#e84545',drunk:'#7b4cca', opm:'#f5f5f5', vampire:'#8b1a8b', gojo:'#00cfff', cursed:'#c0392b', trapper:'#27ae60', yi:'#e8e8e8', gunner:'#b8860b', samurai:'#d4af37', mage:'#9b59b6', thunder:'#f1c40f', blacksmith:'#cd7f32', naobito:'#c8c8e8', itachi:'#8b0000', yuta:'#ff6fa5', engineer:'#3a8fd6', cannondad:'#bdbdbd', dio:'#f5d020', tiger:'#cc2200', stargirl:'#ffe066', obito:'#ff6600', fisherman:'#4a90d9', geto:'#5b3a8e', sakiko:'#c9a4d1', joseph:'#2f7dc0', steve:'#4a8f3c',daji:'#e08ac7',yuki:'#b8860b',wuxing:'#9b8cce',sans:'#e8e8e8' };
-const P2_COLORS = { chef:'#ff9f43', drunk:'#48dbfb', opm:'#aaaaaa', vampire:'#cc44cc', gojo:'#7ff8ff', cursed:'#e74c3c', trapper:'#2ecc71', yi:'#cccccc', gunner:'#f0c040', samurai:'#ffe88a', mage:'#d7aefb', thunder:'#ffe066', blacksmith:'#e8a840', naobito:'#aaaacc', itachi:'#ff3333', yuta:'#ffa3c8', engineer:'#7ec8ff', cannondad:'#787878', dio:'#fff066', tiger:'#ff4422', stargirl:'#fff5aa', obito:'#ffaa44', fisherman:'#8ec6ff', geto:'#a678e0', sakiko:'#e8cdf0', joseph:'#6fb8ee', steve:'#8fd96b',daji:'#e8cdf8' ,yuki:'#b8960b',wuxing:'#c3b8e8',sans:'#a8d8f0'};
+const P1_COLORS ={ chef:'#e84545',drunk:'#7b4cca', opm:'#f5f5f5', vampire:'#8b1a8b', gojo:'#00cfff', cursed:'#c0392b', trapper:'#27ae60', yi:'#e8e8e8', gunner:'#b8860b', samurai:'#d4af37', mage:'#9b59b6', thunder:'#f1c40f', blacksmith:'#cd7f32', naobito:'#c8c8e8', itachi:'#8b0000', yuta:'#ff6fa5', engineer:'#3a8fd6', cannondad:'#bdbdbd', dio:'#f5d020', tiger:'#cc2200', stargirl:'#ffe066', obito:'#ff6600', fisherman:'#4a90d9', geto:'#5b3a8e', sakiko:'#c9a4d1', joseph:'#2f7dc0', steve:'#4a8f3c',daji:'#e08ac7',yuki:'#b8860b',wuxing:'#9b8cce',sans:'#e8e8e8',pucci:'#8e6bbf' };
+const P2_COLORS = { chef:'#ff9f43', drunk:'#48dbfb', opm:'#aaaaaa', vampire:'#cc44cc', gojo:'#7ff8ff', cursed:'#e74c3c', trapper:'#2ecc71', yi:'#cccccc', gunner:'#f0c040', samurai:'#ffe88a', mage:'#d7aefb', thunder:'#ffe066', blacksmith:'#e8a840', naobito:'#aaaacc', itachi:'#ff3333', yuta:'#ffa3c8', engineer:'#7ec8ff', cannondad:'#787878', dio:'#fff066', tiger:'#ff4422', stargirl:'#fff5aa', obito:'#ffaa44', fisherman:'#8ec6ff', geto:'#a678e0', sakiko:'#e8cdf0', joseph:'#6fb8ee', steve:'#8fd96b',daji:'#e8cdf8' ,yuki:'#b8960b',wuxing:'#c3b8e8',sans:'#a8d8f0',pucci:'#c9a8e8'};
 
 // 玩家 1、2 用既有的兩張色表；玩家 3 以上（多人混戰用）用同一顏色做色調偏移，避免撞色。
 // 之後若要幫玩家 3/4 手動指定色表，只要新增 P3_COLORS / P4_COLORS 並在這裡優先讀取即可。
@@ -3610,6 +3491,29 @@ const PROGRESS_HANDLERS = {
     return {
       atFrac: 1 - Math.min(b.samuraiParryTimer / SAMURAI_PARRY_INTERVAL, 1),
       barColor: b.samuraiNextIsShimetsu ? '#ff6600' : b.char.color
+    };
+  },
+  pucci(b) {
+    if (b.pucciPhase === 'heaven') {
+      // 天堂製造：顯示距離下次加速翻倍的進度，倍率越高條越紅
+      return {
+        atFrac: Math.max(0, Math.min(1, b.pucciSpeedMultTimer / PUCCI_HEAVEN_SPEED_INTERVAL)),
+        barColor: (b.pucciSpeedMult || 1) >= PUCCI_HEAVEN_SPEED_CAP ? '#ff2222' : '#ffe066'
+      };
+    }
+    if (b.pucciPhase === 'moon') {
+      return {
+        atFrac: 1 - Math.max(0, Math.min(1, (b.pucciMoonGravityCd || 0) / PUCCI_MOON_GRAVITY_CD)),
+        barColor: '#7ed957'
+      };
+    }
+    // 白蛇階段：唸密語時特殊配色，否則顯示白蛇出擊CD
+    if (b.pucciChantActive) {
+      return { atFrac: Math.min(1, b.pucciChantIndex / PUCCI_CHANT_LINES.length), barColor: '#e8dcff' };
+    }
+    return {
+      atFrac: 1 - Math.max(0, Math.min(1, (b.pucciSnakeAttackCd || 0) / PUCCI_SNAKE_ATTACK_CD)),
+      barColor: b.pucciDiscFrozen ? '#555' : b.char.color
     };
   },
   thunder(b) {
@@ -3786,6 +3690,24 @@ const PROGRESS_HANDLERS = {
     if (b.hp <= 1) return { atFrac: 1, barColor: '#ff5050' };
     return {
       atFrac: Math.max(0, Math.min(1, 1 - (b.sansLaserTimer || 0) / SANS_LASER_INTERVAL)),
+      barColor: b.char.color
+    };
+  },
+  daji(b) {
+    if (b.dajiCharmTimer > 0) {
+      return { atFrac: 1 - (b.dajiCharmTimer / DAJI_CHARM_DURATION), barColor: '#ff6fd8' };
+    }
+    if (b.dajiSkill2Channel > 0) {
+      return { atFrac: 1 - (b.dajiSkill2Channel / DAJI_ENH_CHANNEL_TIME), barColor: '#c39bd3' };
+    }
+    return {
+      atFrac: 1 - Math.max(0, Math.min(1, (b.dajiSkill1Cd || 0) / DAJI_SKILL1_CD)),
+      barColor: b.dajiEnhanceReady ? '#ffd700' : b.char.color
+    };
+  },
+  wuxing(b) {
+    return {
+      atFrac: 1 - Math.max(0, Math.min(1, (b.wuxingTimer || 0) / WUXING_TRANSFORM_INTERVAL)),
       barColor: b.char.color
     };
   }
@@ -4146,6 +4068,7 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       // 妲己灼燒（任何角色都可能被灼燒）
       dajiBurnTimer:        0,
       dajiBurnTick:         0,
+      dajiBurnOwnerPlayer:  null,     // 灼燒的施加者玩家（供傷害走dealDamage時歸屬統計）
       // 大喬（波紋使者）專屬狀態
       josephState:          ch.type === 'joseph' ? 'charging' : null,       // 'charging' | 'waiting' | 'breathing' | 'failed'
       josephChargeTimer:    ch.type === 'joseph' ? 0 : null,                // 蓄力計時
@@ -4239,6 +4162,8 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       sansUltActive:   ch.type === 'sans' ? false : null,             // 大風車進行中
       sansUltStep:     ch.type === 'sans' ? 0 : null,                 // 大風車目前第幾次攻擊
       sansUltTimer:    ch.type === 'sans' ? 0 : null,                 // 大風車攻擊間隔倒數
+      sansHitIframeTimer: ch.type === 'sans' ? 0 : null,              // 受傷後短暫無敵倒數（避免同時被多重攻擊瞬間扣光格數）
+      sansContinuousTickTimer: ch.type === 'sans' ? 0 : null,         // 持續傷害限頻倒數（電網/毒圈/捌等DOT技能專用）
       sansUltPending:  false,        // 任何球都可能被dealDamage標記：血量歸零前先攔截，交給更新迴圈觸發大招
       // 重力機制（任何角色都可能被Sans的骨牆重力強制拖走去撞牆）
       sansGravityTimer:      0,
@@ -4248,6 +4173,44 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
       sansGravityStartX:     0,
       sansGravityStartY:     0,
       sansGravityOwnerPlayer: null,
+
+      // ── 普奇神父 專屬欄位 ──
+      pucciPhase:            ch.type === 'pucci' ? 'snake' : null,   // 'snake' | 'moon' | 'heaven'
+      pucciSnakeState:       ch.type === 'pucci' ? 'orbit' : null,   // 'orbit' | 'dashing' | 'returning'
+      pucciSnakeAngle:       ch.type === 'pucci' ? Math.random() * Math.PI * 2 : null,
+      pucciSnakeX:           ch.type === 'pucci' ? x : null,
+      pucciSnakeY:           ch.type === 'pucci' ? y : null,
+      pucciSnakeTargetRef:   null,          // 白蛇目前鎖定衝刺的目標球
+      pucciSnakeAttackCd:    ch.type === 'pucci' ? PUCCI_SNAKE_ATTACK_CD * 0.4 : null, // 白蛇出擊冷卻
+      pucciSnakeIdleTimer:   ch.type === 'pucci' ? 0 : null,          // 距離上次出擊經過秒數（用來觸發密語）
+      pucciChantActive:      ch.type === 'pucci' ? false : null,      // 是否正在唸密語
+      pucciChantIndex:       ch.type === 'pucci' ? 0 : null,          // 已唸出第幾句（進度不因中斷歸零）
+      pucciChantLineTimer:   ch.type === 'pucci' ? 0 : null,          // 目前這句已蓄唸秒數
+      pucciChantDone:        ch.type === 'pucci' ? false : null,      // 十四句是否已唸畢
+      pucciBabySpawned:      ch.type === 'pucci' ? false : null,      // 綠色嬰兒是否已生成
+      pucciBabyX:            ch.type === 'pucci' ? 0 : null,
+      pucciBabyY:            ch.type === 'pucci' ? 0 : null,
+      pucciMoonGravityCd:    ch.type === 'pucci' ? 0 : null,          // 新月重力甩動冷卻
+      pucciMoonTimer:        ch.type === 'pucci' ? 0 : null,          // 新月降臨經過秒數（用來判斷🚀生成時機）
+      pucciRocketSpawned:    ch.type === 'pucci' ? false : null,      // 🚀是否已生成
+      pucciHeavenCharging:   ch.type === 'pucci' ? false : null,      // 是否正在觸碰🚀後蓄力進化
+      pucciHeavenChargeTimer: ch.type === 'pucci' ? 0 : null,
+      pucciHeavenActive:     ch.type === 'pucci' ? false : null,      // 天堂製造是否已啟動
+      pucciSpeedMult:        ch.type === 'pucci' ? 1 : null,          // 天堂製造：目前速度倍率
+      pucciSpeedMultTimer:   ch.type === 'pucci' ? 0 : null,          // 天堂製造：距離下次翻倍經過秒數
+      pucciContactCd:        ch.type === 'pucci' ? 0 : null,          // 天堂製造：碰撞傷害觸發CD
+      pucciLastHp:           ch.type === 'pucci' ? MAX_HP : null,      // 上一幀血量（偵測受傷以中斷密語）
+      // 任何角色都可能被普奇的白蛇咬中：CD光碟凍結（技能冷卻停止流動，直到踩到光碟）
+      pucciDiscFrozen:       false,
+      pucciWallClingTimer:   0,      // 被新月重力甩飛落地後，短暫只能貼牆移動
+      // 新月重力機制（獨立於Sans骨牆重力，任何角色都可能被普奇的新月甩向牆壁）
+      pucciGravityTimer:      0,
+      pucciGravityElapsed:    0,
+      pucciGravityDirX:       0,
+      pucciGravityDirY:       0,
+      pucciGravityStartX:     0,
+      pucciGravityStartY:     0,
+      pucciGravityOwnerPlayer: null,
     };
   }
 
@@ -4256,8 +4219,9 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
     // DIO（一擊必殺 MAX_HP 傷害）跟一拳超人（一拳一擊必殺）機制太極端，
     // 無形變身抽到等於瞬間獲得一擊必殺技，直接停用這兩種形態。
     // Sans（固定23點的次數血條，跟一般MAX_HP血量制不相容）同樣排除。
-    const pool = CHARACTERS.filter(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm' && c.id !== 'sans' && c.id !== ball.char.id);
-    if (pool.length === 0) return CHARACTERS.find(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm' && c.id !== 'sans') || ball.char;
+    // 普奇神父（跨多階段、場上全域道具如CD光碟／🚀的複雜狀態機）同樣排除，避免變身時狀態不完整。
+    const pool = CHARACTERS.filter(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm' && c.id !== 'sans' && c.id !== 'pucci' && c.id !== ball.char.id);
+    if (pool.length === 0) return CHARACTERS.find(c => c.id !== 'wuxing' && c.id !== 'dio' && c.id !== 'opm' && c.id !== 'sans' && c.id !== 'pucci') || ball.char;
     return pool[Math.floor(Math.random() * pool.length)];
   }
 
@@ -4365,6 +4329,8 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
     engLaserFX: [],        // 工程師：雷射視覺特效列表
     sansWalls: [],          // Sans：骨牆列表
     sansLaserFX: [],        // Sans：龍骨砲／大風車光束視覺特效列表
+    pucciDiscs: [],          // 普奇神父：場上CD光碟列表 {x,y,ownerPlayer}
+    pucciRocket: null,       // 普奇神父：場上🚀 {x,y,ownerPlayer}
     matchEnded: false,      // 比賽是否已分出勝負（凍結後續戰鬥邏輯用）
     cannonBeamFX: [],        // 砲爹：光柱視覺特效列表
     cannonBlastFX: [],       // 砲爹：光砲視覺特效列表
@@ -4426,9 +4392,6 @@ gojoChargingVisual: ch.type === 'gojo' ? false : null,
   });
 
   updateHUD();
-
-  currentMatchLabel = chs.map(c => c.displayName).join('_vs_');
-  if (!endlessMode) startRecording(); else stopRecording();
 
   if (gameLoop) cancelAnimationFrame(gameLoop);
   lastTime = performance.now();
@@ -4675,6 +4638,7 @@ function updateBeachArena(dt) {
       state.beachElectrifyTimer = ARENA_BEACH_ELECTRIFY_TICK;
       for (const b of state.balls) {
         if (b.char.type === 'thunder') continue; // 施法者自身免疫
+        if (!arenaHealDmgAffects(b)) continue; // Sans不受場地傷害影響
         if (b.x < state.beachBoundary) {
           dealDamage(b, ARENA_BEACH_ELECTRIFY_DMG);
           state.hitFlashes.push({ x: b.x, y: b.y, r: 30, alpha: 1, color: '#fff066', t: 0.35 });
@@ -4690,6 +4654,16 @@ function updateBeachArena(dt) {
 function dealDamage(target, dmg, options = {}) {
   // 無敵狀態（擊殺動畫播放中）不受傷
   if (target.invincible) return;
+  // Sans 受傷無敵：剛挨過一下之後短暫無敵，避免同一瞬間被多重「單次攻擊」疊加扣光「次數血條」
+  // 持續性傷害（電網／大砲光柱／灼燒／毒圈等每幀持續判定，options.continuousDamage）不受此無敵影響，
+  // 否則這類技能對Sans幾乎完全失效（每幀都會被無敵擋掉）
+  if (target.char && target.char.type === 'sans' && target.sansHitIframeTimer > 0 && !options.bypassParry && !options.continuousDamage) return;
+  // Sans 持續傷害頻率限制：這類技能的DPS數值是照一般1200血量設計的，若逐幀全額命中，
+  // Sans的23格血會在不到1秒內被燒光。改成同一持續傷害來源每隔一小段時間才真正扣一次血。
+  if (target.char && target.char.type === 'sans' && options.continuousDamage && !options.bypassParry) {
+    if (target.sansContinuousTickTimer > 0) return;
+    target.sansContinuousTickTimer = SANS_CONTINUOUS_TICK_INTERVAL;
+  }
   // 帶土虛影/轉移階段：本體無敵（虛影取代本體承受攻擊，但不扣血）
   if (target.char && target.char.type === 'obito' &&
       ['ghost','teleporting','in_space','grabbing','returning'].includes(target.obitoKamuiPhase)) return;
@@ -4769,6 +4743,10 @@ function dealDamage(target, dmg, options = {}) {
   } else {
     target.hp = Math.max(0, target.hp - actual);
   }
+  // Sans 受傷無敵：這下真的扣到血了，開始短暫無敵倒數（持續性傷害不觸發，見上方說明）
+  if (target.char && target.char.type === 'sans' && actual > 0 && !options.bypassParry && !options.continuousDamage) {
+    target.sansHitIframeTimer = SANS_HIT_IFRAME_DUR;
+  }
   // 角色剛死亡：清除他所有還留在場上的東西（炮台、尖刺、閃電柱、電網、飛行中的投射物…），
   // 避免「人死了，招式還在場上」的情況
   if (prevHp > 0 && target.hp <= 0 && target.player) {
@@ -4815,12 +4793,25 @@ function purgeDeadPlayerEntities(player) {
   if (state.yiBlackStones) state.yiBlackStones = state.yiBlackStones.filter(x => x.owner !== player);
   if (state.sansWalls) state.sansWalls = state.sansWalls.filter(x => x.owner !== player);
   if (state.sansLaserFX) state.sansLaserFX = state.sansLaserFX.filter(x => x.owner !== player);
+  // 普奇神父：死亡時清除場上光碟／🚀，並解除自己身上可能殘留的凍結／貼牆狀態
+  if (state.pucciDiscs) state.pucciDiscs = state.pucciDiscs.filter(x => x.ownerPlayer !== player);
+  if (state.pucciRocket && state.pucciRocket.ownerPlayer === player) state.pucciRocket = null;
+  if (state.pucciChantFX) delete state.pucciChantFX[player];
+  if (state.standCryFX) state.standCryFX = state.standCryFX.filter(fx => fx.player !== player);
+  {
+    const deadBall = state.balls.find(x => x.player === player);
+    if (deadBall && deadBall.char.type === 'pucci') {
+      // 普奇神父死亡：避免敵人被光碟凍結效果永久卡住
+      for (const bl of state.balls) bl.pucciDiscFrozen = false;
+    }
+  }
   // 死亡玩家自己飛在半空中的骨頭也一併清除
   {
     const ownerBall = state.balls.find(x => x.player === player);
     if (ownerBall && ownerBall.sansBones) ownerBall.sansBones = [];
     // 死亡玩家如果正被Sans重力拖走，解除該效果，避免卡死狀態
     if (ownerBall) ownerBall.sansGravityTimer = 0;
+    if (ownerBall) ownerBall.pucciGravityTimer = 0;
   }
 
   // 通用召喚物：主人死亡時，該主人所有召喚物一併消滅（避免遺孤沒人管、也避免死人還在場上出手）
@@ -5069,8 +5060,18 @@ function getAliveBalls() {
   return state.balls.filter(b => b.hp > 0);
 }
 // 回傳跟 b 不同玩家、且還活著的所有球（多人混戰時可能不只一個）
+// Sans🦴 被動：不受「場地」本身的回血／傷害效果影響（熔岩、青草回血、海灘寶箱/電化水域/海膽等），
+// 但場地的物理障礙物（例如障礙物場的岩石碰撞）仍正常生效，不在此排除範圍。
+function arenaHealDmgAffects(b) {
+  return !(b.char && b.char.type === 'sans');
+}
+
 function getEnemies(b) {
   return state.balls.filter(x => x !== b && x.player !== b.player && x.hp > 0);
+}
+// 普奇神父「天堂製造」是否在場（用來縮短DIO世界時停持續時間）
+function pucciHeavenPresent() {
+  return state.balls.some(x => x.char.type === 'pucci' && x.pucciHeavenActive && x.hp > 0);
 }
 // 從場上找出離 (x,y) 最近、且玩家編號不是 excludePlayer、還活著的球
 function getNearestEnemyTo(x, y, excludePlayer) {
@@ -5359,14 +5360,15 @@ function update(dt) {
   }
 
   // ── DIO 世界（時停）：凍結敵方狀態快照 ──
-  let dioFreezeTarget = null;
-  let dioFreezeSnapshot = null;
+  // 混戰模式下敵方可能不只一人，全部都要凍結，否則沒抓到的人會無視時停正常行動
+  let dioFreezeEntries = null; // [{ball, snapshot}, ...]
   const dioWorldCasterBall = state.balls.find(b => b.char.type === 'dio' && b.dioWorldActive);
   if (dioWorldCasterBall) {
     state.dioWorldGlobalActive = true;
     state.dioWorldCaster = dioWorldCasterBall;
-    dioFreezeTarget = state.balls.find(b => b !== dioWorldCasterBall);
-    if (dioFreezeTarget) dioFreezeSnapshot = { ...dioFreezeTarget };
+    dioFreezeEntries = state.balls
+      .filter(b => b !== dioWorldCasterBall)
+      .map(b => ({ ball: b, snapshot: { ...b } }));
   } else {
     state.dioWorldGlobalActive = false;
     state.dioWorldCaster = null;
@@ -5376,7 +5378,7 @@ function update(dt) {
   if (state.arena === 'lava') {
     for (const b of state.balls) {
       if (b.hp <= 0) continue; // 已死亡不再有任何行為
-      dealDamage(b, ARENA_LAVA_DMG_PER_SEC * dt);
+      if (arenaHealDmgAffects(b)) dealDamage(b, ARENA_LAVA_DMG_PER_SEC * dt, { continuousDamage: true });
     }
   }
 
@@ -5405,6 +5407,11 @@ function update(dt) {
       if (b.arenaFrozen < 0) b.arenaFrozen = 0;
       b.vx = 0; b.vy = 0;
     }
+    // 普奇神父「新月」：被甩飛的球短暫只能貼牆緩慢移動
+    if (b.pucciWallClingTimer > 0) {
+      b.pucciWallClingTimer -= dt;
+      if (b.pucciWallClingTimer < 0) b.pucciWallClingTimer = 0;
+    }
   }
 
   // 青草場：每隔 N 秒雙方回血
@@ -5414,6 +5421,7 @@ function update(dt) {
       state.arenaGrassTimer = ARENA_GRASS_INTERVAL;
       for (const b of state.balls) {
         if (b.hp <= 0) continue; // 已死亡不再有任何行為
+        if (!arenaHealDmgAffects(b)) continue; // Sans不受場地回血影響
         b.hp = Math.min(MAX_HP, b.hp + ARENA_GRASS_HEAL);
         state.hitFlashes.push({ x: b.x, y: b.y, r: 30, alpha: 1, color: '#66ff88', t: 0.5 });
       }
@@ -5500,7 +5508,7 @@ function update(dt) {
     }
 
     // 暗夜領主：衝刺計時
-    if (b.char.type === 'vampire') {
+    if (b.char.type === 'vampire' && !b.pucciDiscFrozen) {
       // 咬擊後CD倒數
       if (b.vampireBiteCooldown > 0) {
         b.vampireBiteCooldown -= dt;
@@ -5551,7 +5559,7 @@ function update(dt) {
     }
 
     // 暗夜領主：咬擊序列處理
-    if (b.char.type === 'vampire' && b.vampireBiting) {
+    if (b.char.type === 'vampire' && b.vampireBiting && !b.pucciDiscFrozen) {
       b.vampireBiteTimer -= dt;
       if (b.vampireBiteTimer <= 0 && b.vampireBiteStep < VAMPIRE_BITE_COUNT) {
         // 執行本次咬擊
@@ -5835,7 +5843,7 @@ function update(dt) {
     // 詛咒 dot 傷害（捌）
     if (b.curseDotTimer > 0) {
       b.curseDotTimer -= dt;
-      dealDamage(b, b.curseDotDmg * dt, { attackerPlayer: b.curseDotOwnerPlayer });
+      dealDamage(b, b.curseDotDmg * dt, { attackerPlayer: b.curseDotOwnerPlayer, continuousDamage: true });
       if (b.curseDotTimer <= 0) { b.curseDotTimer = 0; b.curseDotDmg = 0; }
       // 紅色詛咒粒子
       if (Math.random() < 0.3) state.hitFlashes.push({ x: b.x+randBetween(-15,15), y: b.y+randBetween(-15,15), r: 8, alpha: 0.7, color: '#c0392b', t: 0.4 });
@@ -5883,8 +5891,10 @@ function update(dt) {
     }
 
     // 移動（凍結則不移動；虎天帝超新星蓄力視為被束縛定身，完全不動；被帶土抓進神威空間者完全凍結；冰雪場地凍結同樣完全不動；被妲己魅惑拉近時也暫停自身移動，避免抵銷拉近效果）
-    if (!b.frozenByVampire && !b.obitoInSpace && !(b.char.type === 'vampire' && b.vampireBiting) && !(b.mageFreezeTimer > 0) && !(b.itachiPinnedTimer > 0) && !b.itachiBiting && !b.tigerNovaCharging && !(b.thunderStunTimer > 0) && !(b.arenaFrozen > 0) && !(b.getoBoundTimer > 0) && !b.getoUltimateCharging && !(b.beachCurrentSuckTimer > 0) && !b.frozenByJoseph && !(b.char.type === 'joseph' && (b.josephState === 'charging' || b.josephUltimateActive)) && !(b.dajiCharmedTimer > 0) && !(b.sansGravityTimer > 0) && !b.sansUltActive) {
-      const speedMul = (b.curseSlowTimer > 0 ? CURSE_SLASH_SLOW_FACTOR : 1.0) * (b.inSandZone ? ARENA_SAND_SLOW_FACTOR : 1.0);
+    if (!b.frozenByVampire && !b.obitoInSpace && !(b.char.type === 'vampire' && b.vampireBiting) && !(b.mageFreezeTimer > 0) && !(b.itachiPinnedTimer > 0) && !b.itachiBiting && !b.tigerNovaCharging && !(b.thunderStunTimer > 0) && !(b.arenaFrozen > 0) && !(b.getoBoundTimer > 0) && !b.getoUltimateCharging && !(b.beachCurrentSuckTimer > 0) && !b.frozenByJoseph && !(b.char.type === 'joseph' && (b.josephState === 'charging' || b.josephUltimateActive)) && !(b.dajiCharmedTimer > 0) && !(b.sansGravityTimer > 0) && !b.sansUltActive && !(b.pucciGravityTimer > 0)) {
+      const speedMul = (b.curseSlowTimer > 0 ? CURSE_SLASH_SLOW_FACTOR : 1.0) * (b.inSandZone ? ARENA_SAND_SLOW_FACTOR : 1.0) *
+        (b.char.type === 'pucci' && b.pucciHeavenActive ? b.pucciSpeedMult : 1.0) *
+        (b.pucciWallClingTimer > 0 ? PUCCI_MOON_WALLCLING_SLOW : 1.0);
 
       // 最低速度保證（排除技能主動停止的情況）
       const intentionalStop = (b.char.type === 'gunner' && b.gunnerFiring) ||
@@ -5900,7 +5910,9 @@ function update(dt) {
                               (b.char.type === 'blacksmith' && b.smithSwordSwinging) ||
                               (b.char.type === 'yuta' && b.yutaSlashSwinging) ||
                               (b.char.type === 'naobito' && b.naoDashing) ||
-                              (b.char.type === 'naobito' && b.naoKyouseiFiring);
+                              (b.char.type === 'naobito' && b.naoKyouseiFiring) ||
+                              (b.char.type === 'pucci' && b.pucciChantActive) ||
+                              (b.char.type === 'pucci' && b.pucciHeavenCharging);
       // 居合衝刺：在移動前直接設速度，確保方向正確
       if (b.char.type === 'samurai' && b.samuraiIaidoing) {
         b.vx = Math.cos(b.samuraiIaidoAngle) * SAMURAI_IAIDO_SPEED;
@@ -6075,22 +6087,24 @@ function update(dt) {
       }
 
       // 海膽：碰到後施加持續6秒、每秒1傷害的dot
-      for (let ui = (state.beachUrchins || []).length - 1; ui >= 0; ui--) {
-        const u = state.beachUrchins[ui];
-        if (Math.hypot(b.x - u.x, b.y - u.y) < RADIUS + ARENA_BEACH_URCHIN_R) {
-          b.beachUrchinDot = ARENA_BEACH_URCHIN_DOT_DUR;
-          state.hitFlashes.push({ x: b.x, y: b.y, r: 16, alpha: 0.8, color: '#7a3fb0', t: 0.3 });
-          state.beachUrchins.splice(ui, 1);
+      if (arenaHealDmgAffects(b)) {
+        for (let ui = (state.beachUrchins || []).length - 1; ui >= 0; ui--) {
+          const u = state.beachUrchins[ui];
+          if (Math.hypot(b.x - u.x, b.y - u.y) < RADIUS + ARENA_BEACH_URCHIN_R) {
+            b.beachUrchinDot = ARENA_BEACH_URCHIN_DOT_DUR;
+            state.hitFlashes.push({ x: b.x, y: b.y, r: 16, alpha: 0.8, color: '#7a3fb0', t: 0.3 });
+            state.beachUrchins.splice(ui, 1);
+          }
+        }
+        if (b.beachUrchinDot > 0) {
+          dealDamage(b, ARENA_BEACH_URCHIN_DPS * dt, { continuousDamage: true });
+          b.beachUrchinDot -= dt;
+          if (b.beachUrchinDot < 0) b.beachUrchinDot = 0;
         }
       }
-      if (b.beachUrchinDot > 0) {
-        dealDamage(b, ARENA_BEACH_URCHIN_DPS * dt);
-        b.beachUrchinDot -= dt;
-        if (b.beachUrchinDot < 0) b.beachUrchinDot = 0;
-      }
 
-      // 寶箱：碰到恢復20血
-      if (state.beachChest && Math.hypot(b.x - state.beachChest.x, b.y - state.beachChest.y) < RADIUS + ARENA_BEACH_CHEST_R) {
+      // 寶箱：碰到恢復20血（Sans不受場地回血影響）
+      if (arenaHealDmgAffects(b) && state.beachChest && Math.hypot(b.x - state.beachChest.x, b.y - state.beachChest.y) < RADIUS + ARENA_BEACH_CHEST_R) {
         b.hp = Math.min(MAX_HP, b.hp + ARENA_BEACH_CHEST_HEAL);
         state.hitFlashes.push({ x: b.x, y: b.y, r: 30, alpha: 1, color: '#ffd700', t: 0.5 });
         state.beachChest = null;
@@ -6119,7 +6133,7 @@ function update(dt) {
       if (vamp.hp <= 0) continue;
       const target = getNearestEnemyTo(vamp_me.x, vamp_me.y, vamp_me.player);
       if (!target) continue;
-      if (vamp.char.type === 'vampire' && !vamp.vampireBiting && !target.frozenByVampire && vamp.vampireBiteCooldown <= 0) {
+      if (vamp.char.type === 'vampire' && !vamp.vampireBiting && !target.frozenByVampire && vamp.vampireBiteCooldown <= 0 && !vamp.pucciDiscFrozen) {
         // 停止衝刺並開始咬擊
         vamp.vampireDashing = false;
         vamp.vampireDashElapsed = 0;
@@ -6215,14 +6229,14 @@ function update(dt) {
       for (let bi = 0; bi < state.balls.length; bi++) {
         const opm = state.balls[bi];
         if (opm.hp <= 0) continue;
-        if (opm.char.type === 'opm' && !opm.opmPunched && opm.opmCollisionCooldown <= 0) {
+        if (opm.char.type === 'opm' && !opm.opmPunched && opm.opmCollisionCooldown <= 0 && !opm.pucciDiscFrozen) {
           opm.opmCountdown = Math.max(0, opm.opmCountdown - OPM_COLLISION_REDUCE);
           opm.opmCollisionCooldown = OPM_COLLISION_COOLDOWN;
         }
       }
       // 九十九由基：碰撞後延遲觸發「鳳輪」並疊加重力
       [b0, b1].forEach(yuki => {
-        if (yuki.char.type !== 'yuki' || yuki.hp <= 0) return;
+        if (yuki.char.type !== 'yuki' || yuki.hp <= 0 || yuki.pucciDiscFrozen) return;
         if ((yuki.yukiCollisionCd || 0) <= 0 && (yuki.yukiPhoenixTimer || 0) <= 0) {
           yuki.yukiCollisionCd = YUKI_COLLISION_COOLDOWN;
           yuki.yukiPhoenixTimer = YUKI_PHOENIX_DELAY;
@@ -6235,7 +6249,7 @@ function update(dt) {
         if (curser.hp <= 0) continue;
       const target = getNearestEnemyTo(vamp_me.x, vamp_me.y, vamp_me.player);
       if (!target) continue;
-        if (curser.char.type === 'cursed') {
+        if (curser.char.type === 'cursed' && !curser.pucciDiscFrozen) {
           // 捌小CD：避免持續碰觸重複觸發
           if (!curser.hachiCooldown || curser.hachiCooldown <= 0) {
             curser.hachiCooldown = 0.55;
@@ -6318,6 +6332,20 @@ function update(dt) {
           state.hitFlashes.push({ x: target.x, y: target.y, r: 16, alpha: 0.7, color: isBreathing ? '#2f7dc0' : '#7799bb', t: 0.25 });
         }
       }
+
+      // 普奇神父：天堂製造期間，碰撞造成隨速度倍率同步提升的傷害
+      for (let pi = 0; pi < state.balls.length; pi++) {
+        const pu = state.balls[pi];
+        if (pu.char.type !== 'pucci' || !pu.pucciHeavenActive) continue;
+        const target = getNearestEnemyTo(pu.x, pu.y, pu.player);
+        if (!target) continue;
+        if (!(pu.pucciContactCd > 0)) {
+          pu.pucciContactCd = PUCCI_HEAVEN_CONTACT_CD;
+          const dmg = PUCCI_HEAVEN_COLLIDE_BASE * (pu.pucciSpeedMult || 1);
+          dealDamage(target, dmg, { attackerPlayer: pu.player });
+          state.hitFlashes.push({ x: target.x, y: target.y, r: 18, alpha: 0.85, color: '#8e6bbf', t: 0.3 });
+        }
+      }
     } else {
       // 強制分開避免穿模（居合衝刺中跳過）
       const eitherIaido = (b0.char.type==='samurai' && b0.samuraiIaidoing) ||
@@ -6362,13 +6390,15 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     const b = state.balls[bi], enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (b.hp <= 0) continue;
     // 時停中：敵方（非DIO）攻擊計時器凍結，避免時停結束後瞬間觸發堆積的攻擊；冰雪場地凍結期間技能CD也不會減少
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || (b.arenaFrozen > 0)) {
+    // 普奇神父白蛇的CD光碟效果：被咬中的敵人在光碟被踩到之前，所有技能冷卻同樣不會減少
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || (b.arenaFrozen > 0) || b.pucciDiscFrozen) {
       // 不累積 attackTimer；各技能計時器也凍結
       continue;
     }
     b.attackTimer += dt;
     if (b.char.type === 'opm' && b.opmCollisionCooldown > 0) b.opmCollisionCooldown -= dt;
     if (b.char.type === 'joseph' && b.josephContactCd > 0) b.josephContactCd -= dt;
+    if (b.char.type === 'pucci' && b.pucciContactCd > 0) b.pucciContactCd -= dt;
     // 帶土被假想子彈彈出後硬直
     if (b.obitoEjectStun > 0) {
       b.obitoEjectStun -= dt;
@@ -6662,7 +6692,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (b.char.type !== 'gojo') continue;
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) {
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) {
       // 時停中：術式球仍可移動（已在投射物迴圈凍結），但不觸發新技能
       continue;
     }
@@ -6828,7 +6858,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
     if (b.char.type !== 'yi') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 落黑棋計時
     b.yiBlackTimer -= dt;
@@ -6970,7 +7000,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
     if (b.char.type !== 'gunner') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 連射邏輯
     if (b.gunnerFiring) {
@@ -6993,7 +7023,10 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         b.gunnerAmmoFired++;
         b.gunnerFireTimer = GUNNER_BULLET_INTERVAL;
         playHitSound('knife');
-        state.hitFlashes.push({ x: b.x, y: b.y, r: 12, alpha: 0.8, color: b.char.color, t: 0.12 });
+        // 槍口火光：畫在槍口方向偏移處，避免直接疊在角色本體上造成閃爍感
+        const muzzleX = b.x + Math.cos(angle + spread) * (RADIUS + 6);
+        const muzzleY = b.y + Math.sin(angle + spread) * (RADIUS + 6);
+        state.hitFlashes.push({ x: muzzleX, y: muzzleY, r: 8, alpha: 0.8, color: '#ffdd66', t: 0.08 });
       }
       if (b.gunnerAmmoFired >= GUNNER_MAG_SIZE) {
         b.gunnerFiring = false;
@@ -7039,7 +7072,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     if (b.char.type !== 'custom' || !b.customParts || b.customParts.basic !== 'a_gunner') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
     if (!b.customGunnerFiring) continue;
 
     // 停下來連射
@@ -7067,7 +7100,9 @@ for (let bi = 0; bi < state.balls.length; bi++) {
       b.customGunnerAmmoFired++;
       b.customGunnerFireTimer = GUNNER_BULLET_INTERVAL;
       playHitSound('knife');
-      state.hitFlashes.push({ x: b.x, y: b.y, r: 12, alpha: 0.8, color: b.char.color, t: 0.12 });
+      const muzzleX2 = b.x + Math.cos(angle + spread) * (RADIUS + 6);
+      const muzzleY2 = b.y + Math.sin(angle + spread) * (RADIUS + 6);
+      state.hitFlashes.push({ x: muzzleX2, y: muzzleY2, r: 8, alpha: 0.8, color: '#ffdd66', t: 0.08 });
     }
     if (b.customGunnerAmmoFired >= GUNNER_MAG_SIZE) {
       b.customGunnerFiring = false;
@@ -7086,7 +7121,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     if (b.char.type !== 'steve') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 資源收集中：原地不動，時間到後升級裝備
     if (b.steveGathering) {
@@ -7352,7 +7387,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
     if (b.char.type !== 'trapper') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 鎖鏈CD計時
     if (!b.trapChainActive) {
@@ -7449,7 +7484,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     if (b.hp <= 0) continue; // 已死亡不再有任何行為
     if (b.trapDotTimer > 0) {
       b.trapDotTimer -= dt;
-      dealDamage(b, b.trapDotDps * dt, { attackerPlayer: b.trapDotOwnerPlayer });
+      dealDamage(b, b.trapDotDps * dt, { attackerPlayer: b.trapDotOwnerPlayer, continuousDamage: true });
       if (b.trapDotTimer <= 0) { b.trapDotTimer = 0; b.trapDotDps = 0; }
       if (Math.random() < 0.25) {
         state.hitFlashes.push({ x: b.x + randBetween(-12,12), y: b.y + randBetween(-12,12), r: 7, alpha: 0.7, color: '#2ecc71', t: 0.35 });
@@ -7464,7 +7499,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
     if (b.char.type !== 'engineer') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 機甲模式倒數
     if (b.engMechActive) {
@@ -7569,7 +7604,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     if (b.char.type !== 'cannondad') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 近戰拳頭：貼近敵人時揮拳
     if (b.cannonMeleeCooldown > 0) b.cannonMeleeCooldown -= dt;
@@ -7790,7 +7825,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
         // 定身（重用通用定身欄位）並持續造成傷害
         ball.itachiPinnedTimer = Math.max(ball.itachiPinnedTimer, ENGINEER_GRID_STUN_BUFFER);
         ball.vx = 0; ball.vy = 0;
-        dealDamage(ball, ENGINEER_GRID_DPS * dt, { attackerPlayer: g.owner });
+        dealDamage(ball, ENGINEER_GRID_DPS * dt, { attackerPlayer: g.owner, continuousDamage: true });
         if (Math.random() < 0.4) {
           state.hitFlashes.push({ x: ball.x + randBetween(-14,14), y: ball.y + randBetween(-14,14), r: 6, alpha: 0.7, color: '#5fd0ff', t: 0.2 });
         }
@@ -7833,7 +7868,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
     if (b.char.type !== 'thunder') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) {
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) {
       // 時停中只更新閃電柱壽命（已在上方處理），不觸發新閃電
       for (let i = state.thunderPillars.length - 1; i >= 0; i--) {
         const p = state.thunderPillars[i];
@@ -7966,7 +8001,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
     if (b.char.type !== 'blacksmith') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 揮劍動畫計時
     if (b.smithSwordSwinging) {
@@ -8109,7 +8144,7 @@ for (let bi = 0; bi < state.balls.length; bi++) {
     if (b.char.type !== 'naobito') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 凶星軌跡CD倒數
     if (b.naoKyouseiTimer > 0) b.naoKyouseiTimer -= dt;
@@ -8325,7 +8360,7 @@ waypoints.push({
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
     if (b.char.type !== 'mage') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 鴿子CD
     if (b.mageDoveTimer > 0) b.mageDoveTimer -= dt;
@@ -8453,12 +8488,53 @@ waypoints.push({
     }
   }
 
+  // ── 普奇神父「新月」重力機制：獨立於Sans骨牆重力，甩飛不會生成骨牆 ──
+  for (const b of state.balls) {
+    if (b.hp <= 0) continue;
+    if (b.pucciGravityTimer > 0) {
+      b.pucciGravityTimer -= dt;
+      b.pucciGravityElapsed = (b.pucciGravityElapsed || 0) + dt;
+      const rampFrac = Math.min(1, b.pucciGravityElapsed / PUCCI_GRAVITY_RAMP_TIME);
+      const curSpeed = PUCCI_GRAVITY_PULL_SPEED * rampFrac;
+      const moveDist = curSpeed * dt;
+      b.x += b.pucciGravityDirX * moveDist;
+      b.y += b.pucciGravityDirY * moveDist;
+      b.vx = 0; b.vy = 0; // 位移期間由本區塊直接控制位置，避免一般移動邏輯干擾
+      let hitEdge = false;
+      if (b.x - RADIUS < WALL)     { b.x = WALL + RADIUS;     hitEdge = true; }
+      if (b.x + RADIUS > W - WALL) { b.x = W - WALL - RADIUS; hitEdge = true; }
+      if (b.y - RADIUS < WALL)     { b.y = WALL + RADIUS;     hitEdge = true; }
+      if (b.y + RADIUS > H - WALL) { b.y = H - WALL - RADIUS; hitEdge = true; }
+      if (hitEdge || b.pucciGravityTimer <= 0) {
+        const dist = Math.hypot(b.x - b.pucciGravityStartX, b.y - b.pucciGravityStartY);
+        if (dist > 0) {
+          dealDamage(b, dist * PUCCI_GRAVITY_DMG_PER_PX, { attackerPlayer: b.pucciGravityOwnerPlayer });
+          state.hitFlashes.push({ x: b.x, y: b.y, r: 32, alpha: 1, color: '#c9d6ff', t: 0.35 });
+          playHitSound('opm');
+        }
+        b.pucciGravityTimer = 0;
+        // 落地後短暫只能貼牆移動
+        b.pucciWallClingTimer = PUCCI_MOON_WALLCLING_DUR;
+        const ang2 = Math.random() * Math.PI * 2;
+        b.vx = Math.cos(ang2) * BASE_SPEED;
+        b.vy = Math.sin(ang2) * BASE_SPEED;
+      }
+    }
+  }
+
   // ── Sans🦴 主邏輯 ──
   for (let bi = 0; bi < state.balls.length; bi++) {
     const b = state.balls[bi];
     if (b.hp <= 0) continue;
     if (b.char.type !== 'sans') continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue; // 時停中：Sans本體行動全部暫停
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+
+    // 受傷無敵倒數／DOT限頻：屬於被動防禦機制，光碟凍結不應暫停，否則等同變相延長無敵
+    if (b.sansHitIframeTimer > 0) b.sansHitIframeTimer -= dt;
+    if (b.sansContinuousTickTimer > 0) b.sansContinuousTickTimer -= dt;
+
+    if (b.pucciDiscFrozen) continue; // 光碟凍結：僅暫停技能觸發判定（大風車等），無敵倒數已在上面處理
 
     // 大招「大風車」：觸發判定（dealDamage攔截到致命一擊時會設定sansUltPending）
     if (b.sansUltPending && !b.sansUltActive) {
@@ -8539,7 +8615,8 @@ waypoints.push({
           if (bd < RADIUS + 8) {
             bone.tickTimer = SANS_BONE_TICK;
             dealDamage(target, SANS_BONE_DAMAGE, { attackerPlayer: b.player });
-            state.hitFlashes.push({ x: target.x, y: target.y, r: 16, alpha: 0.8, color: '#f4f1de', t: 0.2 });
+            state.hitFlashes.push({ x: target.x, y: target.y, r: 14, alpha: 1, color: '#ffffff', t: 0.15 });
+            state.hitFlashes.push({ x: target.x, y: target.y, r: 26, alpha: 0.9, color: '#ff4444', t: 0.28 });
             break;
           }
         }
@@ -8572,16 +8649,19 @@ waypoints.push({
         r: 20, alpha: 0.8, color: '#e8e8e8', t: 0.3
       });
 
-      // 重力機制：每使用兩次骨牆，第二次額外強制拖走敵人（方向與這次骨牆平移方向一致）
-      if (b.sansWallUses % 2 === 0 && enemy.hp > 0 && !(enemy.sansGravityTimer > 0)) {
+      // 重力機制：每使用兩次骨牆，第二次額外強制拖走「所有」敵人（方向與這次骨牆平移方向一致）
+      if (b.sansWallUses % 2 === 0) {
         const gx = wall.horizontal ? 0 : -wall.dir;
         const gy = wall.horizontal ? -wall.dir : 0;
-        enemy.sansGravityTimer = SANS_GRAVITY_DURATION;
-        enemy.sansGravityElapsed = 0;
-        enemy.sansGravityDirX = gx; enemy.sansGravityDirY = gy;
-        enemy.sansGravityStartX = enemy.x; enemy.sansGravityStartY = enemy.y;
-        enemy.sansGravityOwnerPlayer = b.player;
-        state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 26, alpha: 0.9, color: '#a0e0ff', t: 0.4 });
+        for (const foe of getEnemies(b)) {
+          if (foe.hp <= 0 || foe.sansGravityTimer > 0) continue;
+          foe.sansGravityTimer = SANS_GRAVITY_DURATION;
+          foe.sansGravityElapsed = 0;
+          foe.sansGravityDirX = gx; foe.sansGravityDirY = gy;
+          foe.sansGravityStartX = foe.x; foe.sansGravityStartY = foe.y;
+          foe.sansGravityOwnerPlayer = b.player;
+          state.hitFlashes.push({ x: foe.x, y: foe.y, r: 26, alpha: 0.9, color: '#a0e0ff', t: 0.4 });
+        }
         playHitSound('vampire_dash');
       }
     }
@@ -8608,6 +8688,7 @@ waypoints.push({
   // ── Sans🦴 骨牆：移動＋命中判定（環境物件，獨立於角色迴圈之外）──
   for (let i = state.sansWalls.length - 1; i >= 0; i--) {
     const wall = state.sansWalls[i];
+    if (state.dioWorldGlobalActive && (!state.dioWorldCaster || wall.owner !== state.dioWorldCaster.player)) continue; // 時停中：骨牆完全靜止
     wall.life -= dt;
     wall.pos += wall.dir * wall.speed * dt;
     wall.tickTimer -= dt;
@@ -8636,6 +8717,7 @@ waypoints.push({
   // ── Sans🦴 龍骨砲／大風車：光束移動＋命中判定（共用同一組視覺特效陣列）──
   for (let i = state.sansLaserFX.length - 1; i >= 0; i--) {
     const lz = state.sansLaserFX[i];
+    if (state.dioWorldGlobalActive && (!state.dioWorldCaster || lz.owner !== state.dioWorldCaster.player)) continue; // 時停中：光束（含預警）完全靜止
     if (lz.warn) {
       lz.warnTimer -= dt;
       if (lz.warnTimer <= 0) lz.warn = false; // 預警結束，本幀開始才真正發射、進入判定
@@ -8643,23 +8725,18 @@ waypoints.push({
     }
     lz.life -= dt;
     if (lz.life <= 0) { state.sansLaserFX.splice(i, 1); continue; }
-    if (!lz.hit) {
-      for (const target of state.balls) {
-        if (target.hp <= 0 || target.player === lz.owner) continue;
-       const spread = 40; // 想讓大風車多好躲，就調這個數字（px）
- const dx = target.x - lz.x, dy = target.y - lz.y;
- 
-
- const cosA = Math.cos(lz.angle), sinA = Math.sin(lz.angle);
-        const localX = dx * cosA + dy * sinA;
-        const localY = -dx * sinA + dy * cosA;
-        if (localX > 0 && localX < lz.length && Math.abs(localY) < lz.width / 2 + RADIUS) {
-          dealDamage(target, lz.damage, { attackerPlayer: lz.owner });
-          lz.hit = true;
-          state.hitFlashes.push({ x: target.x, y: target.y, r: 30, alpha: 1, color: '#dff0ff', t: 0.3 });
-          playHitSound('opm');
-          break;
-        }
+    if (!lz.hitSet) lz.hitSet = new Set(); // 已命中過的目標記錄，避免同一發光束對同一人重複扣血
+    for (const target of state.balls) {
+      if (target.hp <= 0 || target.player === lz.owner || lz.hitSet.has(target)) continue;
+      const dx = target.x - lz.x, dy = target.y - lz.y;
+      const cosA = Math.cos(lz.angle), sinA = Math.sin(lz.angle);
+      const localX = dx * cosA + dy * sinA;
+      const localY = -dx * sinA + dy * cosA;
+      if (localX > 0 && localX < lz.length && Math.abs(localY) < lz.width / 2 + RADIUS) {
+        dealDamage(target, lz.damage, { attackerPlayer: lz.owner });
+        lz.hitSet.add(target);
+        state.hitFlashes.push({ x: target.x, y: target.y, r: 30, alpha: 1, color: '#dff0ff', t: 0.3 });
+        playHitSound('opm');
       }
     }
   }
@@ -8671,7 +8748,7 @@ waypoints.push({
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
     if (b.char.type !== 'samurai') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 居合衝刺中（穿透）
     if (b.samuraiIaidoing) {
@@ -9203,7 +9280,7 @@ waypoints.push({
     if (b.char.type !== 'itachi') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 烏鴉替身：瀕死觸發（每場一次），優先判定
     if (!b.itachiCrowUsed && !b.opmExecuted && b.hp <= 0) {
@@ -9344,7 +9421,7 @@ waypoints.push({
     if (b.char.type !== 'yuta') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 禁錮自身CD倒數
     if (b.yutaBindCooldown > 0) {
@@ -9496,7 +9573,7 @@ waypoints.push({
           if (proj > 0) {
             const perp = Math.abs(ex * dy - ey * dx); // 垂直距離
             if (perp < YUTA_RIKA_CANNON_RANGE) {
-              dealDamage(foe, YUTA_RIKA_CANNON_DPS * dt, { attackerPlayer: b.player });
+              dealDamage(foe, YUTA_RIKA_CANNON_DPS * dt, { attackerPlayer: b.player, continuousDamage: true });
             }
           }
         }
@@ -9533,6 +9610,235 @@ waypoints.push({
     for (let i = state.steveAxeFX.length - 1; i >= 0; i--) {
       state.steveAxeFX[i].life -= dt;
       if (state.steveAxeFX[i].life <= 0) state.steveAxeFX.splice(i, 1);
+    }
+  }
+
+  // ── 普奇神父 邏輯 ──
+  // 場上CD光碟：敵人踩到後解除冷卻凍結
+  if (state.pucciDiscs && state.pucciDiscs.length) {
+    for (let di = state.pucciDiscs.length - 1; di >= 0; di--) {
+      const disc = state.pucciDiscs[di];
+      let consumed = false;
+      for (const b of state.balls) {
+        if (b.hp <= 0 || b.player === disc.ownerPlayer) continue;
+        if (!b.pucciDiscFrozen) continue;
+        if (Math.hypot(b.x - disc.x, b.y - disc.y) < RADIUS + 16) {
+          b.pucciDiscFrozen = false;
+          state.hitFlashes.push({ x: b.x, y: b.y, r: 20, alpha: 0.8, color: '#9b8cce', t: 0.3 });
+          consumed = true;
+        }
+      }
+      if (consumed) state.pucciDiscs.splice(di, 1);
+    }
+  }
+
+  for (const b of state.balls) {
+    if (b.hp <= 0) continue; // 已死亡不再有任何行為
+    if (b.char.type !== 'pucci') continue;
+
+    // 受傷偵測：用來中斷密語蓄唸（已唸出的部分不會歸零）
+    if (b.hp < b.pucciLastHp) {
+      b.pucciChantActive = false;
+      b.pucciSnakeIdleTimer = 0; // 同步重置閒置計時，避免下一幀因閒置已達門檻而立刻重新觸發
+    }
+    b.pucciLastHp = b.hp;
+
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || (b.arenaFrozen > 0)) {
+      // 天堂製造：即使身處他人的時停中，仍可用極慢速度緩慢移動
+      if (b.pucciHeavenActive && state.dioWorldGlobalActive && b !== state.dioWorldCaster) {
+        b.x += b.vx * dt * PUCCI_HEAVEN_TIMESTOP_CRAWL;
+        b.y += b.vy * dt * PUCCI_HEAVEN_TIMESTOP_CRAWL;
+        b.x = Math.max(WALL + RADIUS, Math.min(W - WALL - RADIUS, b.x));
+        b.y = Math.max(WALL + RADIUS, Math.min(H - WALL - RADIUS, b.y));
+      }
+      continue;
+    }
+
+    const enemy = getNearestEnemyTo(b.x, b.y, b.player);
+    if (!enemy) continue;
+
+    // ══ 階段一：白蛇 ══
+    if (b.pucciPhase === 'snake') {
+      if (b.pucciSnakeState === 'orbit') {
+        // 環繞跟隨本體（同DIO替身）
+        b.pucciSnakeAngle = Math.atan2(enemy.y - b.y, enemy.x - b.x);
+        b.pucciSnakeX = b.x + Math.cos(b.pucciSnakeAngle) * PUCCI_SNAKE_RADIUS;
+        b.pucciSnakeY = b.y + Math.sin(b.pucciSnakeAngle) * PUCCI_SNAKE_RADIUS;
+
+        if (b.pucciSnakeAttackCd > 0) b.pucciSnakeAttackCd -= dt;
+
+        const distToEnemy = Math.hypot(enemy.x - b.x, enemy.y - b.y);
+        if (b.pucciSnakeAttackCd <= 0 && distToEnemy < PUCCI_SNAKE_DETECT_RANGE && !enemy.pucciDiscFrozen) {
+          // 出擊：白蛇衝向敵人
+          b.pucciSnakeState = 'dashing';
+          b.pucciSnakeTargetRef = enemy;
+          b.pucciChantActive = false; // 出擊會中斷密語蓄唸
+          b.pucciSnakeIdleTimer = 0;
+        } else {
+          // 沒有出擊：累積閒置時間，用來觸發密語
+          b.pucciSnakeIdleTimer += dt;
+          if (!b.pucciChantDone && !b.pucciChantActive && b.pucciSnakeIdleTimer >= PUCCI_CHANT_IDLE_DELAY) {
+            b.pucciChantActive = true;
+          }
+        }
+      } else if (b.pucciSnakeState === 'dashing') {
+        const tgt = b.pucciSnakeTargetRef;
+        if (!tgt || tgt.hp <= 0) {
+          b.pucciSnakeState = 'returning';
+        } else {
+          const dx = tgt.x - b.pucciSnakeX, dy = tgt.y - b.pucciSnakeY;
+          const d = Math.hypot(dx, dy) || 1;
+          const step = Math.min(d, PUCCI_SNAKE_DASH_SPEED * dt);
+          b.pucciSnakeX += (dx / d) * step;
+          b.pucciSnakeY += (dy / d) * step;
+          if (d < PUCCI_SNAKE_HIT_RANGE) {
+            // 命中：造成傷害並丟出CD光碟
+            dealDamage(tgt, PUCCI_SNAKE_STAB_DAMAGE, { attackerPlayer: b.player });
+            tgt.pucciDiscFrozen = true;
+            state.pucciDiscs = state.pucciDiscs || [];
+            state.pucciDiscs.push({
+              x: randBetween(WALL + 40, W - WALL - 40),
+              y: randBetween(WALL + 40, H - WALL - 40),
+              ownerPlayer: b.player
+            });
+            state.hitFlashes.push({ x: tgt.x, y: tgt.y, r: 22, alpha: 1, color: '#c8b6e8', t: 0.3 });
+            playHitSound('knife');
+            b.pucciSnakeState = 'returning';
+            b.pucciSnakeAttackCd = PUCCI_SNAKE_ATTACK_CD;
+          }
+        }
+      } else if (b.pucciSnakeState === 'returning') {
+        const dx = b.x - b.pucciSnakeX, dy = b.y - b.pucciSnakeY;
+        const d = Math.hypot(dx, dy) || 1;
+        const step = Math.min(d, PUCCI_SNAKE_DASH_SPEED * dt);
+        b.pucciSnakeX += (dx / d) * step;
+        b.pucciSnakeY += (dy / d) * step;
+        if (d < 6) {
+          b.pucciSnakeState = 'orbit';
+        }
+      }
+
+      // 密語：依序唸出十四句，受傷／出擊都會中斷（進度保留）
+      if (b.pucciChantActive) {
+        b.vx = 0; b.vy = 0; // 蓄唸期間原地不動
+        b.pucciChantLineTimer += dt;
+        if (b.pucciChantLineTimer >= PUCCI_CHANT_LINE_TIME) {
+          b.pucciChantLineTimer = 0;
+          if (!state.pucciChantFX) state.pucciChantFX = {};
+          state.pucciChantFX[b.player] = { text: PUCCI_CHANT_LINES[b.pucciChantIndex], life: PUCCI_CHANT_LINE_TIME, maxLife: PUCCI_CHANT_LINE_TIME, x: b.x, y: b.y };
+          b.pucciChantIndex++;
+          if (b.pucciChantIndex >= PUCCI_CHANT_LINES.length) {
+            b.pucciChantDone = true;
+            b.pucciChantActive = false;
+            b.pucciBabySpawned = true;
+            b.pucciBabyX = randBetween(WALL + 30, W - WALL - 30);
+            b.pucciBabyY = randBetween(WALL + 30, H - WALL - 30);
+            state.hitFlashes.push({ x: b.pucciBabyX, y: b.pucciBabyY, r: 26, alpha: 1, color: '#7ed957', t: 0.5 });
+          }
+        }
+      }
+
+      // 綠色嬰兒：爬向普奇，觸碰後進入新月階段
+      if (b.pucciBabySpawned) {
+        const bdx = b.x - b.pucciBabyX, bdy = b.y - b.pucciBabyY;
+        const bd = Math.hypot(bdx, bdy) || 1;
+        b.pucciBabyX += (bdx / bd) * PUCCI_BABY_SPEED * dt;
+        b.pucciBabyY += (bdy / bd) * PUCCI_BABY_SPEED * dt;
+        if (bd < PUCCI_BABY_CATCH_RANGE) {
+          b.pucciBabySpawned = false;
+          b.pucciPhase = 'moon';
+          b.pucciMoonTimer = 0;
+          b.pucciMoonGravityCd = PUCCI_MOON_GRAVITY_CD;
+          b.pucciRocketSpawned = false;
+          // 白蛇退場：清除自己丟出的CD光碟，並解除敵方身上因此殘留的凍結狀態
+          state.pucciDiscs = (state.pucciDiscs || []).filter(d => d.ownerPlayer !== b.player);
+          for (const foe of getEnemies(b)) foe.pucciDiscFrozen = false;
+          state.hitFlashes.push({ x: b.x, y: b.y, r: 60, alpha: 1.2, color: '#c9d6ff', t: 0.6 });
+          playHitSound('knife');
+          if (!state.standCryFX) state.standCryFX = [];
+          state.standCryFX.push({ text: 'C-Moon', x: b.x, y: b.y, life: 1.8, maxLife: 1.8, color: '#7ed957', player: b.player });
+        }
+      }
+    }
+
+    // ══ 階段二：新月 ══
+    else if (b.pucciPhase === 'moon') {
+      b.pucciMoonTimer += dt;
+      if (b.pucciMoonGravityCd > 0) b.pucciMoonGravityCd -= dt;
+      if (b.pucciMoonGravityCd <= 0) {
+        b.pucciMoonGravityCd = PUCCI_MOON_GRAVITY_CD;
+        for (const foe of getEnemies(b)) {
+          if (foe.pucciGravityTimer > 0) continue;
+          if (Math.hypot(foe.x - b.x, foe.y - b.y) > PUCCI_MOON_RADIUS) continue;
+          const dirs = ['up', 'down', 'left', 'right'];
+          const dir = dirs[Math.floor(Math.random() * 4)];
+          const gx = (dir === 'left') ? -1 : (dir === 'right') ? 1 : 0;
+          const gy = (dir === 'up') ? -1 : (dir === 'down') ? 1 : 0;
+          foe.pucciGravityTimer = PUCCI_GRAVITY_DURATION;
+          foe.pucciGravityElapsed = 0;
+          foe.pucciGravityDirX = gx; foe.pucciGravityDirY = gy;
+          foe.pucciGravityStartX = foe.x; foe.pucciGravityStartY = foe.y;
+          foe.pucciGravityOwnerPlayer = b.player;
+          state.hitFlashes.push({ x: foe.x, y: foe.y, r: 26, alpha: 0.9, color: '#c9d6ff', t: 0.4 });
+        }
+      }
+
+      // 新月降臨一段時間後，場地正中央生成🚀
+      if (!b.pucciRocketSpawned && b.pucciMoonTimer >= PUCCI_MOON_ROCKET_DELAY) {
+        b.pucciRocketSpawned = true;
+        state.pucciRocket = { x: W / 2, y: H / 2, ownerPlayer: b.player };
+        state.hitFlashes.push({ x: W / 2, y: H / 2, r: 40, alpha: 1, color: '#ffffff', t: 0.6 });
+      }
+
+      // 觸碰🚀：停止移動並開始蓄力進化天堂製造
+      if (state.pucciRocket && state.pucciRocket.ownerPlayer === b.player && !b.pucciHeavenCharging && !b.pucciHeavenActive) {
+        if (Math.hypot(b.x - state.pucciRocket.x, b.y - state.pucciRocket.y) < PUCCI_ROCKET_HIT_RANGE) {
+          b.pucciHeavenCharging = true;
+          b.pucciHeavenChargeTimer = 0;
+        }
+      }
+      if (b.pucciHeavenCharging) {
+        b.vx = 0; b.vy = 0;
+        b.pucciHeavenChargeTimer += dt;
+        if (b.pucciHeavenChargeTimer >= PUCCI_HEAVEN_CHARGE_TIME) {
+          b.pucciHeavenCharging = false;
+          b.pucciPhase = 'heaven';
+          b.pucciHeavenActive = true;
+          b.pucciSpeedMult = PUCCI_HEAVEN_SPEED_BASE;
+          b.pucciSpeedMultTimer = 0;
+          state.pucciRocket = null;
+          state.hitFlashes.push({ x: b.x, y: b.y, r: 70, alpha: 1.3, color: '#ffe066', t: 0.7 });
+          playHitSound('knife');
+          if (!state.standCryFX) state.standCryFX = [];
+          state.standCryFX.push({ text: 'Made in Heaven', x: b.x, y: b.y, life: 1.8, maxLife: 1.8, color: '#ffe066', player: b.player });
+        }
+      }
+    }
+
+    // ══ 階段三：天堂製造 ══
+    else if (b.pucciPhase === 'heaven') {
+      b.pucciSpeedMultTimer += dt;
+      if (b.pucciSpeedMultTimer >= PUCCI_HEAVEN_SPEED_INTERVAL) {
+        b.pucciSpeedMultTimer = 0;
+        b.pucciSpeedMult = Math.min(PUCCI_HEAVEN_SPEED_CAP, b.pucciSpeedMult * 2);
+      }
+    }
+  }
+
+  // 普奇神父：密語字幕淡出
+  if (state.pucciChantFX) {
+    for (const key in state.pucciChantFX) {
+      const fx = state.pucciChantFX[key];
+      fx.life -= dt;
+      if (fx.life <= 0) delete state.pucciChantFX[key];
+    }
+  }
+
+  // 普奇神父：替身宣告字幕（C-Moon／Made in Heaven）淡出
+  if (state.standCryFX) {
+    for (let i = state.standCryFX.length - 1; i >= 0; i--) {
+      state.standCryFX[i].life -= dt;
+      if (state.standCryFX[i].life <= 0) state.standCryFX.splice(i, 1);
     }
   }
 
@@ -9583,8 +9889,8 @@ waypoints.push({
     }
     } // end !obitoInSpace (替身)
 
-    // 世界：CD倒數（時停中不倒數）
-    if (!b.dioWorldActive && b.dioWorldCooldownTimer > 0) {
+    // 世界：CD倒數（時停中不倒數；光碟凍結中也不倒數）
+    if (!b.dioWorldActive && b.dioWorldCooldownTimer > 0 && !b.pucciDiscFrozen) {
       b.dioWorldCooldownTimer -= dt;
     }
 
@@ -9624,18 +9930,20 @@ waypoints.push({
           b.dioBreadEaten = 0;
           b.dioHighActive = true;
           b.dioWorldActive = true;
-          b.dioWorldTimer = DIO_WORLD_HIGH_DURATION;
+          b.dioWorldTimer = DIO_WORLD_HIGH_DURATION * (pucciHeavenPresent() ? PUCCI_HEAVEN_DIOWORLD_SHORTEN : 1);
           b.dioWorldKnifeTimer = 0;
           b.dioWorldCooldownTimer = DIO_WORLD_COOLDOWN;
           if (!b.dioSteamrollerThrown) b.dioSteamrollerPending = true;
           state.hitFlashes.push({ x: b.x, y: b.y, r: 70, alpha: 1.3, color: '#ff4444', t: 0.6 });
           playHitSound('knife');
+          if (!state.standCryFX) state.standCryFX = [];
+          state.standCryFX.push({ text: 'The WORLD', x: b.x, y: b.y, life: 1.8, maxLife: 1.8, color: '#ff4444', player: b.player });
         }
       }
     }
 
-    // 世界：自動施放（CD完成時觸發，非HIGH狀態）
-    if (!b.dioWorldActive && b.dioWorldCooldownTimer <= 0) {
+    // 世界：自動施放（CD完成時觸發，非HIGH狀態；光碟凍結時不觸發）
+    if (!b.dioWorldActive && b.dioWorldCooldownTimer <= 0 && !b.pucciDiscFrozen) {
       if (b.thunderParalyzed > 0) {
         b.thunderParalyzed = 0;
         b.thunderStunTimer = 0.5; // 打斷定身 0.5 秒
@@ -9646,10 +9954,12 @@ waypoints.push({
         b.dioWorldCooldownTimer = 2.0; // 打斷：2秒後再試
       } else {
       b.dioWorldActive = true;
-      b.dioWorldTimer = DIO_WORLD_DURATION;
+      b.dioWorldTimer = DIO_WORLD_DURATION * (pucciHeavenPresent() ? PUCCI_HEAVEN_DIOWORLD_SHORTEN : 1);
       b.dioWorldKnifeTimer = 0;
       b.dioWorldCooldownTimer = DIO_WORLD_COOLDOWN;
       playHitSound('knife');
+      if (!state.standCryFX) state.standCryFX = [];
+      state.standCryFX.push({ text: 'The WORLD', x: b.x, y: b.y, life: 1.8, maxLife: 1.8, color: '#ff4444', player: b.player });
       } // end else (not paralyzed)
     }
 
@@ -9764,7 +10074,7 @@ waypoints.push({
     if (b.char.type !== 'stargirl') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 技能一：大星星CD倒數，CD完自動發射（場上不超過3顆）
     if (b.starBigTimer > 0) b.starBigTimer -= dt;
@@ -10032,7 +10342,7 @@ waypoints.push({
     if (b.char.type !== 'obito') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     const phase = b.obitoKamuiPhase;
 
@@ -10425,7 +10735,7 @@ waypoints.push({
         // 鐵鏈傷害（範圍持續）
         const chainD = Math.hypot(enemy.x - b.x, enemy.y - b.y);
         if (chainD < OBITO_KAMUI_CHAIN_RADIUS + RADIUS) {
-          dealDamage(enemy, OBITO_KAMUI_CHAIN_DAMAGE * dt * 60, { attackerPlayer: b.player });
+          dealDamage(enemy, OBITO_KAMUI_CHAIN_DAMAGE * dt * 60, { attackerPlayer: b.player, continuousDamage: true });
           state.hitFlashes.push({ x: enemy.x, y: enemy.y, r: 18, alpha: 0.7, color: '#cc44ff', t: 0.1 });
         }
         if (b.obitoChainTimer <= 0) {
@@ -10665,7 +10975,7 @@ waypoints.push({
     if (b.char.type !== 'tiger') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 被動一：流血池持續扣血（對所有角色）
   }
@@ -10699,7 +11009,7 @@ waypoints.push({
     if (b.char.type !== 'tiger') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 技能一：徑庭拳 蓄力→出拳（僅在周圍有單位/敵人進入範圍時才會觸發）
     if (b.tigerPunchTimer > 0) b.tigerPunchTimer -= dt;
@@ -10911,7 +11221,7 @@ waypoints.push({
     if (b.char.type !== 'joseph') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || (b.arenaFrozen > 0)) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || (b.arenaFrozen > 0) || b.pucciDiscFrozen) continue;
     if (b.gunnerStunTimer > 0) continue; // 被閃光彈暈眩：暫停波紋呼吸法與所有技能判定
     if (!b.josephDioHpCostDone && enemy.char.type === 'dio') {
       b.josephDioHpCostDone = true;
@@ -11121,7 +11431,7 @@ waypoints.push({
     if (b.char.type !== 'fisherman') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // ── 大海：海浪 + 坐船勾甩（優先於一切，直到序列結束）──
     if (b.fisherOceanPhase) {
@@ -11330,7 +11640,7 @@ waypoints.push({
     if (b.char.type !== 'geto') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 游雲被動CD遞減
     if (b.getoCaneCooldown > 0) b.getoCaneCooldown -= dt;
@@ -11563,7 +11873,7 @@ waypoints.push({
     if (b.char.type !== 'sakiko') continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
     if (!enemy) continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 殘月的餘韻：Fever滿層時觸發雙音色齊發＋期間不死
     if (!b.sakikoDualActive && (b.sakikoFever || 0) >= SAKIKO_FEVER_MAX) {
@@ -11676,7 +11986,7 @@ if (!b.sakikoDualActive) {
   for (const b of state.balls) {
     if (b.hp <= 0) continue; // 已死亡不再有任何行為
     if (b.char.type !== 'daji') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
     const enemy = getNearestEnemyTo(b.x, b.y, b.player);
 
     if (b.dajiSkill1Cd > 0) b.dajiSkill1Cd -= dt;
@@ -11825,6 +12135,7 @@ if (!b.sakikoDualActive) {
           dealDamage(enemy, DAJI_FIRE_DAMAGE, { attackerPlayer: b.player });
           enemy.dajiBurnTimer = DAJI_BURN_DURATION;
           enemy.dajiBurnTick = Math.min(enemy.dajiBurnTick || 1, 1);
+          enemy.dajiBurnOwnerPlayer = b.player;
           f.active = false;
           state.hitFlashes.push({ x: f.x, y: f.y, r: 14, alpha: 0.85, color: '#7cff8a', t: 0.25 });
           playHitSound('knife');
@@ -11864,9 +12175,8 @@ if (!b.sakikoDualActive) {
       b.dajiBurnTick = (b.dajiBurnTick || 0) - dt;
       if (b.dajiBurnTick <= 0) {
         b.dajiBurnTick += 1;
-        const burnPrevHp = b.hp;
-        b.hp = Math.max(0, b.hp - MAX_HP * DAJI_BURN_PCT);
-        if (burnPrevHp > 0 && b.hp <= 0) purgeDeadPlayerEntities(b.player);
+        const targetMaxHp = (b.char && b.char.type === 'sans') ? SANS_MAX_HP : MAX_HP;
+        dealDamage(b, targetMaxHp * DAJI_BURN_PCT, { attackerPlayer: b.dajiBurnOwnerPlayer });
         state.hitFlashes.push({ x: b.x, y: b.y, r: 12, alpha: 0.6, color: '#7cff8a', t: 0.2 });
       }
       if (b.dajiBurnTimer < 0) b.dajiBurnTimer = 0;
@@ -11877,7 +12187,7 @@ if (!b.sakikoDualActive) {
   for (const b of state.balls) {
     if (b.hp <= 0) continue; // 已死亡不再有任何行為
     if (b.char.type !== 'yuki') continue;
-    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace) continue;
+    if ((state.dioWorldGlobalActive && b !== state.dioWorldCaster) || b.obitoInSpace || b.pucciDiscFrozen) continue;
 
     // 被動：由基自身帶有少許引力，持續將範圍內敵人微微拉近（重力層數越高，引力略為增強）
     {
@@ -11967,7 +12277,7 @@ if (!b.sakikoDualActive) {
         const d = Math.hypot(dx, dy) || 1;
         const pull = Math.min(d, YUKI_BLACKHOLE_PULL_SPEED * dt);
         enemy.x += (dx / d) * pull; enemy.y += (dy / d) * pull;
-        dealDamage(enemy, YUKI_BLACKHOLE_DPS * dt, { attackerPlayer: b.player });
+        dealDamage(enemy, YUKI_BLACKHOLE_DPS * dt, { attackerPlayer: b.player, continuousDamage: true });
       }
       if (b.yukiBlackHoleTimer <= 0) {
         b.yukiBlackHoleActive = false;
@@ -11981,10 +12291,25 @@ if (!b.sakikoDualActive) {
   }
 
   // ── DIO 世界（時停）：將敵方所有狀態還原為本幀凍結前的樣子（HP變化除外，讓DIO的傷害保留）──
-  if (dioFreezeTarget && dioFreezeSnapshot) {
-    const survivedHp = dioFreezeTarget.hp;
-    Object.assign(dioFreezeTarget, dioFreezeSnapshot);
-    dioFreezeTarget.hp = survivedHp;
+  if (dioFreezeEntries) {
+    for (const entry of dioFreezeEntries) {
+      const survivedHp = entry.ball.hp;
+      // 普奇神父「天堂製造」：不受他人時停完全凍結，位置與階段狀態允許緩慢推進
+      if (entry.ball.char.type === 'pucci' && entry.snapshot.pucciHeavenActive) {
+        const survivedX = entry.ball.x, survivedY = entry.ball.y;
+        const survivedSpeedMult = entry.ball.pucciSpeedMult;
+        const survivedSpeedMultTimer = entry.ball.pucciSpeedMultTimer;
+        Object.assign(entry.ball, entry.snapshot);
+        entry.ball.hp = survivedHp;
+        entry.ball.x = survivedX;
+        entry.ball.y = survivedY;
+        entry.ball.pucciSpeedMult = survivedSpeedMult;
+        entry.ball.pucciSpeedMultTimer = survivedSpeedMultTimer;
+        continue;
+      }
+      Object.assign(entry.ball, entry.snapshot);
+      entry.ball.hp = survivedHp;
+    }
   }
 }
 
@@ -12639,6 +12964,22 @@ function render() {
       ctx.stroke();
       ctx.restore();
     }
+  }
+
+  // Sans🦴：受傷無敵光環（純特效，不顯示文字）
+  for (const b of state.balls) {
+    if (b.char.type !== 'sans' || b.hp <= 0 || !(b.sansHitIframeTimer > 0)) continue;
+    const frac = Math.max(0, Math.min(1, b.sansHitIframeTimer / SANS_HIT_IFRAME_DUR));
+    const pulse = 0.5 + 0.5 * Math.sin(elapsed * 45);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, RADIUS + 6, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(160,224,255,${0.4 + 0.5 * pulse * frac})`;
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#a0e0ff';
+    ctx.shadowBlur = 14 * frac;
+    ctx.stroke();
+    ctx.restore();
   }
 
   // 陷阱大師：鎖鏈連線
@@ -14828,6 +15169,183 @@ function render() {
     ctx.fillText('🧍', sx, sy);
     ctx.restore();
   }
+
+  // 普奇神父：白蛇／CD光碟／密語字幕／綠色嬰兒／新月重力圈／🚀／天堂製造光環
+  for (const b of state.balls) {
+    if (b.char.type !== 'pucci') continue;
+    if (b.hp <= 0) continue;
+
+    if (b.pucciPhase === 'snake') {
+      // 白蛇（環繞或衝刺中）
+      const sx = b.pucciSnakeX != null ? b.pucciSnakeX : b.x;
+      const sy = b.pucciSnakeY != null ? b.pucciSnakeY : b.y;
+      ctx.save();
+      const pulse = 0.8 + 0.2 * Math.sin(elapsed * 5 + b.player);
+      const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, RADIUS * 1.1);
+      sg.addColorStop(0, `rgba(142,107,191,${0.35 * pulse})`);
+      sg.addColorStop(1, 'rgba(142,107,191,0)');
+      ctx.beginPath(); ctx.arc(sx, sy, RADIUS * 1.1, 0, Math.PI * 2);
+      ctx.fillStyle = sg; ctx.fill();
+      ctx.font = `${RADIUS * 1.1}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.9;
+      ctx.fillText('🐍', sx, sy);
+      ctx.restore();
+
+      // 密語蓄唸時的字幕
+      if (b.pucciChantActive) {
+        ctx.save();
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#e8dcff';
+        ctx.shadowColor = '#000'; ctx.shadowBlur = 3;
+        const dots = '.'.repeat(1 + Math.floor((b.pucciChantLineTimer / PUCCI_CHANT_LINE_TIME) * 3));
+        ctx.fillText(`「密語」${dots}`, b.x, b.y - RADIUS - 16);
+        ctx.restore();
+      }
+
+      // 綠色嬰兒
+      if (b.pucciBabySpawned) {
+        ctx.save();
+        const babyPulse = 0.85 + 0.15 * Math.sin(elapsed * 3 + b.player);
+        const bbg = ctx.createRadialGradient(b.pucciBabyX, b.pucciBabyY, 0, b.pucciBabyX, b.pucciBabyY, RADIUS * 0.9);
+        bbg.addColorStop(0, `rgba(126,217,87,${0.4 * babyPulse})`);
+        bbg.addColorStop(1, 'rgba(126,217,87,0)');
+        ctx.beginPath(); ctx.arc(b.pucciBabyX, b.pucciBabyY, RADIUS * 0.9, 0, Math.PI * 2);
+        ctx.fillStyle = bbg; ctx.fill();
+        ctx.font = `${RADIUS * 0.9}px serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.globalAlpha = 0.95;
+        ctx.fillText('👶🏻', b.pucciBabyX, b.pucciBabyY);
+        ctx.restore();
+      }
+    } else if (b.pucciPhase === 'moon') {
+      // 新月替身
+      ctx.save();
+      const pulse = 0.8 + 0.2 * Math.sin(elapsed * 4 + b.player);
+      const moonX = b.x + RADIUS * 1.3, moonY = b.y - RADIUS * 1.3;
+      // 穩定光暈（取代 shadowBlur，避免 emoji shadow 閃爍）
+      const mg = ctx.createRadialGradient(moonX, moonY, 0, moonX, moonY, RADIUS * 0.9);
+      mg.addColorStop(0, `rgba(201,214,255,${0.4 * pulse})`);
+      mg.addColorStop(1, 'rgba(201,214,255,0)');
+      ctx.beginPath(); ctx.arc(moonX, moonY, RADIUS * 0.9, 0, Math.PI * 2);
+      ctx.fillStyle = mg; ctx.fill();
+      ctx.font = `${RADIUS * 1.1}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.9;
+      ctx.fillText('🌙', moonX, moonY);
+      ctx.restore();
+      // 重力範圍圈
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, PUCCI_MOON_RADIUS, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(126,217,87,${0.35 * pulse})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    } else if (b.pucciPhase === 'heaven') {
+      ctx.save();
+      const pulse = 0.8 + 0.2 * Math.sin(elapsed * 8 + b.player);
+      const heavenX = b.x + RADIUS * 1.3, heavenY = b.y - RADIUS * 1.3;
+      // 穩定光暈（取代 shadowBlur，避免 emoji shadow 閃爍）
+      const hg = ctx.createRadialGradient(heavenX, heavenY, 0, heavenX, heavenY, RADIUS);
+      hg.addColorStop(0, `rgba(255,224,102,${0.45 * pulse})`);
+      hg.addColorStop(1, 'rgba(255,224,102,0)');
+      ctx.beginPath(); ctx.arc(heavenX, heavenY, RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle = hg; ctx.fill();
+      ctx.font = `${RADIUS * 1.2}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.95;
+      ctx.fillText('🐎', heavenX, heavenY);
+      ctx.restore();
+      // 加速光環（隨速度倍率增亮）
+      ctx.save();
+      const glowR = RADIUS + 6 + Math.min(24, (b.pucciSpeedMult || 1) * 2);
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, glowR, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,224,102,${0.5 * pulse})`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // 普奇神父：場上CD光碟
+  if (state.pucciDiscs) {
+    for (const disc of state.pucciDiscs) {
+      ctx.save();
+      const dg = ctx.createRadialGradient(disc.x, disc.y, 0, disc.x, disc.y, RADIUS * 0.9);
+      dg.addColorStop(0, 'rgba(155,140,206,0.4)');
+      dg.addColorStop(1, 'rgba(155,140,206,0)');
+      ctx.beginPath(); ctx.arc(disc.x, disc.y, RADIUS * 0.9, 0, Math.PI * 2);
+      ctx.fillStyle = dg; ctx.fill();
+      ctx.font = `${RADIUS}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.95;
+      ctx.fillText('💿', disc.x, disc.y);
+      ctx.restore();
+    }
+  }
+
+  // 普奇神父：場中央🚀
+  if (state.pucciRocket) {
+    ctx.save();
+    const rx = state.pucciRocket.x, ry = state.pucciRocket.y;
+    // 穩定光暈（取代 shadowBlur，避免 emoji shadow 閃爍）
+    const rkg = ctx.createRadialGradient(rx, ry, 0, rx, ry, RADIUS * 1.3);
+    rkg.addColorStop(0, 'rgba(255,255,255,0.4)');
+    rkg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.beginPath(); ctx.arc(rx, ry, RADIUS * 1.3, 0, Math.PI * 2);
+    ctx.fillStyle = rkg; ctx.fill();
+    ctx.font = `${RADIUS * 1.3}px serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.globalAlpha = 0.95;
+    ctx.fillText('🚀', rx, ry);
+    ctx.restore();
+  }
+
+  // 普奇神父：密語字幕（十四句依序顯示）
+  if (state.pucciChantFX) {
+    for (const key in state.pucciChantFX) {
+      const fx = state.pucciChantFX[key];
+      const alpha = Math.max(0, fx.life / fx.maxLife);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.font = 'bold 16px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#e8dcff';
+      ctx.shadowColor = '#000'; ctx.shadowBlur = 4;
+      ctx.fillText(`「${fx.text}」`, fx.x, fx.y - RADIUS - 34);
+      ctx.restore();
+    }
+  }
+
+  // 普奇神父：替身宣告字幕（C-Moon／Made in Heaven）進化瞬間彈出的大字
+  if (state.standCryFX) {
+    for (const fx of state.standCryFX) {
+      const elapsed = fx.maxLife - fx.life;
+      const popDur = 0.25;
+      // 彈出動畫：先放大超過1倍再回彈到1倍
+      const popScale = elapsed < popDur
+        ? 0.5 + 0.7 * Math.sin(Math.min(1, elapsed / popDur) * Math.PI / 2)
+        : 1;
+      const alpha = fx.life > 0.5 ? 1 : Math.max(0, fx.life / 0.5);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(fx.x, fx.y - RADIUS - 62);
+      ctx.scale(popScale, popScale);
+      ctx.font = 'italic bold 26px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = 'rgba(20,10,30,0.85)';
+      ctx.strokeText(fx.text, 0, 0);
+      ctx.shadowColor = fx.color; ctx.shadowBlur = 16;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(fx.text, 0, 0);
+      ctx.restore();
+    }
+  }
   if (state.dioPunchFX) {
     for (const fx of state.dioPunchFX) {
       const prog = fx.life / fx.maxLife;
@@ -16804,7 +17322,6 @@ function updateHUD() {
 }
 
 function showResult(deadBalls) {
-  if (!endlessMode) stopRecording();
   const overlay = document.getElementById('overlay');
   const titleEl = document.getElementById('result-title');
   const subEl   = document.getElementById('result-sub');
@@ -16879,6 +17396,8 @@ let endlessPlayerCharId = null;
 function startEndless() {
   endlessMode = true;
   endlessStage = 1;
+  setPlayerMode(2); // 闖關固定單挑，避免殘留3-4人混戰設定（含UI顯示）混進來
+  p3Choice = null; p4Choice = null;
   showEndlessPick();
 }
 
@@ -17100,7 +17619,8 @@ function buildCustomCharacter(parts) {
 
 function startAssembleMode() {
   assembleMode = true;
-  playerModeCount = 2;
+  setPlayerMode(2); // 避免殘留3-4人混戰設定（含UI顯示）混進來
+  p3Choice = null; p4Choice = null;
   assembleSelectedParts = { passive: null, basic: null, skill1: null, skill2: null };
   assembleSlotIndex = 0;
   showAssemblePicker();
